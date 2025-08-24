@@ -1,0 +1,216 @@
+/* =============== Banner Container =============== */
+.banner-slider {
+  width: 100%;
+  max-width: 1486px;
+  height: 330px;
+  padding: 0 1rem;
+  overflow: hidden;
+  border-radius: 12px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* =============== Banner Image =============== */
+.banner-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  z-index: 0;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.banner-image.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.banner-image.inactive {
+  opacity: 0;
+  z-index: 0;
+}
+
+/* =============== FIRST BANNER TEXT + BUTTON =============== */
+.banner-content-1 {
+  position: absolute;
+  top: 57px;
+  left: 106px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.banner-text-1 {
+  color: #fff;
+  font-family: Poppins;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.banner-button-1 {
+  display: flex;
+  width: 221px;
+  height: 50px;
+  padding: 11px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  background: #d35400;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #fff;
+  text-align: center;
+  font-family: Poppins;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 110%;
+  text-transform: capitalize;
+}
+
+/* =============== SECOND BANNER TEXT + BUTTON =============== */
+.banner-content-2 {
+  position: absolute;
+  top: 105px;
+  left: 78px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.banner-header-2 {
+  color: #fff;
+  font-family: Poppins;
+  font-size: 20px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.banner-text-2 {
+  color: #fff;
+  font-family: Poppins;
+  font-size: 52.455px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.banner-button-2 {
+  display: flex;
+  width: 202px;
+  height: 50px;
+  padding: 16px 22px;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  background: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #142333;
+  text-align: center;
+  font-family: Poppins;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 110%;
+  text-transform: capitalize;
+}
+
+/* =============== RESPONSIVE =============== */
+@media (max-width: 1440px) {
+  .banner-slider {
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .banner-slider {
+    max-width: 90%;
+  }
+
+  .banner-image {
+    border-radius: 10px;
+  }
+
+  .banner-content-1 {
+    top: 170px;
+    left: 80px;
+  }
+
+  .banner-content-2 {
+    top: 180px;
+    left: 60px;
+  }
+
+  .banner-text-1,
+  .banner-text-2 {
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 768px) {
+  .banner-slider {
+    max-width: 100%;
+    margin-top: 80px;
+  }
+
+  .banner-image {
+    border-radius: 8px;
+  }
+
+  .banner-content-1 {
+    top: 140px;
+    left: 40px;
+  }
+
+  .banner-content-2 {
+    top: 150px;
+    left: 30px;
+  }
+
+  .banner-text-1,
+  .banner-text-2 {
+    font-size: 34px;
+  }
+
+  .banner-button-1,
+  .banner-button-2 {
+    width: auto;
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-slider {
+    margin-top: 70px;
+  }
+
+  .banner-image {
+    border-radius: 6px;
+  }
+
+  .banner-content-1 {
+    top: 120px;
+    left: 20px;
+  }
+
+  .banner-content-2 {
+    top: 130px;
+    left: 20px;
+  }
+
+  .banner-text-1,
+  .banner-text-2 {
+    font-size: 24px;
+  }
+}
