@@ -69,7 +69,7 @@ const menu: MenuItem[] = [
 const HomeNavbar = () => {
   const navigate = useNavigate()
   const handleRaiseAReuirement = () => {
-    navigate("/requirement/selectCategory");
+    navigate("/requirement");
   };
     const handleProfileClick = () => {
     navigate("/profile");

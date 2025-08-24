@@ -19,7 +19,7 @@ export function ProfileHeader() {
             </Button>
           </div>
           <div className="space-y-1.5">
-            <h2 className="text-2xl font-bold">Shubham Sharma</h2>
+            <h2 className="text-2xl font-bold text-gray-600">Shubham Sharma</h2>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Mail className="h-4 w-4" />
               <span>shubham@gmail.com</span>

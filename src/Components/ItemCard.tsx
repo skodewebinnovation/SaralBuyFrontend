@@ -13,6 +13,7 @@ const ItemCard = ({category,items}:{category:string,items:string[]}) => {
 
   return (
     <div className="group">
+      
       <HoverCard >
       <HoverCardTrigger asChild className="overflow-hidden ">
         <div className="w-32 cursor-pointer rounded-2x">

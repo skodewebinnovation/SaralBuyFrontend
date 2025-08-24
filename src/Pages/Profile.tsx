@@ -7,7 +7,7 @@ import React from 'react'
 const Profile = () => {
   return (
     <div className="w-full max-w-7xl mx-auto py-6 space-y-6 px-4">
-      <h1 className="text-3xl font-bold">Profile & Settings</h1>
+      <h1 className="text-3xl font-bold text-gray-600">Profile & Settings</h1>
       <div className="grid gap-8">
         <ProfileHeader />
         <div className="grid gap-8 md:grid-cols-[250px_1fr]">

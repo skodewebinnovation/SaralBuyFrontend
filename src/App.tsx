@@ -15,6 +15,7 @@ import RequirementForm from "./Pages/RequirementForm";
 import HomeNavbar from "./Components/Navbar/HomeNavbar";
 import Footer from "./Components/Footer/Footer";
 import Category from "./Components/Category/Category";
+import Requirement from "./Pages/Requirement";
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<LoginPopup/>} />
-        <Route path="/requirement" element={<LoginPopup/>} />
+        <Route path="/requirement" element={<Requirement/>} />
         <Route path="/login/otp" element={<OTPPopup />} />
         <Route path="/:category/:select-item" element={<Category />} />
         <Route path="/profile" element={<Profile />} />
