@@ -1,5 +1,6 @@
 import Banner from '@/Components/Banner/Banner';
 import ItemCard from '@/Components/ItemCard'
+import { MoveRight } from 'lucide-react';
 import React from 'react'
 import { Link } from 'react-router-dom';
 
@@ -118,9 +119,12 @@ const Requirement = () => {
       }
     </div>
     {/* looking for div */}
-    <div className='bg-orange-100 p-5 rounded-lg mt-10'>
+    <div className='bg-orange-50 p-5 rounded-lg mt-10'>
       <h1 className='text-lg font-bold text-start'>Didn't Find What You'r Looking For ?</h1>
-      <p className='text-gray-600 text-sm mt-1'>What know not every category fit into a box. if your need doesn't match one of the listed options. Click <Link to={"/"} className='text-blue-600 underline'>Other </Link> to tell us more.</p>
+      <div className='flex justify-between items-center m-1'>
+        <p className='text-gray-600 text-sm'>What know not every category fit into a box. if your need doesn't match one of the listed options. Click <Link to={"/"} className='text-blue-600 underline'>Other </Link> to tell us more.</p>
+        <MoveRight className="h-4 w-4 text-gray-600" />
+      </div>
     </div>
    </div>
   )

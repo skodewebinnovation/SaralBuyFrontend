@@ -1,9 +1,10 @@
 //Styles
 import "../Styling/Home/homePage.css";
 import Banner from "@/Components/Banner/Banner";
-import ItemCard from "@/Components/ItemCard";
+
 import Requirement from "@/Components/Requirement";
 import SwiperBidSlider from "@/Components/SwiperBidSlider";
+import TrendingCategory from "@/Components/TrendingCategory";
 
 
 
@@ -11,9 +12,9 @@ import SwiperBidSlider from "@/Components/SwiperBidSlider";
 
 const Home = () => {
   return (
-<main>
+<main className="relative min-h-screen">
   <div className="w-full max-w-7xl mx-auto px-4">
-  <Banner />
+  <Banner /> 
   {/* bid */}
   <div className="grid grid-cols-1 sm:grid-cols-2 mt-10 gap-5">
     <SwiperBidSlider/>
@@ -22,7 +23,15 @@ const Home = () => {
 </div> 
 {/* requirement  */}
   <div className="mt-10">
-    <Requirement title="Your Requirements" color="orange"/>
+    <Requirement title="Your Requirements" color="orange" bg/>
+  </div>
+    {/* trending Section */}
+     <div className="mt-10 max-w-7xl mx-auto px-4">
+      <TrendingCategory/>
+    </div>
+    {/* requirement  */}
+  <div >
+    <Requirement title="Electronics" color="orange"/>
   </div>
 </main> );
 };

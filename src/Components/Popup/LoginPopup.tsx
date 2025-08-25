@@ -1,25 +1,27 @@
 import React, { useState } from "react";
-
-//Logo and Icons
 import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
-import crossIcon from "../../image/Icons/crossIcon.png";
-
-//Style
-import "../../Styling/Popup/LoginPopup.css";
-import "../../Styling/Home/homePage.css";
 import { useNavigate } from "react-router-dom";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { XCircleIcon } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 
-const LoginPopup = ({ onClose }:{onClose?:()=>void}) => {
-  //UseStates
+type Props={
+  open:boolean;
+  setOpen:React.Dispatch<React.SetStateAction<boolean>>
+} 
+const LoginPopup:React.FC<Props> = ({open,setOpen}) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [error, setError] = useState("");
-
-  //UseNavigate
   const navigate = useNavigate();
 
-  const handleNumberChange = (event:any) => {
+  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-
     if (/^\d{0,10}$/.test(value)) {
       setMobileNumber(value);
       setError("");
@@ -37,43 +39,36 @@ const LoginPopup = ({ onClose }:{onClose?:()=>void}) => {
   };
 
   return (
-    <div className="home-page-layout-login">
-      <div className="login-popup-overlay">
-        <button
-          className="close-button"
-          onClick={() => {
-            if (onClose) onClose();
-            else navigate(-1);
-          }}
-          aria-label="Close popup"
-        >
-          <img src={crossIcon} alt="Close Icon" />
-        </button>
-
-        <div className="logo-container">
-          <img src={saralBuyLogo} alt="Logo" className="SaralBuyLogoLayout" />
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="max-w-md w-full p-6 space-y-3">
+    
+        <div className="h-16 flex justify-center">
+          <img
+            src={saralBuyLogo}
+            alt="Logo"
+            className="w-full h-full object-contain"
+          />
         </div>
 
-        <div className="login-text">Login Here</div>
-        <div className="login-text-content">
-          Enter Your Phone Number to Sign In/ Sign Up Your Account
+    <div className="space-y-2">
+         <h1 className=" text-gray-700 text-3xl font-bold">Login here</h1>
+         <p>  Sign In / Sign Up Your Account</p>
+       </div>
+        <div className="space-y-4 w-full">0d325de   
+          <Input
+            className="w-full py-5"
+            type="text"
+            placeholder="Enter your Mobile Number"
+            value={mobileNumber}
+            onChange={handleNumberChange}
+          />
+          {error && <div className="text-red-500 text-sm">{error}</div>}
+          <Button className="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-bold rounded-md" onClick={handleSendOTP}>
+            Send OTP
+          </Button>
         </div>
-        <input
-          className="login-number-input"
-          type="text"
-          placeholder="Enter your Mobile Number"
-          value={mobileNumber}
-          onChange={handleNumberChange}
-        />
-        {error && <div className="error-message">{error}</div>}
-        <button
-          className="send-otp-button send-otp-text"
-          onClick={handleSendOTP}
-        >
-          Send OTP
-        </button>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
