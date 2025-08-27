@@ -85,7 +85,7 @@ const HomeNavbar = () => {
            
               <img
                 src={saralBuyLogo}
-                className="max-h-16 dark:invert"
+                className="max-h-20  dark:invert"
                 alt={'company logo'}
               />
             </Link>

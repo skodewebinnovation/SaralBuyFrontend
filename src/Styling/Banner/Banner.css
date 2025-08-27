@@ -159,7 +159,6 @@
 @media (max-width: 768px) {
   .banner-slider {
     max-width: 100%;
-    margin-top: 80px;
   }
 
   .banner-image {
@@ -189,9 +188,7 @@
 }
 
 @media (max-width: 480px) {
-  .banner-slider {
-    margin-top: 70px;
-  }
+
 
   .banner-image {
     border-radius: 6px;

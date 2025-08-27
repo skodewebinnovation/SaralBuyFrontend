@@ -49,7 +49,7 @@ const Banner = () => {
   }, []);
 
   return (
-    <div className="banner-slider mt-10">
+    <div className="banner-slider mt-5 sm:mt-10">
       {banners.map((banner, index) => (
         <div key={index}>
           <img

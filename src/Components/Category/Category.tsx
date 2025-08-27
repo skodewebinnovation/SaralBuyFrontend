@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import Slider from 'rc-slider';
 // import 'rc-slider/assets/index.css';
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,7 +12,7 @@ import {
 import { Button } from "../../Components/ui/button";
 import { Input } from "../../Components/ui/input";
 import { Textarea } from "../../Components/ui/textarea";
-import { PlusIcon, Upload, FileUp, MoveLeft, ChevronDown, X, XIcon } from "lucide-react";
+import { PlusIcon, Upload, FileUp, MoveLeft, XIcon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from "../../Components/ui/select";
 import { DatePicker } from "../../utils/DatePicker";
-import {toast} from "sonner"
 import { Range } from "react-range";
 
 import { CategoryFormchema } from "@/validations/Schema";
@@ -30,6 +29,7 @@ import { useForm } from "react-hook-form";
 import { Label } from "../ui/label";
 const Category = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const path = location.pathname;
   const lastPart = path.substring(path.lastIndexOf("/") + 1);
   const [date,setDate] = useState<Date | undefined> (undefined)
@@ -61,7 +61,9 @@ const Category = () => {
       <div className="flex flex-row sm:justify-between justify-end items-center gap-3 mb-6">
         <Breadcrumb className="sm:block hidden">
           <BreadcrumbList >
-            <BreadcrumbItem className="flex items-center gap-2">
+            <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" onClick={()=>{
+              navigate(-1)
+            }}>
               <MoveLeft className="h-4 w-4" />
                <BreadcrumbPage className="capitalize font-semibold  text-gray-500">
                 Selected Product
