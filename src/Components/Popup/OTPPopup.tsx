@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
-import { useNavigate } from "react-router-dom";
-import { Input } from "../ui/input";
+import { useFetch } from "@/helper/use-fetch";
 import { Button } from "../ui/button";
 import {
   InputOTP,
@@ -12,13 +11,38 @@ import {
   Dialog,
   DialogContent,
 } from "../ui/dialog";
+import authService from "@/services/auth.service";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { getUserProfile } from "@/zustand/userProfile";
+import { Spinner } from "../ui/shadcn-io/spinner";
+import { useNavigate } from "react-router-dom";
 
 type Props={
   open:boolean;
-  setOpen:React.Dispatch<React.SetStateAction<boolean>>
+  setOpen:React.Dispatch<React.SetStateAction<boolean>>;
+  number?:string
 } 
-const OtpPopup:React.FC<Props> = ({open,setOpen}) => {
+const OtpPopup:React.FC<Props> = ({open,setOpen,number}) => {
+  const {fn,data,loading}= useFetch(authService.verifyOtp)
+    const [value, setValue] = React.useState("")
+  const getProfile=  getUserProfile()
+  const navigate = useNavigate();
+  const handleVerify = async(e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await fn(number,value);
+    e?.currentTarget?.reset();
+  }
 
+  useEffect(()=>{
+    if(data){
+     getProfile.execute();
+      setOpen(false);
+      if(!(getProfile as any)?.firstName && !(getProfile as any)?.lastName && !(getProfile as any)?.email){
+      navigate('/profile')
+    }
+    }
+    
+  },[data])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -32,12 +56,13 @@ const OtpPopup:React.FC<Props> = ({open,setOpen}) => {
           />
         </div>
        <div className="space-y-2">
-         <h1 className=" text-gray-700 text-3xl font-bold">OTP Verification</h1>
-         <p>Enter the OTP code send on your number 9785******</p>
+         <DialogTitle className=" text-gray-700 text-3xl font-bold text-center">OTP Verification</DialogTitle>
+         <p className="text-center">Enter the OTP code send on your number {number?.toString().slice(0,4)}******</p>
        </div>
 
-        <div className="flex justify-center items-center flex-col space-y-5">
-         <InputOTP maxLength={6}>
+        <form onSubmit={handleVerify} className="flex justify-center items-center flex-col space-y-5">
+         <InputOTP maxLength={4}  value={value}
+        onChange={(value) => setValue(value)}>
       <InputOTPGroup className="space-x-4">
         <InputOTPSlot
           index={0}
@@ -57,10 +82,12 @@ const OtpPopup:React.FC<Props> = ({open,setOpen}) => {
         />
       </InputOTPGroup>
     </InputOTP>
-     <Button className="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-bold rounded-md" >
-               Continue
+     <Button type="submit" disabled={loading|| value.length !== 4} className="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-bold rounded-md" >
+               {
+                loading ? <Spinner className="w-5 h-5 animate-spin" /> : 'Continue'
+                }
               </Button>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

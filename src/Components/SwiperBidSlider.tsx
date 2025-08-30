@@ -47,10 +47,10 @@ const SwiperBidSlider = () => {
       </div>
 
       {/* Slider */}
-      <div ref={sliderRef} className="keen-slider">
+      <div ref={sliderRef} className="keen-slider ">
         {bids.map((bid) => (
-          <div key={bid.id} className="keen-slider__slide">
-            <Card className="flex flex-row items-center justify-around gap-4 p-4 rounded-xl shadow border border-gray-200">
+          <div key={bid.id} className="keen-slider__slide ">
+            <Card className="flex flex-row items-center justify-around gap-4 p-4 rounded-xl   shadow border border-gray-200">
               {/* Image */}
               <div className="w-24 h-24 flex-shrink-0">
                 <img

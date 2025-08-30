@@ -15,12 +15,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../../Components/ui/sheet";
-
+import { useDebounce } from 'use-debounce';
+import {Skeleton} from "../../Components/ui/skeleton"
 //Logo and Icons
 import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../ui/input";
-
+import { Card } from "../ui/card";
+import { useFetch } from "@/helper/use-fetch";
+import ProductService from "@/services/product.service";
+import { useEffect, useState } from "react";
+import debounce from 'debounce';
 interface MenuItem {
   title: string;
   url: string;
@@ -64,16 +69,55 @@ const menu: MenuItem[] = [
 ];
 
 
-
+type ProductsType={title:string,image:string,_id:string,description:string}
 
 const HomeNavbar = () => {
   const navigate = useNavigate()
+  const {fn,data} = useFetch(ProductService.getSeachProduct)
+  const [text, setText] = useState('');
+  const [products,setProducts] = useState<ProductsType[]>([]);
+ const [value, {isPending,flush}] = useDebounce(text, 1000);
+ const [showDropdown, setShowDropdown] = useState(false);
   const handleRaiseAReuirement = () => {
     navigate("/requirement");
   };
     const handleProfileClick = () => {
     navigate("/profile");
   };
+  const handleInputValue =async(e: React.ChangeEvent<HTMLInputElement>)=>{
+    const value = e.target.value
+    if(!value.trim()) return; 
+    setText(value)
+ 
+  }
+
+  const handleKeyPress =(e:React.KeyboardEvent<HTMLInputElement>)=>{
+    const key = e.key.toLowerCase();
+    if(key === 'enter' && value.trim() !== ''){
+        setShowDropdown(false); 
+            setProducts([]);
+            setText('');
+            flush();
+       navigate(`/product-listing?title=${encodeURIComponent(value)}&key=enter`);
+    }
+  }
+
+
+ useEffect(() => {
+  if (value.trim().length > 1) {
+    fn(value);
+      setShowDropdown(true);
+  } else {
+    setProducts([]);
+    setShowDropdown(false)
+  }
+}, [value]);
+
+  useEffect(()=>{
+    setProducts(data)
+  },[data])
+
+  console.log(text.length)
   return (
     <section className="py-4 mb-2">
       <div className="px-4 mx-auto">
@@ -82,7 +126,7 @@ const HomeNavbar = () => {
           <div className="flex items-center gap-6">
             {/* Logo */}
             <Link to={'/'} className="flex items-center gap-2">
-           
+            
               <img
                 src={saralBuyLogo}
                 className="max-h-20  dark:invert"
@@ -100,14 +144,58 @@ const HomeNavbar = () => {
             </div>
           </div>
           {/* search */}
-           <div className="relative w-1/2">
-      <Input
-        type="text"
-        placeholder="Search..."
-        className="pl-8 rounded-full focus-visible:ring-0 border border-gray-300 shadow-sm focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
-      />
-      <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 pointer-events-none opacity-50" />
+        <div className="relative w-1/2">
+  <Input
+    type="search"
+    onInput={handleInputValue}
+    onKeyPress={handleKeyPress}
+    placeholder="Search by name, or category..."
+    className="pl-8 rounded-full focus-visible:ring-0 border border-gray-300 shadow-sm focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
+  />
+  <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 pointer-events-none opacity-50" />
+
+  {/* Search Dropdown */}
+  {showDropdown  && (
+    <div className="absolute top-full mt-2 w-full z-50 max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
+      {isPending()   ? (
+        Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-20 rounded-md w-full" />
+        ))
+      ) : products?.length > 0  ? (
+        products.map((p: ProductsType) => (
+          <Card
+            key={p._id}
+            className="p-2 rounded-xl shadow-md bg-white cursor-pointer hover:bg-gray-50"
+           onClick={() => {
+            setShowDropdown(false); 
+            setProducts([]);
+            setText('');
+            flush();
+            navigate(`/product-listing?_id=${encodeURIComponent(p._id)}&title=${encodeURIComponent(p.title)}`);
+          }}
+
+          >
+            <div className="flex gap-4">
+              <img
+                className="w-14 h-14 object-contain rounded-lg"
+                src={p.image}
+                alt={p.title}
+              />
+              <div className="flex-1">
+                <p className="text-md font-semibold text-orange-600">{p.title}</p>
+                <p className="text-sm text-gray-600 line-clamp-2">{p.description}</p>
+              </div>
+            </div>
+          </Card>
+        ))
+      ) : (
+        <p className="text-sm text-gray-500 p-2 text-center">No results found.</p>
+      )}
     </div>
+  )}
+</div>
+
+
           <div className="flex gap-4 items-center">
             <Button  variant="secondary" size="icon" className="cursor-pointer"> 
               <MessageSquareText className="w-5 h-5"/>

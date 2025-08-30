@@ -1,13 +1,8 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-
-
+import { BrowserRouter as Router, Routes, Route, useSearchParams, Navigate } from "react-router-dom";
 //Pages
 import Home from "./Pages/Home";
 import Profile from "./Pages/Profile";
-
-//Style
 import "./App.css";
 import RequirementForm from "./Pages/RequirementForm";
 import HomeNavbar from "./Components/Navbar/HomeNavbar";
@@ -16,13 +11,23 @@ import Category from "./Components/Category/Category";
 import Requirement from "./Pages/Requirement";
 import ProductLisiting from "./Pages/ProductLisiting";
 import { useCategoriesStore } from "./zustand/getCategories";
+import { getUserProfile } from "./zustand/userProfile";
 
 function App() {
  const categories = useCategoriesStore()
+ const userProfile = getUserProfile();
+ console.log(userProfile)
+function TitleProtectWrapper() {
+  const [searchParams] = useSearchParams();
+  const title = searchParams.get("title");
+  return title ? <ProductLisiting /> : <Navigate to="/" />;
+}
+
 useEffect(() => {
   categories.execute();
+  userProfile.execute();
 }, [])
-console.log(categories)
+
 
   return (
     <Router>
@@ -30,15 +35,17 @@ console.log(categories)
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/requirement" element={<Requirement/>} />
-        <Route path="/:category/:select-item" element={<Category />} />
+        <Route path="/:category/:selectItem" element={<Category />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/product-listing" element={<ProductLisiting/>}/>
+        <Route path="/product-listing" element={<TitleProtectWrapper/>}/>
         <Route
           path="/requirementform/:mainCategory/:subCategory"
           element={<RequirementForm />}
         />
       </Routes>
-            {/* <Footer/> */}
+            {/* {
+              !pathname.includes('/product-listing') ? <Footer/> : null
+            } */}
     </Router>
   );
 }

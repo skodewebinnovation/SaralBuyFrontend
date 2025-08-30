@@ -34,59 +34,48 @@
   z-index: 0;
 }
 
-/* =============== FIRST BANNER TEXT + BUTTON =============== */
-.banner-content-1 {
+/* =============== Banner Content (Common) =============== */
+.banner-content-1,
+.banner-content-2 {
   position: absolute;
-  top: 57px;
-  left: 106px;
+  bottom: 15%; /* ✅ button always near bottom */
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  align-items: center; /* ✅ center align */
+  gap: 12px;
+  text-align: center;
+  width: 90%; /* ✅ fit inside screen */
 }
 
+/* =============== FIRST BANNER TEXT + BUTTON =============== */
 .banner-text-1 {
   color: #fff;
-  
   font-size: 50px;
-  font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
 
 .banner-button-1 {
-  display: flex;
-  width: 221px;
+  display: inline-flex;
+  min-width: 200px;
   height: 50px;
   padding: 11px 16px;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
   background: #d35400;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   color: #fff;
-  text-align: center;
-  
   font-size: 16px;
-  font-weight: 400;
-  line-height: 110%;
+  font-weight: 500;
   text-transform: capitalize;
 }
 
 /* =============== SECOND BANNER TEXT + BUTTON =============== */
-.banner-content-2 {
-  position: absolute;
-  top: 105px;
-  left: 78px;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
 .banner-header-2 {
   color: #fff;
   font-size: 20px;
@@ -96,63 +85,36 @@
 
 .banner-text-2 {
   color: #fff;
-  font-size: 52.455px;
-  font-style: normal;
+  font-size: 52px;
   font-weight: 700;
   line-height: normal;
 }
 
 .banner-button-2 {
-  display: flex;
-  width: 202px;
+  display: inline-flex;
+  min-width: 200px;
   height: 50px;
-  padding: 16px 22px;
+  padding: 14px 20px;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
   background: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   color: #142333;
-  text-align: center;
-  
   font-size: 16px;
-  font-weight: 400;
-  line-height: 110%;
+  font-weight: 500;
   text-transform: capitalize;
 }
 
 /* =============== RESPONSIVE =============== */
-@media (max-width: 1440px) {
-  .banner-slider {
-    max-width: 1200px;
-  }
-}
-
 @media (max-width: 1024px) {
   .banner-slider {
     max-width: 90%;
   }
-
-  .banner-image {
-    border-radius: 10px;
-  }
-
-  .banner-content-1 {
-    top: 170px;
-    left: 80px;
-  }
-
-  .banner-content-2 {
-    top: 180px;
-    left: 60px;
-  }
-
   .banner-text-1,
   .banner-text-2 {
-    font-size: 42px;
+    font-size: 40px;
   }
 }
 
@@ -160,52 +122,37 @@
   .banner-slider {
     max-width: 100%;
   }
-
-  .banner-image {
-    border-radius: 8px;
-  }
-
-  .banner-content-1 {
-    top: 140px;
-    left: 40px;
-  }
-
-  .banner-content-2 {
-    top: 150px;
-    left: 30px;
-  }
-
   .banner-text-1,
   .banner-text-2 {
-    font-size: 34px;
+    font-size: 28px;
   }
-
+  .banner-header-2 {
+    font-size: 16px;
+  }
   .banner-button-1,
   .banner-button-2 {
-    width: auto;
+    min-width: 160px;
+    font-size: 14px;
     padding: 10px 14px;
   }
 }
 
 @media (max-width: 480px) {
-
-
-  .banner-image {
-    border-radius: 6px;
+  .banner-slider {
+    height: 260px; /* ✅ smaller height for phone */
   }
-
-  .banner-content-1 {
-    top: 120px;
-    left: 20px;
-  }
-
-  .banner-content-2 {
-    top: 130px;
-    left: 20px;
-  }
-
   .banner-text-1,
   .banner-text-2 {
-    font-size: 24px;
+    font-size: 20px;
+  }
+  .banner-header-2 {
+    font-size: 14px;
+  }
+  .banner-button-1,
+  .banner-button-2 {
+    min-width: 140px;
+    height: auto;
+    font-size: 13px;
+    padding: 8px 12px;
   }
 }

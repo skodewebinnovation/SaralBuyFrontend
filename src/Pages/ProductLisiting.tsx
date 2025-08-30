@@ -1,5 +1,3 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import {
   Dialog,
@@ -17,6 +15,17 @@ import { useCategoriesStore } from '@/zustand/getCategories'
 import { Range } from "react-range";
 import RecentProductCard from '@/Components/RecentProductCard'
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useSearchParams } from 'react-router-dom'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../Components/ui/breadcrumb";
+import { Spinner } from '../Components/ui/shadcn-io/spinner';
+import productService from '@/services/product.service'
+import ProductListingCard from '@/Components/ProductListingCard'
 export default function ProductListing() {
   const [values, setValues] = useState([100, 4000]);
   const [filters, setFilters] = useState([
@@ -52,7 +61,23 @@ export default function ProductListing() {
     },
   ])
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-  const { data, loading, error } = useCategoriesStore();
+  const { data } = useCategoriesStore();
+  const [searchParams] = useSearchParams()
+
+  const [title,setTitle] = useState('')
+  const [key,setKey] = useState('')
+  const [products, setProducts] = useState<any[]>([]);
+  const [total,setTotal]= useState(0)
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const limit = 10;
+
+  useEffect(() => {
+    if(!searchParams) return;
+  setTitle(searchParams.get("title")!|| '')
+  if(searchParams.get("key")) setKey(searchParams.get("key")!)
+}, [searchParams]);
+
   useEffect(() => {
     if (!data || data.length === 0) return;
 
@@ -72,6 +97,36 @@ export default function ProductListing() {
       })
     );
   }, [data]);
+
+
+useEffect(() => {
+  if (title) {
+    setProducts([]);
+    setPage(1);
+    fetchMoreData(true);
+  }
+}, [title]);
+
+ const fetchMoreData  = async (reset:boolean= false) => {
+  if (!title) return console.warn("title missing");
+  const currentPage = reset ? 1 : page;
+
+  try {
+    const response = await productService.getProductByTitle(title, currentPage, limit);
+    const newProducts  = response?.data?.data?.products || [];
+
+    setProducts(prev => reset ? newProducts : [...prev, ...newProducts]);
+    setTotal(response?.data?.data.total);
+    const totalPages = response?.data?.data.totalPages;
+
+    setHasMore(currentPage < totalPages);
+    setPage(reset ? 2 : currentPage + 1);  // update consistently
+  } catch (error) {
+    console.log('Error during get products', error);
+  }
+};
+
+  
 
 
   return (
@@ -202,10 +257,20 @@ export default function ProductListing() {
         {/*  Desktop */}
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-baseline justify-between  ">
-            <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-gray-600">Product Cartegory</h1>
+                  <Breadcrumb className="sm:block hidden">
+          <BreadcrumbList >
+            <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" >
+               <BreadcrumbPage className="capitalize font-semibold text-orange-600 ">
+                {title}
+              </BreadcrumbPage>
+                <BreadcrumbSeparator />
+                <BreadcrumbPage className="capitalize font-semibold text-gray-500">
+                Reuirements {total || ""}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
 
-            <div className="flex items-center">
-
+          </BreadcrumbList>
+        </Breadcrumb>
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(true)}
@@ -214,10 +279,10 @@ export default function ProductListing() {
                 <span className="sr-only">Filters</span>
                 <FunnelIcon aria-hidden="true" className="size-5" />
               </button>
-            </div>
+           
           </div>
 
-          <section aria-labelledby="products-heading" className="pt-6 pb-24">
+          <section aria-labelledby="products-heading" className="py-10">
             <h2 id="products-heading" className="sr-only">
               Products
             </h2>
@@ -229,10 +294,10 @@ export default function ProductListing() {
 
 
                 {filters.map((section) => (
-                  section.id !== 'budget' ? <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-6">
+                  section.id !== 'budget' ? <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-5">
                     <h3 className="-my-3 flow-root">
                       <DisclosureButton className="group flex w-full items-center justify-between  py-2 text-sm text-gray-400 hover:text-gray-500">
-                        <span className="font-semibold text-lg text-gray-600 tracking-wide" >{section.name}</span>
+                        <span className="font-semibold text-[15px] text-gray-600 tracking-wide" >{section.name}</span>
                         <span className="ml-6 flex items-center">
                           <PlusIcon aria-hidden="true" className="size-5 group-data-open:hidden" />
                           <MinusIcon aria-hidden="true" className="size-5 group-not-data-open:hidden" />
@@ -257,10 +322,10 @@ export default function ProductListing() {
                       </div>
                     </DisclosurePanel>
                   </Disclosure> :
-                    <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-6">
+                    <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-3">
                       <h3 className="-my-3 flow-root">
                         <DisclosureButton className="group flex w-full items-center justify-between  py-3 text-sm text-gray-400 hover:text-gray-500">
-                          <span className="font-semibold text-lg text-gray-600">{section.name}</span>
+                          <span className="font-semibold text-[15px] text-gray-600">{section.name}</span>
                           <span className="ml-6 flex items-center">
                             <PlusIcon aria-hidden="true" className="size-5 group-data-open:hidden" />
                             <MinusIcon aria-hidden="true" className="size-5 group-not-data-open:hidden" />
@@ -321,12 +386,28 @@ export default function ProductListing() {
 
               {/* Product grid */}
               <div className="lg:col-span-3 shadow-sm rounded-2xl p-6 border  ">
-                <div className='grid grid-col-1 sm:grid-cols-2 gap-6 '>
-                  {
-                    [1, 2, 4, 3, 4, 5, 6, 8, 5, 6, 8, 9].map(i => <RecentProductCard />)
-                  }
-
+                 {
+                  key.length > 0 && products.length == 0 ?
+                  <div className='flex justify-center items-center h-full flex-col space-y-2'>
+                    <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-illustration-svg-png-download-8779492.png" alt="" className='h-24 w-24' />
+                    <p className='text-xl font-semibold  text-center'>No Item Found</p>
+                  </div>:
+                   <InfiniteScroll
+                  dataLength={products.length}
+                  next={fetchMoreData}
+                  hasMore={hasMore}
+                  loader={  <div className="flex justify-center py-6">
+                  <Spinner className="h-6 w-6 animate-spin text-orange-500" />
+                </div>}
+                  endMessage={<p className="text-center pt-4 text-gray-400">You have seen all products.</p>}
+               
+                >
+                <div className="grid grid-col-1 sm:grid-cols-2 gap-6">
+                  {products.map((product: any) => <ProductListingCard  product={product}/>)}
                 </div>
+                </InfiniteScroll>
+                 }
+           
               </div>
             </div>
           </section>

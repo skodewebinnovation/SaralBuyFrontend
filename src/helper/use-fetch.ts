@@ -4,7 +4,7 @@ export const useFetch = (cb:any)=>{
     const [data,setData] = useState<any>(null);
     const [loading,setLoading] = useState<boolean>(false);
     const [error,setError] = useState<any>(null);
-    const [showToast,setShowToast] = useState<boolean>(true);
+    // const [showToast,setShowToast] = useState<boolean>(true);
 
     const fn = async(...args:any)=>{
         setLoading(true);
@@ -18,9 +18,7 @@ export const useFetch = (cb:any)=>{
         } catch (error:any) {
             console.log(error?.response ||  error)
             error = error?.response?.data?.message || error?.response?.data?.error?.message || error.message as string || error;
-            {
-            showToast  && toast.error(error)
-            }
+            toast.error(error)
             setError(error);
             setLoading(false);
             
@@ -29,5 +27,5 @@ export const useFetch = (cb:any)=>{
         }
       
     }
-    return {data,loading,fn,error,setData,setShowToast,setError}
+    return {data,loading,fn,error,setData,setError}
 }

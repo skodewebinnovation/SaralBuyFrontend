@@ -1,24 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { XCircleIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-
+import { useFetch } from "@/helper/use-fetch";
+import authService from "@/services/auth.service";
+import { toast } from "sonner";
+import { Spinner } from "../ui/shadcn-io/spinner";
+import OtpPopup from "./OTPPopup";
 type Props={
   open:boolean;
-  setOpen:React.Dispatch<React.SetStateAction<boolean>>
+  setOpen:React.Dispatch<React.SetStateAction<boolean>>;
+  setNumber?: React.Dispatch<React.SetStateAction<string>>;
+  setOtpPopup?:React.Dispatch<React.SetStateAction<boolean>>
+
 } 
-const LoginPopup:React.FC<Props> = ({open,setOpen}) => {
+const LoginPopup:React.FC<Props> = ({open,setOpen,setNumber,setOtpPopup}) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+ 
+  const {fn,data,loading} = useFetch(authService.sendOtp)
 
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -28,20 +36,30 @@ const LoginPopup:React.FC<Props> = ({open,setOpen}) => {
     }
   };
 
-  const handleSendOTP = () => {
+  const handleSendOTP = async(e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     if (mobileNumber.length !== 10) {
-      setError("Enter a valid 10 digit mobile number");
+      toast.error("Enter a valid 10 digit mobile number");
       return;
     }
-    if (!error) {
-      navigate("/login/otp", { state: { mobileNumber } });
-    }
+    await fn(mobileNumber)
+    e.currentTarget.reset();
+
   };
 
+  useEffect(()=>{
+    if(data){
+      toast.success("OTP sent successfully")
+      setNumber?.(mobileNumber)
+      setOpen(false)
+      setOtpPopup?.(true)
+    }
+  },[data])
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-md w-full p-6 space-y-3">
-    
+    <>    
+    <Dialog open={open} onOpenChange={setOpen} >
+      <DialogContent >
+    <form onSubmit={handleSendOTP} className=" p-6 max-w-md inline-block space-y-5 ">
         <div className="h-16 flex justify-center">
           <img
             src={saralBuyLogo}
@@ -51,10 +69,10 @@ const LoginPopup:React.FC<Props> = ({open,setOpen}) => {
         </div>
 
     <div className="space-y-2">
-         <h1 className=" text-gray-700 text-3xl font-bold">Login here</h1>
-         <p>  Sign In / Sign Up Your Account</p>
+         <DialogTitle className=" text-gray-700 text-3xl font-bold text-center">Login here</DialogTitle>
+         <DialogTitle className="text-center text-md text-gray-600">  Sign In / Sign Up Your Account</DialogTitle>
        </div>
-        <div className="space-y-4 w-full">0d325de   
+        <div className="space-y-4 w-full">
           <Input
             className="w-full py-5"
             type="text"
@@ -63,12 +81,16 @@ const LoginPopup:React.FC<Props> = ({open,setOpen}) => {
             onChange={handleNumberChange}
           />
           {error && <div className="text-red-500 text-sm">{error}</div>}
-          <Button className="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-bold rounded-md" onClick={handleSendOTP}>
-            Send OTP
+          <Button type="submit" disabled={loading|| mobileNumber.length < 10} className="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-bold rounded-md" >
+            {
+              loading ? <Spinner className="w-5 h-5 animate-spin" /> : 'Send OTP'
+            }
           </Button>
         </div>
+    </form>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 
