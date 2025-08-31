@@ -5,7 +5,7 @@ import App from './App.tsx'
 import { Toaster } from './Components/ui/sonner.tsx'
 createRoot(document.getElementById('root')!).render(
   <>
-    <Toaster/>
+    <Toaster richColors  />
     <App />
   </>,
 )

@@ -19,8 +19,9 @@ function App() {
  console.log(userProfile)
 function TitleProtectWrapper() {
   const [searchParams] = useSearchParams();
-  const title = searchParams.get("title");
-  return title ? <ProductLisiting /> : <Navigate to="/" />;
+  // const title = searchParams.get("prt");
+  // return title ? <ProductLisiting /> : <Navigate to="/" />;
+  return <ProductLisiting/>
 }
 
 useEffect(() => {
@@ -35,7 +36,7 @@ useEffect(() => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/requirement" element={<Requirement/>} />
-        <Route path="/:category/:selectItem" element={<Category />} />
+        <Route path="/category/:categoryId" element={<Category />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/product-listing" element={<TitleProtectWrapper/>}/>
         <Route

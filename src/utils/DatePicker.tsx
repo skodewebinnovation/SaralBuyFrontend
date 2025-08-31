@@ -28,7 +28,7 @@ export function DatePicker({ date, setDate }: Props) {
           className="data-[empty=true]:text-muted-foreground flex-1 justify-start text-left font-normal "
         >
           <CalendarIcon />
-          {date ? format(date, "dd-MM-yyyy") : <span>Pick a date</span>}
+          {date ? format(date, "dd-MM-yyyy") : <span>Delivery Date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">

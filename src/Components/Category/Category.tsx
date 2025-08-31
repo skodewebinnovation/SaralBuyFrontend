@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // import Slider from 'rc-slider';
 // import 'rc-slider/assets/index.css';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,34 +27,101 @@ import { CategoryFormchema } from "@/validations/Schema";
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from "react-hook-form";
 import { Label } from "../ui/label";
+import { useCategoriesStore } from "@/zustand/getCategories";
+import { toast } from "sonner";
+import { useFetch } from "@/helper/use-fetch";
+import productService from "@/services/product.service";
+import categoryService from "@/services/category.service";
 const Category = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const path = location.pathname;
-  const lastPart = path.substring(path.lastIndexOf("/") + 1);
+  const {categoryId} = useParams()
+  const[subCategroies,setSubCategoies]= useState([])
   const [date,setDate] = useState<Date | undefined> (undefined)
   const [values, setValues] = useState([2, 10]);
+  const{fn,data:productCreateData} = useFetch(productService.addProduct)
+  const {fn:getCatByIdFn,data:catByIdData} = useFetch(categoryService.getCategoriesById)
+const [image, setImage] = useState<File | null>(null);
+const [fileDoc, setFileDoc] = useState<File | null>(null);
+const imageRef =useRef(null)
+const fileDocRef =useRef(null)
 
-  const {watch,handleSubmit,setValue,formState:{errors}} = useForm({
+
+  useEffect(()=>{
+   (async()=>{
+    await getCatByIdFn(categoryId)
+   })()
+  },[categoryId])
+
+
+
+    useEffect(()=>{
+    if(catByIdData) setSubCategoies((catByIdData as any)?.subCategories)
+  },[catByIdData])
+
+
+  const {watch,handleSubmit,setValue,formState:{errors},register,getValues} = useForm({
     resolver: zodResolver(CategoryFormchema) as any,
     defaultValues:{
-      gst_requirement:'',
-      product_type:''
+    title:'',
+    quantity:'',
+    categroy_type:'',
+    minimumBudget: '',
+    productType:'',  // is new or not
+    oldProductValue:{ // if old one this
+      min:'',
+      max:''
+    },
+    productCondition:'', // if old one this
+
+    // section 2
+    image:'',      // store image URL or path
+    document: '',   // store doc/pdf path
+    description: '', 
+    // section 3
+    paymentAndDelivery: {
+        ex_deliveryDate: undefined as Date | undefined,
+        paymentMode: '',  // if yes aalow the below field
+        gstNumber:'',
+        organizationName: '',
+        organizationAddress: ''
+    },
+    draft: false,
+    gst_requirement:'',
+   
     }
   })
 
   const gstField = watch("gst_requirement")
-  const productField = watch("product_type")
+  const productField = watch("productType")
+  const categoryType = watch("categroy_type") // this is also id
 
-  function onSubmit(data:any){
-    console.log(data)
+
+  useEffect(() => {
+  setValue("oldProductValue.min", values[0].toString());
+  setValue("oldProductValue.max", values[1].toString());
+}, [values, setValue]);
+
+ async function onSubmit(data:any){
+  const formData = new FormData();
+Object.entries(data).forEach(([key, val]) => {
+  if (typeof val === "object") {
+    formData.append(key, JSON.stringify(val));
+  } else {
+    formData.append(key, val as any);
+  }
+});
+if (image) formData.append("image", image);
+if (fileDoc) formData.append("document", fileDoc);
+    await fn(categoryId,categoryType,formData)
   }
 
-  // {errors.bio && (
-  //               <p className='text-sm text-red-500'>
-  //                 {errors.bio.message?.toString()}
-  //               </p>
-  //             )}
+  useEffect(()=>{
+  for(let i=0;i<Object.entries(errors).length;i++){
+    toast.error(Object.entries(errors)[i][1]?.message)
+    break;
+  }
+  },[errors])
+
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
       {/* Breadcrumb + Action */}
@@ -70,7 +137,7 @@ const Category = () => {
               </BreadcrumbPage>
                 <BreadcrumbSeparator />
                 <BreadcrumbPage className="capitalize font-semibold text-orange-600">
-                {decodeURIComponent(lastPart) || ""}
+                {decodeURIComponent(catByIdData?.categoryName) || ""}
               </BreadcrumbPage>
             </BreadcrumbItem>
 
@@ -97,7 +164,7 @@ const Category = () => {
           </p>
         </div>
             <div className="col-span-1 w-[80%] sm:w-full mx-auto">
-                    <img src="../electronic.png" alt="" loading="lazy" />
+                    <img src={catByIdData?.image} alt="" loading="lazy" />
             </div>
         </div>
 
@@ -107,26 +174,26 @@ const Category = () => {
           <div className=" shadow-sm rounded-2xl p-6 border ">
             <h3 className="text-lg font-semibold mb-4">Product Details</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-              <Input type="text" placeholder="Title*" className="col-span-3"  />
-              <Select>
+              <Input type="text" placeholder="Title*" className="col-span-3"  {...register('title')}   />
+              <Select 
+              value={categoryType}
+              onValueChange={(value)=> setValue('categroy_type',value)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="computer">Computer & Laptops</SelectItem>
-                  <SelectItem value="tv">TVs and Screens</SelectItem>
-                  <SelectItem value="mobile">Mobiles</SelectItem>
+                  {
+                  catByIdData &&   subCategroies.map((c:any)=><SelectItem value={c?._id}>{c?.name}</SelectItem>)
+                  }
                 </SelectContent>
               </Select>
-              <Input type="text" placeholder="Quantity*" />
-              <Input type="text" placeholder="Minimum Budget" />
+              <Input type="text" placeholder="Quantity*"  {...register('quantity')}/>
+              <Input type="text" placeholder="Minimum Budget" {...register('minimumBudget')} />
              {
              ( productField === 'new_product' || productField === '')  &&(
                  <Select 
               value={productField}
-              onValueChange={(value)=>{
-                setValue('product_type',value)
-              }}>
+             onValueChange={(value) => setValue("productType", value)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Product Type" />
                 </SelectTrigger>
@@ -146,7 +213,7 @@ const Category = () => {
      <div className="flex justify-between items-center mb-3">
        <Label className=" font-medium text-gray-500">Old Product</Label>
        <XIcon className="w-4 h-4 text-gray-400 cursor-pointer" onClick={()=>{
-        setValue('product_type','new_product')
+        setValue('productType','new_product')
        }}/>
      </div>
       <Range
@@ -194,7 +261,9 @@ const Category = () => {
         </div>
       </div>
     </div>
-      <Select>
+      <Select
+      onValueChange={(val)=>setValue('productCondition',val)}
+      >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Product Condition" />
                 </SelectTrigger>
@@ -215,18 +284,56 @@ const Category = () => {
           <div className=" shadow-sm rounded-2xl p-6 border">
             <h3 className="text-lg font-semibold mb-4">Other Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer hover:">
-                <Upload className="h-6 w-6 mb-2 text-gray-500" />
-                <span className="text-sm text-muted-foreground">Upload Image</span>
-              </div>
-              <div className="border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer hover:">
-                <FileUp className="h-6 w-6 mb-2 text-gray-500" />
-                <span className="text-sm text-muted-foreground">
-                  Browse From Device (doc/pdf)
-                </span>
-              </div>
+              <div
+  onClick={() => (imageRef as any).current?.click()}
+  className="border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer"
+>
+  <Upload className="h-6 w-6 mb-2 text-gray-500" />
+  <span className="text-sm text-muted-foreground">Upload Image</span>
+  <input
+    type="file"
+    accept="image/*"
+    hidden
+    ref={imageRef}
+    onChange={(e) => {
+      if (e.target.files?.[0]) {
+        setImage(e.target.files[0]);
+      }
+    }}
+  />
+  {image && (
+    <p className="text-xs mt-2 text-green-600">
+      {image.name}
+    </p>
+  )}
+</div>
+             <div
+  onClick={() => (fileDocRef as any).current?.click()}
+  className="border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer"
+>
+  <FileUp className="h-6 w-6 mb-2 text-gray-500" />
+  <span className="text-sm text-muted-foreground">
+    Browse From Device (doc/pdf)
+  </span>
+  <input
+    type="file"
+    accept=".pdf,.doc,.docx"
+    hidden
+    ref={fileDocRef}
+    onChange={(e) => {
+      if (e.target.files?.[0]) {
+        setFileDoc(e.target.files[0]);
+      }
+    }}
+  />
+  {fileDoc && (
+    <p className="text-xs mt-2 text-green-600">
+      {fileDoc.name}
+    </p>
+  )}
+</div>
             </div>
-            <Textarea placeholder="Description*" />
+            <Textarea placeholder="Description*"  {...register("description")} />
           </div>
 
 
@@ -235,7 +342,13 @@ const Category = () => {
               Payment & Delivery Details
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-              <DatePicker date={date} setDate={setDate} />
+              <DatePicker date={date}
+              setDate={(val)=>{
+                if(val){
+                setDate(val);
+                setValue("paymentAndDelivery.ex_deliveryDate", val as any);
+                }
+              }} />
               <Select >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Payment Mode" />
@@ -263,9 +376,9 @@ const Category = () => {
               {
                 gstField === "yes" &&(
                  <>
-                      <Input type="text" placeholder="GST Number" />
-                     <Input type="text" placeholder="Organization Name" />
-                             <Input type="text" placeholder="Organization Address" />
+                      <Input type="text" placeholder="GST Number" {...register("paymentAndDelivery.gstNumber")} />
+                     <Input type="text" placeholder="Organization Name"  {...register("paymentAndDelivery.organizationName")} />
+                      <Input type="text" placeholder="Organization Address" {...register("paymentAndDelivery.organizationAddress")}  />
                  </>
                 )
               }

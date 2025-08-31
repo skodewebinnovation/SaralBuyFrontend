@@ -7,7 +7,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ItemCard = ({categoryName,subCategories,image}:{categoryName:string,subCategories:string[],image:string}) => {
+const ItemCard = ({categoryName,subCategories,image,_id}:{categoryName:string,subCategories:string[],image:string,_id:string}) => {
   const navigate = useNavigate()
 
   return (
@@ -35,7 +35,7 @@ const ItemCard = ({categoryName,subCategories,image}:{categoryName:string,subCat
       >
         {subCategories.map((item:any, index) => (
           <div
-            onClick={() => navigate(`/${categoryName}/${encodeURIComponent(item.name)}`)}
+            onClick={() => navigate(`/category/${_id}`)}
             key={index}
             className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer flex items-center justify-between border-b last:border-none"
           >
