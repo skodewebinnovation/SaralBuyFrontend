@@ -1,4 +1,5 @@
 //Styles
+import Brands from "@/Components/Brands";
 import "../Styling/Home/homePage.css";
 import Banner from "@/Components/Banner/Banner";
 
@@ -33,6 +34,9 @@ const Home = () => {
   <div >
     <Requirement title="Electronics" color="orange"/>
   </div>
+  {/* brands */}
+  <Brands></Brands>
+
 </main> );
 };
 

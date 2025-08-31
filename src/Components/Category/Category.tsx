@@ -27,18 +27,18 @@ import { CategoryFormchema } from "@/validations/Schema";
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from "react-hook-form";
 import { Label } from "../ui/label";
-import { useCategoriesStore } from "@/zustand/getCategories";
 import { toast } from "sonner";
 import { useFetch } from "@/helper/use-fetch";
 import productService from "@/services/product.service";
 import categoryService from "@/services/category.service";
+import { Spinner } from "../ui/shadcn-io/spinner";
 const Category = () => {
   const navigate = useNavigate();
   const {categoryId} = useParams()
   const[subCategroies,setSubCategoies]= useState([])
   const [date,setDate] = useState<Date | undefined> (undefined)
   const [values, setValues] = useState([2, 10]);
-  const{fn,data:productCreateData} = useFetch(productService.addProduct)
+  const{fn,data:productCreateData,loading} = useFetch(productService.addProduct)
   const {fn:getCatByIdFn,data:catByIdData} = useFetch(categoryService.getCategoriesById)
 const [image, setImage] = useState<File | null>(null);
 const [fileDoc, setFileDoc] = useState<File | null>(null);
@@ -59,7 +59,8 @@ const fileDocRef =useRef(null)
   },[catByIdData])
 
 
-  const {watch,handleSubmit,setValue,formState:{errors},register,getValues} = useForm({
+
+  const {watch,handleSubmit,setValue,formState:{errors},register,getValues,reset} = useForm({
     resolver: zodResolver(CategoryFormchema) as any,
     defaultValues:{
     title:'',
@@ -94,6 +95,7 @@ const fileDocRef =useRef(null)
   const gstField = watch("gst_requirement")
   const productField = watch("productType")
   const categoryType = watch("categroy_type") // this is also id
+  const paymentMode = watch("paymentAndDelivery.paymentMode");
 
 
   useEffect(() => {
@@ -121,6 +123,16 @@ if (fileDoc) formData.append("document", fileDoc);
     break;
   }
   },[errors])
+
+    useEffect(()=>{
+    if(productCreateData){
+       toast.success("Product Created Successfully")
+       setDate(undefined)
+       reset()
+       setImage(null)
+       setFileDoc(null)
+    }
+  },[productCreateData])
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
@@ -154,7 +166,7 @@ if (fileDoc) formData.append("document", fileDoc);
     <form  onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Panel */}
-        <div className=" md:col-span-1 lg:col-span-1 bg-white shadow-sm rounded-2xl p-6 border xs:grid xs:grid-cols-2 gap-6 ">
+        <div className=" md:col-span-1 lg:col-span-1 bg-white shadow-sm rounded-2xl p-6 border xs:grid xs:grid-cols-2 gap-6  space-y-4">
         <div className="col-span-1  align-center sm:block flex flex-col justify-center ">
               <h2 className="text-lg font-semibold mb-2">Tailor Your Experience</h2>
           <p className="text-sm text-muted-foreground">
@@ -343,13 +355,19 @@ if (fileDoc) formData.append("document", fileDoc);
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
               <DatePicker date={date}
+              
               setDate={(val)=>{
                 if(val){
                 setDate(val);
                 setValue("paymentAndDelivery.ex_deliveryDate", val as any);
                 }
               }} />
-              <Select >
+              <Select 
+               value={paymentMode}
+              onValueChange={(value)=>{
+                setValue('paymentAndDelivery.paymentMode',value)
+              }}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Payment Mode" />
                 </SelectTrigger>
@@ -389,7 +407,9 @@ if (fileDoc) formData.append("document", fileDoc);
           <div className="flex justify-end mt-4 gap-3">
             <Button type="button" variant="outline">Save as Draft</Button>
             <Button type="submit" className="bg-orange-600 hover:bg-orange-500 text-white">
-              Submit
+              {
+                loading ? <Spinner className="w-5 h-5 animate-spin"/> : 'Submit'
+              }
             </Button>
           </div>
         </div>

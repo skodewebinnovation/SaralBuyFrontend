@@ -45,8 +45,9 @@ useEffect(() => {
         />
       </Routes>
             {/* {
-              !pathname.includes('/product-listing') ? <Footer/> : null
+              !pathname.includes('/product-listing') ? : null
             } */}
+            <Footer/> 
     </Router>
   );
 }

@@ -1,7 +1,7 @@
 
 import { Button } from "../Components/ui/button";
 import { User, MapPin, List } from "lucide-react";
-const RecentProductCard = ({product}:{product:any}) => {
+const RecentProductCard = () => {
   return (
       <div className='p-5 bg-white rounded-lg shadow-md '>
       <span className="border-2 border-gray-800 rounded-full mb-4 inline-block p-1  max-w-fit px-3 text-sm font-semibold"> Sationary</span>

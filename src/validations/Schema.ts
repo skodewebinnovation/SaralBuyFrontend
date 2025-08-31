@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { email, z } from "zod";
 
 export const CategoryFormchema = z.object({
   title: z.string().min(1, "Title is required"), // ensures empty string also fails
@@ -31,3 +31,14 @@ export const CategoryFormchema = z.object({
   draft: z.boolean().optional(),
   gst_requirement: z.string().optional(),
 });
+
+export const ProfileSchema = z.object({
+  firstName: z.string().min(1, "First Name is required"),
+  lastName: z.string().min(1, "Last Name is required"),
+  email: z.string().email("Invalid email"),
+  phone: z.string().min(10, "Phone number is required"),
+  address: z.string().min(5, "Address is required"),
+  aadhaarNumber:z.string().refine((value)=> !value || /^[2-9]{1}[0-9]{11}$/.test(value),{
+    message: 'Invalid Aadhaar Number'
+  })
+})
