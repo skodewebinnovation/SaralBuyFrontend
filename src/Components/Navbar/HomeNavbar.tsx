@@ -119,11 +119,12 @@ const HomeNavbar = () => {
 
   console.log(text.length)
   return (
-    <section className="py-4 mb-2">
-      <div className="px-4 mx-auto">
+    <section className="mb-2 relative z-9">
+      <div className="mx-auto bg-gray-50 p-3 sticky top-0">
         {/* Desktop Menu */}
-        <nav className="hidden justify-evenly lg:flex items-center gap-5">
+        <nav className="hidden justify-evenly lg:flex items-center gap-5 ">
           <div className="flex items-center gap-6">
+            {/* Logo */}
             {/* Logo */}
             <Link to={'/'} className="flex items-center gap-2">
             
@@ -156,7 +157,7 @@ const HomeNavbar = () => {
 
   {/* Search Dropdown */}
   {showDropdown  && (
-    <div className="absolute top-full mt-2 w-full z-50 max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
+    <div className="absolute top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
       {isPending()   ? (
         Array.from({ length: 3 }).map((_, i) => (
           <Skeleton key={i} className="h-20 rounded-md w-full" />
@@ -209,7 +210,7 @@ const HomeNavbar = () => {
              <Button onClick={handleRaiseAReuirement}  variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
             Raise a Requirement
             </Button>
-               <Button onClick={handleProfileClick}  variant="secondary" size="icon" className="cursor-pointer">
+               <Button onClick={handleProfileClick}   size="icon" className="cursor-pointer">
               <User className="w-5 h-5"/>
             </Button>
           </div>

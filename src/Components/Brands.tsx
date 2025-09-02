@@ -1,10 +1,8 @@
 const Brands = () => {
   return (
-    <div className="relative px-8 sm:px-16 py-10 min-h-42 flex items-center z-0">
+    <div className="relative px-8 sm:px-16 py-10 min-h-42 flex items-center z-0 overflow-hidden">
       
-      <div
-        className="absolute inset-0 bg-[url('./grid.png')] bg-cover bg-no-repeat opacity-10 pointer-events-none"
-      />
+      <img src="Rectangle 4320.png" className="w-full absolute top-10 left-0"/>
 
       {/* Content */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full max-w-7xl mx-auto px-4 gap-6 relative z-10">

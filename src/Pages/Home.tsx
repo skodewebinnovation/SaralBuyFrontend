@@ -13,7 +13,7 @@ import TrendingCategory from "@/Components/TrendingCategory";
 
 const Home = () => {
   return (
-<main className="relative min-h-screen">
+<main className="relative min-h-screen ">
   <div className="w-full max-w-7xl mx-auto px-4">
   <Banner /> 
   {/* bid */}
@@ -27,9 +27,18 @@ const Home = () => {
     <Requirement title="Your Requirements" color="orange" bg/>
   </div>
     {/* trending Section */}
-     <div className="mt-10 max-w-7xl mx-auto px-4">
-      <TrendingCategory/>
-    </div>
+    <div className="mt-10 relative mx-auto px-4 w-full">
+  <TrendingCategory />
+<img src="All In One Market Place that Fits You.png" className="absolute -top-5 left-0 w-full">
+
+</img>
+
+
+
+
+
+</div>
+
     {/* requirement  */}
   <div >
     <Requirement title="Electronics" color="orange"/>

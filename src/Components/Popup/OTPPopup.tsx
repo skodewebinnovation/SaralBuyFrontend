@@ -41,14 +41,13 @@ const OtpPopup:React.FC<Props> = ({open,setOpen,number}) => {
       navigate('/profile')
     }
     }
-    
   },[data])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-md w-full p-6 space-y-3">
     
-        <div className="h-16 flex justify-center">
+        <div className="h-20 flex justify-center">
           <img
             src={saralBuyLogo}
             alt="Logo"
@@ -56,8 +55,8 @@ const OtpPopup:React.FC<Props> = ({open,setOpen,number}) => {
           />
         </div>
        <div className="space-y-2">
-         <DialogTitle className=" text-gray-700 text-3xl font-bold text-center">OTP Verification</DialogTitle>
-         <p className="text-center">Enter the OTP code send on your number {number?.toString().slice(0,4)}******</p>
+         <DialogTitle className=" text-gray-700 text-3xl font-extrabold ">OTP Verification</DialogTitle>
+         <p className="text-sm">Enter the OTP code send on your number {number?.toString().slice(0,4)}******</p>
        </div>
 
         <form onSubmit={handleVerify} className="flex justify-center items-center flex-col space-y-5">
@@ -82,7 +81,7 @@ const OtpPopup:React.FC<Props> = ({open,setOpen,number}) => {
         />
       </InputOTPGroup>
     </InputOTP>
-     <Button type="submit" disabled={loading|| value.length !== 4} className="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-bold rounded-md" >
+     <Button type="submit" disabled={loading|| value.length !== 4} className="w-full py-5  text-white font-bold rounded-sm" >
                {
                 loading ? <Spinner className="w-5 h-5 animate-spin" /> : 'Continue'
                 }

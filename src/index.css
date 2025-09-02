@@ -1,8 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
 html{
-  font-family: "Open Sans", sans-serif;
+    font-family: "Poppins";
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;

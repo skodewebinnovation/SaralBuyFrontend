@@ -13,28 +13,34 @@ import { Spinner } from "../ui/shadcn-io/spinner"
 import { toast } from "sonner"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ProfileSchema } from "@/validations/Schema"
-
+import { useNavigate } from "react-router-dom"
+import LoginPopup from "../Popup/LoginPopup"
+import OtpPopup from "../Popup/OTPPopup"
 export function AccountSettings() {
   const docRef = useRef<HTMLInputElement | null>(null)
   const [fileDoc, setFileDoc] = useState<File | null>(null)
-  const {user}= getUserProfile()
-const{fn:updateProfilefn,data:updateProfileRes,loading}= useFetch(userService.updateProfile)
-  const { handleSubmit,formState:{errors}, register,reset} = useForm({
-    resolver:zodResolver(ProfileSchema),
+  const { user, setUser } = getUserProfile()
+  const navigate = useNavigate()
+  const [open, setOpen] = useState(false)
+  const [otpPopup, setOtpPopup] = useState(false);
+  const [number, setNumber] = useState('')
+  const { fn: updateProfilefn, data: updateProfileRes, loading } = useFetch(userService.updateProfile)
+  const { handleSubmit, formState: { errors }, register, reset } = useForm({
+    resolver: zodResolver(ProfileSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
-      phone:'',
+      phone: '',
       address: "",
       aadhaarNumber: "",
     },
   })
 
-    useEffect(() => {
+  useEffect(() => {
     if (user) {
       reset({
-        phone:(user as any)?.phone || '',
+        phone: (user as any)?.phone || '',
         firstName: (user as any)?.firstName || "",
         lastName: (user as any)?.lastName || "",
         email: (user as any)?.email || "",
@@ -62,27 +68,44 @@ const{fn:updateProfilefn,data:updateProfileRes,loading}= useFetch(userService.up
     await updateProfilefn(formData)
   }
 
-  useEffect(()=>{
-    if(updateProfileRes){
-  toast.success('Profile updated successfully')
-    }
-  },[updateProfileRes])
+  useEffect(() => {
+    if (updateProfileRes) {
+      setUser(updateProfileRes);
+      toast.success('Profile updated successfully')
+      navigate(-1)
 
-    useEffect(()=>{
-    for(let i=0;i<Object.entries(errors).length;i++){
+    }
+  }, [updateProfileRes])
+
+  useEffect(() => {
+    if (!user?.firstName && !user?.phone && !user?.lastName && !user?.email && !user?.address) {
+      return;
+    };
+    for (let i = 0; i < Object.entries(errors).length; i++) {
       toast.error(Object.entries(errors)[i][1]?.message)
       break;
     }
-    },[errors])
+  }, [errors])
   return (
     <div className="space-y-6">
       {/* Personal Details */}
+      {
+        open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
+      }
+      {
+        <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
+      }
       <Card>
         <CardHeader>
           <CardTitle>Personal Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit, () => {
+            if (!user) {
+              setOpen(true);
+              ;
+            }
+          })} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="first-name">First Name</Label>
@@ -162,17 +185,17 @@ const{fn:updateProfilefn,data:updateProfileRes,loading}= useFetch(userService.up
                   <Label htmlFor="aadhaar-image">Aadhaar Card Image</Label>
                   <div className="border rounded-md p-4 flex flex-col items-center justify-center text-sm text-muted-foreground">
                     <div className="flex flex-col py-5 items-center">
-                     <div className="flex space-x-3 items-center">
-                       <Upload className="h-6 w-6 mb-2 text-gray-500" />
-                      <Button type="button" variant="link" className="p-0">
-                        Upload the Aadhaar Image
-                      </Button>
-                     </div>
-                         {fileDoc && (
-                <p className="text-xs mt-2 text-green-600">
-                  {fileDoc.name}
-                </p>
-              )}
+                      <div className="flex space-x-3 items-center">
+                        <Upload className="h-6 w-6 mb-2 text-gray-500" />
+                        <Button type="button" variant="link" className="p-0">
+                          Upload the Aadhaar Image
+                        </Button>
+                      </div>
+                      {fileDoc && (
+                        <p className="text-xs mt-2 text-green-600">
+                          {fileDoc.name}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <input
@@ -186,7 +209,7 @@ const{fn:updateProfilefn,data:updateProfileRes,loading}= useFetch(userService.up
                       }
                     }}
                   />
-                
+
                 </div>
               </CardContent>
             </Card>
@@ -195,7 +218,7 @@ const{fn:updateProfilefn,data:updateProfileRes,loading}= useFetch(userService.up
             <div className="flex justify-end">
               <Button type="submit" className="cursor-pointer max-w-sm" disabled={loading}>
                 {
-                  loading ? <Spinner className="w-5 h-5 animate-spin"/> : 'Submit Changes'
+                  loading ? <Spinner className="w-5 h-5 animate-spin" /> : 'Submit Changes'
                 }
               </Button>
             </div>

@@ -60,7 +60,7 @@ const LoginPopup:React.FC<Props> = ({open,setOpen,setNumber,setOtpPopup}) => {
     <Dialog open={open} onOpenChange={setOpen} >
       <DialogContent >
     <form onSubmit={handleSendOTP} className=" p-6 max-w-md inline-block space-y-5 ">
-        <div className="h-16 flex justify-center">
+        <div className="h-20 flex justify-center">
           <img
             src={saralBuyLogo}
             alt="Logo"
@@ -69,8 +69,8 @@ const LoginPopup:React.FC<Props> = ({open,setOpen,setNumber,setOtpPopup}) => {
         </div>
 
     <div className="space-y-2">
-         <DialogTitle className=" text-gray-700 text-3xl font-bold text-center">Login here</DialogTitle>
-         <DialogTitle className="text-center text-md text-gray-600">  Sign In / Sign Up Your Account</DialogTitle>
+         <DialogTitle className=" text-gray-800 text-3xl font-extrabold ">Login here</DialogTitle>
+         <DialogTitle className=" text-sm text-gray-600">  Enter your Phone Number to Sign In / Sign Up Your Account</DialogTitle>
        </div>
         <div className="space-y-4 w-full">
           <Input
@@ -81,7 +81,7 @@ const LoginPopup:React.FC<Props> = ({open,setOpen,setNumber,setOtpPopup}) => {
             onChange={handleNumberChange}
           />
           {error && <div className="text-red-500 text-sm">{error}</div>}
-          <Button type="submit" disabled={loading|| mobileNumber.length < 10} className="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-bold rounded-md" >
+          <Button type="submit" disabled={loading|| mobileNumber.length < 10} className="w-full rounded-sm py-5  text-white font-bold " >
             {
               loading ? <Spinner className="w-5 h-5 animate-spin" /> : 'Send OTP'
             }

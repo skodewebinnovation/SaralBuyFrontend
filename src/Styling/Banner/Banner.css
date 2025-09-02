@@ -110,7 +110,7 @@
 /* =============== RESPONSIVE =============== */
 @media (max-width: 1024px) {
   .banner-slider {
-    max-width: 90%;
+    max-width: 100%;
   }
   .banner-text-1,
   .banner-text-2 {

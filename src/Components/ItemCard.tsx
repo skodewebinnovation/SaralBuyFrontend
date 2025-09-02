@@ -15,9 +15,9 @@ const ItemCard = ({categoryName,subCategories,image,_id}:{categoryName:string,su
       
       <HoverCard >
       <HoverCardTrigger asChild className="overflow-hidden ">
-        <div className="w-32 cursor-pointer rounded-2x">
+        <div className="cursor-pointer rounded-2x">
           <img
-            className="w-full h-28 object-cover rounded-xs bg-blend-hard-light"
+            className="w-full h-24 object-cover rounded-xs bg-blend-hard-light"
             src={image}
             alt="Category"
           />

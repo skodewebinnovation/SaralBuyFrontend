@@ -12,7 +12,10 @@ import Requirement from "./Pages/Requirement";
 import ProductLisiting from "./Pages/ProductLisiting";
 import { useCategoriesStore } from "./zustand/getCategories";
 import { getUserProfile } from "./zustand/userProfile";
-
+// import "@fontsource/poppins"; // Imports the default 400 weight
+import "@fontsource/poppins/400.css"; // Imports the regular 400 weight
+import "@fontsource/poppins/600.css"; // Imports the bold 700 weight
+import ProductOverView from "./Pages/ProductOverView";
 function App() {
  const categories = useCategoriesStore()
  const userProfile = getUserProfile();
@@ -22,6 +25,13 @@ function TitleProtectWrapper() {
   // const title = searchParams.get("prt");
   // return title ? <ProductLisiting /> : <Navigate to="/" />;
   return <ProductLisiting/>
+}
+
+const ProtectedCategoryRoute =()=>{
+  const {user} = userProfile;
+    return (!(user as any)?.firstName && !(user as any)?.lastName && !(user as any)?.email)?
+    <Navigate to="/profile"/>
+    : <Category/>
 }
 
 useEffect(() => {
@@ -39,10 +49,12 @@ useEffect(() => {
         <Route path="/category/:categoryId" element={<Category />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/product-listing" element={<TitleProtectWrapper/>}/>
+        <Route path="/product-overview/:productId" element={<ProductOverView/>}/>
         <Route
           path="/requirementform/:mainCategory/:subCategory"
           element={<RequirementForm />}
         />
+      <Route path="*" element={<h1>No Page found</h1>}/>
       </Routes>
             {/* {
               !pathname.includes('/product-listing') ? : null

@@ -32,6 +32,9 @@ import { useFetch } from "@/helper/use-fetch";
 import productService from "@/services/product.service";
 import categoryService from "@/services/category.service";
 import { Spinner } from "../ui/shadcn-io/spinner";
+import { getUserProfile } from "@/zustand/userProfile";
+import LoginPopup from "../Popup/LoginPopup";
+import OtpPopup from "../Popup/OTPPopup";
 const Category = () => {
   const navigate = useNavigate();
   const {categoryId} = useParams()
@@ -44,8 +47,10 @@ const [image, setImage] = useState<File | null>(null);
 const [fileDoc, setFileDoc] = useState<File | null>(null);
 const imageRef =useRef(null)
 const fileDocRef =useRef(null)
-
-
+  let {user} = getUserProfile();
+  const [open,setOpen] = useState(false)
+ const [otpPopup, setOtpPopup] = useState(false);
+const [number,setNumber] = useState('')
   useEffect(()=>{
    (async()=>{
     await getCatByIdFn(categoryId)
@@ -65,7 +70,7 @@ const fileDocRef =useRef(null)
     defaultValues:{
     title:'',
     quantity:'',
-    categroy_type:'',
+    subCategoryId:'',
     minimumBudget: '',
     productType:'',  // is new or not
     oldProductValue:{ // if old one this
@@ -73,7 +78,7 @@ const fileDocRef =useRef(null)
       max:''
     },
     productCondition:'', // if old one this
-
+    categoryId:'',
     // section 2
     image:'',      // store image URL or path
     document: '',   // store doc/pdf path
@@ -94,7 +99,7 @@ const fileDocRef =useRef(null)
 
   const gstField = watch("gst_requirement")
   const productField = watch("productType")
-  const categoryType = watch("categroy_type") // this is also id
+  const selectedSubategoryId = watch("subCategoryId") // this is also id
   const paymentMode = watch("paymentAndDelivery.paymentMode");
 
 
@@ -104,6 +109,10 @@ const fileDocRef =useRef(null)
 }, [values, setValue]);
 
  async function onSubmit(data:any){
+    if(!user){
+       setOpen(true);
+       return;
+    }
   const formData = new FormData();
 Object.entries(data).forEach(([key, val]) => {
   if (typeof val === "object") {
@@ -114,8 +123,9 @@ Object.entries(data).forEach(([key, val]) => {
 });
 if (image) formData.append("image", image);
 if (fileDoc) formData.append("document", fileDoc);
-    await fn(categoryId,categoryType,formData)
+    await fn(categoryId,selectedSubategoryId,formData)
   }
+
 
   useEffect(()=>{
   for(let i=0;i<Object.entries(errors).length;i++){
@@ -135,6 +145,14 @@ if (fileDoc) formData.append("document", fileDoc);
   },[productCreateData])
 
   return (
+    <>
+
+     {
+      open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
+    }
+    {
+      <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
+    }
     <div className="w-full max-w-7xl mx-auto p-4">
       {/* Breadcrumb + Action */}
       <div className="flex flex-row sm:justify-between justify-end items-center gap-3 mb-6">
@@ -156,7 +174,7 @@ if (fileDoc) formData.append("document", fileDoc);
           </BreadcrumbList>
         </Breadcrumb>
 
-        <Button className="bg-orange-600 hover:bg-orange-500  text-white font-semibold rounded-md flex items-center gap-2">
+        <Button variant={'link'} className="bg-orange-600 cursor-pointer w-32 hover:bg-orange-500  text-white  rounded-md flex items-center gap-2">
           <PlusIcon className="h-4 w-4" />
           Add Product
         </Button>
@@ -175,22 +193,22 @@ if (fileDoc) formData.append("document", fileDoc);
             select another one.
           </p>
         </div>
-            <div className="col-span-1 w-[80%] sm:w-full mx-auto">
-                    <img src={catByIdData?.image} alt="" loading="lazy" />
+            <div className="col-span-1 w-full">
+                    <img src={catByIdData?.image} alt="" loading="lazy" className="m-auto w-full" />
             </div>
         </div>
 
     
         <div className="col-span-1 md:col-span-2 flex flex-col gap-6">
      
-          <div className=" shadow-sm rounded-2xl p-6 border ">
+          <div className=" shadow-sm rounded-2xl p-6 border bg-gray-50 ">
             <h3 className="text-lg font-semibold mb-4">Product Details</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-              <Input type="text" placeholder="Title*" className="col-span-3"  {...register('title')}   />
+              <Input type="text" placeholder="Title*" className="col-span-3 bg-white"  {...register('title')}   />
               <Select 
-              value={categoryType}
-              onValueChange={(value)=> setValue('categroy_type',value)}>
-                <SelectTrigger className="w-full">
+              value={selectedSubategoryId}
+              onValueChange={(value)=> setValue('subCategoryId',value)}>
+                <SelectTrigger className="w-full bg-white">
                   <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -199,14 +217,14 @@ if (fileDoc) formData.append("document", fileDoc);
                   }
                 </SelectContent>
               </Select>
-              <Input type="text" placeholder="Quantity*"  {...register('quantity')}/>
-              <Input type="text" placeholder="Minimum Budget" {...register('minimumBudget')} />
+              <Input type="text" placeholder="Quantity*"  {...register('quantity') } className="bg-white"/>
+              <Input type="text" placeholder="Minimum Budget" {...register('minimumBudget')} className="bg-white" />
              {
              ( productField === 'new_product' || productField === '')  &&(
                  <Select 
               value={productField}
              onValueChange={(value) => setValue("productType", value)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full bg-white">
                   <SelectValue placeholder="Product Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -276,7 +294,7 @@ if (fileDoc) formData.append("document", fileDoc);
       <Select
       onValueChange={(val)=>setValue('productCondition',val)}
       >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full bg-white">
                   <SelectValue placeholder="Product Condition" />
                 </SelectTrigger>
                 <SelectContent>
@@ -293,12 +311,12 @@ if (fileDoc) formData.append("document", fileDoc);
           </div>
 
   
-          <div className=" shadow-sm rounded-2xl p-6 border">
+          <div className=" shadow-sm rounded-2xl p-6 border bg-gray-50">
             <h3 className="text-lg font-semibold mb-4">Other Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
               <div
   onClick={() => (imageRef as any).current?.click()}
-  className="border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer"
+  className="border-2 border-dashed rounded-lg flex bg-white flex-col items-center justify-center p-6 cursor-pointer"
 >
   <Upload className="h-6 w-6 mb-2 text-gray-500" />
   <span className="text-sm text-muted-foreground">Upload Image</span>
@@ -321,7 +339,7 @@ if (fileDoc) formData.append("document", fileDoc);
 </div>
              <div
   onClick={() => (fileDocRef as any).current?.click()}
-  className="border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer"
+  className="border-2 border-dashed rounded-lg bg-white flex flex-col items-center justify-center p-6 cursor-pointer"
 >
   <FileUp className="h-6 w-6 mb-2 text-gray-500" />
   <span className="text-sm text-muted-foreground">
@@ -345,11 +363,11 @@ if (fileDoc) formData.append("document", fileDoc);
   )}
 </div>
             </div>
-            <Textarea placeholder="Description*"  {...register("description")} />
+            <Textarea placeholder="Description*"  {...register("description")} className="bg-white min-h-24" />
           </div>
 
 
-          <div className=" shadow-sm rounded-2xl p-6 border">
+          <div className=" shadow-sm rounded-2xl p-6 border bg-gray-50">
             <h3 className="text-lg font-semibold mb-4">
               Payment & Delivery Details
             </h3>
@@ -368,7 +386,7 @@ if (fileDoc) formData.append("document", fileDoc);
                 setValue('paymentAndDelivery.paymentMode',value)
               }}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full bg-white">
                   <SelectValue placeholder="Payment Mode" />
                 </SelectTrigger>
                 <SelectContent>
@@ -382,7 +400,7 @@ if (fileDoc) formData.append("document", fileDoc);
               onValueChange={(value)=>{
                 setValue('gst_requirement',value)
               }}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full bg-white">
                   <SelectValue placeholder="GST Input Required"   />
                 </SelectTrigger>
                 <SelectContent>
@@ -394,9 +412,9 @@ if (fileDoc) formData.append("document", fileDoc);
               {
                 gstField === "yes" &&(
                  <>
-                      <Input type="text" placeholder="GST Number" {...register("paymentAndDelivery.gstNumber")} />
-                     <Input type="text" placeholder="Organization Name"  {...register("paymentAndDelivery.organizationName")} />
-                      <Input type="text" placeholder="Organization Address" {...register("paymentAndDelivery.organizationAddress")}  />
+                      <Input type="text" placeholder="GST Number" {...register("paymentAndDelivery.gstNumber")}  className="bg-white"/>
+                     <Input type="text" placeholder="Organization Name"  {...register("paymentAndDelivery.organizationName")} className="bg-white" />
+                      <Input type="text" placeholder="Organization Address" {...register("paymentAndDelivery.organizationAddress")}  className="bg-white"/>
                  </>
                 )
               }
@@ -404,9 +422,9 @@ if (fileDoc) formData.append("document", fileDoc);
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end mt-4 gap-3">
-            <Button type="button" variant="outline">Save as Draft</Button>
-            <Button type="submit" className="bg-orange-600 hover:bg-orange-500 text-white">
+          <div className="flex justify-end  gap-3">
+            <Button type="button" variant="outline" className="w-32">Save as Draft</Button>
+            <Button type="submit" className=" text-white w-32">
               {
                 loading ? <Spinner className="w-5 h-5 animate-spin"/> : 'Submit'
               }
@@ -416,6 +434,7 @@ if (fileDoc) formData.append("document", fileDoc);
       </div>
     </form>
     </div>
+    </>
   );
 };
 

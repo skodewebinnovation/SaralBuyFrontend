@@ -2,14 +2,22 @@ import React from 'react';
 import "../../Styling/Footer/Footer.css";
 
 import { FaFacebookF, FaTwitter, FaInstagram, FaPinterestP, FaYoutube, FaMapMarkerAlt, FaEnvelope, FaPhone } from 'react-icons/fa';
-
+import { Link } from 'react-router-dom';
+import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
 const Footer = () => {
   return (
     <footer className=" footer-container">
       <div className="footer-content">
         {/* Logo & Description */}
         <div className="footer-section">
-          <h2 className="footer-logo">Best Buy</h2>
+          <Link to={'/'} className="flex items-center gap-2">
+            
+              <img
+                src={saralBuyLogo}
+                className="max-h-20  dark:invert"
+                alt={'company logo'}
+              />
+            </Link>
           <p className="footer-description">
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 

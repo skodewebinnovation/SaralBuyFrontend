@@ -8,20 +8,22 @@ import LoginPopup from "./Popup/LoginPopup";
 import OtpPopup from "./Popup/OTPPopup";
 import { useNavigate } from "react-router-dom";
 const ProductListingCard = ({product}:{product:any}) => {
-  let {user} = getUserProfile();
+  console.log(product)
+  // let {user} = getUserProfile();
   const [open,setOpen] = useState(false)
  const [otpPopup, setOtpPopup] = useState(false);
- const navigate = useNavigate()
  const [number,setNumber] = useState('')
-  const handleSendOtp =()=>{
-    if(!user){
-       setOpen(true);
-       return;
-    }
+ const navigate = useNavigate()
 
-    if(!(user as any)?.firstName && !(user as any)?.lastName && !(user as any)?.email){
-      return navigate('/profile')
-    }
+  const handleSendOtp =()=>{
+    // if(!user){
+    //    setOpen(true);
+    //    return;
+    // }
+    // if(!(user as any)?.firstName && !(user as any)?.lastName && !(user as any)?.email){
+    //   return navigate('/profile')
+    // }
+    return navigate('/product-overview/'+product._id)
   }
   return (
     <>
@@ -31,8 +33,8 @@ const ProductListingCard = ({product}:{product:any}) => {
     {
       <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
     }
-      <div className='p-5 bg-white rounded-lg border '>
-      <span className="border-2 border-gray-800 rounded-full mb-4 inline-block p-1  max-w-fit px-3 text-sm font-semibold">{product?.productType || 'No Type'}</span>
+      <div className='py-3 px-4 bg-white rounded-lg border shadow-sm '>
+      <span className="border-2 border-gray-600 text-gray-600 min-w-32 text-center rounded-full mb-4 inline-block p-1  max-w-fit px-3 text-sm font-semibold capitalize">{product?.categoryId?.categoryName || 'No Type'}</span>
       {/* image */}
       <div className='flex flex-row justify-start items-center gap-x-8'>
         <div className="w-28 h-28 flex-shrink-0">
@@ -46,16 +48,16 @@ const ProductListingCard = ({product}:{product:any}) => {
         
         {/* Content */}
             <div className="space-y-1">
-            <h2 className="font-bold text-xl text-gray-600  capitalize line-clamp-1">
+            <h2 className="font-bold text-xl mb-2 text-gray-800  capitalize line-clamp-1">
             {product?.title}
             </h2>
 
 
-            <div className="flex items-center text-sm text-gray-700 gap-2">
-            <User size={16} /> {product?.createdBy?.userName || 'Pushpak'}
+            <div className="flex items-center text-sm text-gray-700 gap-2 space-y-1">
+            <User size={16} /> {product?.userId?.firstName+ " "+ product?.userId?.lastName || 'No Name found'}
             </div>
             <div className="flex items-center text-sm text-gray-700 gap-2 line-clamp-1">
-            <MapPin size={16} /> {product?.createdBy?.Location || 'Gurgaon'}
+            <MapPin size={16} /> {product?.userId?.address|| 'No Address found'}
             </div>
             <div className="flex items-center text-sm text-gray-700 gap-2">
             <List size={16} /> {product?.quantity} units
@@ -68,8 +70,8 @@ const ProductListingCard = ({product}:{product:any}) => {
 {
   product?.createdAt && <p className="text-sm text-gray-600 font-semibold ">Date: {format(product?.createdAt, "dd/MM/yyyy")}</p>
 }
-     <Button onClick={handleSendOtp} variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
-          Place Quotation
+     <Button onClick={handleSendOtp} variant="ghost" size="lg" className="border rounded-sm  font-semibold shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
+          Place Bid
     </Button>
     </div>
      </div>

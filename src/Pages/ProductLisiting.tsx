@@ -257,7 +257,7 @@ useEffect(() => {
         {/*  Desktop */}
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-baseline justify-between  ">
-                  <Breadcrumb className="sm:block hidden">
+                  {/* <Breadcrumb className="sm:block hidden">
           <BreadcrumbList >
             <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" >
                <BreadcrumbPage className="capitalize font-semibold text-orange-600 ">
@@ -270,7 +270,7 @@ useEffect(() => {
             </BreadcrumbItem>
 
           </BreadcrumbList>
-        </Breadcrumb>
+        </Breadcrumb> */}
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(true)}
@@ -385,8 +385,17 @@ useEffect(() => {
               </form>
 
               {/* Product grid */}
-              <div className="lg:col-span-3 shadow-sm rounded-2xl p-6 border  ">
-                 {
+              <div className="lg:col-span-3   ">
+               <div className="flex justify-between items-center mb-4">
+        <p className="font-bold text-2xl border-l-4 border-gray-800 pl-3 tracking-tight text-gray-800">
+          Results
+        </p>
+        <p className="text-sm text-gray-600 font-medium">
+        {total || 0}  Requirements 
+        </p>
+      </div>
+                 <div className='shadow-sm rounded-2xl p-6 border'>
+                  {
                   key.length > 0 && products.length == 0 ?
                   <div className='flex justify-center items-center h-full flex-col space-y-2'>
                     <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-illustration-svg-png-download-8779492.png" alt="" className='h-24 w-24' />
@@ -407,6 +416,7 @@ useEffect(() => {
                 </div>
                 </InfiniteScroll>
                  }
+                 </div>
            
               </div>
             </div>
