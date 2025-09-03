@@ -373,7 +373,8 @@ if (fileDoc) formData.append("document", fileDoc);
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
               <DatePicker date={date}
-              
+              title="Delivery Date"
+              disabledBeforeDate={new Date(new Date().getTime()- 24 * 60 * 60 * 1000)}
               setDate={(val)=>{
                 if(val){
                 setDate(val);

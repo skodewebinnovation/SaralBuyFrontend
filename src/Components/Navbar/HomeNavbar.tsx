@@ -16,7 +16,7 @@ import {
   SheetTrigger,
 } from "../../Components/ui/sheet";
 import { useDebounce } from 'use-debounce';
-import {Skeleton} from "../../Components/ui/skeleton"
+import { Skeleton } from "../../Components/ui/skeleton"
 //Logo and Icons
 import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -25,7 +25,12 @@ import { Card } from "../ui/card";
 import { useFetch } from "@/helper/use-fetch";
 import ProductService from "@/services/product.service";
 import { useEffect, useState } from "react";
-import debounce from 'debounce';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../../Components/ui/tooltip"
+import TooltipComp from "@/utils/tooltip";
 interface MenuItem {
   title: string;
   url: string;
@@ -69,55 +74,53 @@ const menu: MenuItem[] = [
 ];
 
 
-type ProductsType={title:string,image:string,_id:string,description:string}
+type ProductsType = { title: string, image: string, _id: string, description: string }
 
 const HomeNavbar = () => {
   const navigate = useNavigate()
-  const {fn,data} = useFetch(ProductService.getSeachProduct)
+  const { fn, data } = useFetch(ProductService.getSeachProduct)
   const [text, setText] = useState('');
-  const [products,setProducts] = useState<ProductsType[]>([]);
- const [value, {isPending,flush}] = useDebounce(text, 1000);
- const [showDropdown, setShowDropdown] = useState(false);
+  const [products, setProducts] = useState<ProductsType[]>([]);
+  const [value, { isPending, flush }] = useDebounce(text, 1000);
+  const [showDropdown, setShowDropdown] = useState(false);
   const handleRaiseAReuirement = () => {
     navigate("/requirement");
   };
-    const handleProfileClick = () => {
+  const handleProfileClick = () => {
     navigate("/profile");
   };
-  const handleInputValue =async(e: React.ChangeEvent<HTMLInputElement>)=>{
+  const handleInputValue = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    if(!value.trim()) return; 
+    if (!value.trim()) return;
     setText(value)
- 
+
   }
 
-  const handleKeyPress =(e:React.KeyboardEvent<HTMLInputElement>)=>{
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const key = e.key.toLowerCase();
-    if(key === 'enter' && value.trim() !== ''){
-        setShowDropdown(false); 
-            setProducts([]);
-            setText('');
-            flush();
-       navigate(`/product-listing?title=${encodeURIComponent(value)}&key=enter`);
+    if (key === 'enter' && value.trim() !== '') {
+      setShowDropdown(false);
+      setProducts([]);
+      setText('');
+      flush();
+      navigate(`/product-listing?title=${encodeURIComponent(value)}&key=enter`);
     }
   }
 
 
- useEffect(() => {
-  if (value.trim().length > 1) {
-    fn(value);
+  useEffect(() => {
+    if (value.trim().length > 1) {
+      fn(value);
       setShowDropdown(true);
-  } else {
-    setProducts([]);
-    setShowDropdown(false)
-  }
-}, [value]);
+    } else {
+      setProducts([]);
+      setShowDropdown(false)
+    }
+  }, [value]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setProducts(data)
-  },[data])
-
-  console.log(text.length)
+  }, [data])
   return (
     <section className="mb-2 relative z-9">
       <div className="mx-auto bg-gray-50 p-3 sticky top-0">
@@ -127,16 +130,16 @@ const HomeNavbar = () => {
             {/* Logo */}
             {/* Logo */}
             <Link to={'/'} className="flex items-center gap-2">
-            
+
               <img
                 src={saralBuyLogo}
-                className="max-h-20  dark:invert"
+                className="max-h-20 mix-blend-darken  dark:invert"
                 alt={'company logo'}
               />
             </Link>
             <div className="flex items-center relative ">
               <MapPin className="w-4 h-4  text-orange-500 rounded-full  absolute top-1/2 left-3  -translate-1/2"></MapPin>
-              <Input placeholder="Location..." className="border-b-[1.5px] pl-6 text-sm border-x-0 border-t-0 shadow-none rounded-none border-b-black focus-visible:ring-0 focus:outline-0 focus:shadow-none "/>
+              <Input placeholder="Location..." className="border-b-[1.5px] bg-transparent pl-6 text-sm border-x-0 border-t-0 shadow-none rounded-none border-b-black focus-visible:ring-0 focus:outline-0 focus:shadow-none " />
               {/* <NavigationMenu>
                 <NavigationMenuList>
                   {menu.map((item) => renderMenuItem(item))}
@@ -145,73 +148,77 @@ const HomeNavbar = () => {
             </div>
           </div>
           {/* search */}
-        <div className="relative w-1/2">
-  <Input
-    type="search"
-    onInput={handleInputValue}
-    onKeyPress={handleKeyPress}
-    placeholder="Search by name, or category..."
-    className="pl-8 rounded-full focus-visible:ring-0 border border-gray-300 shadow-sm focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
-  />
-  <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 pointer-events-none opacity-50" />
+          <div className="relative w-1/2">
+            <Input
+              type="search"
+              onInput={handleInputValue}
+              onKeyPress={handleKeyPress}
+              placeholder="Search by name, or category..."
+              className="pl-8 rounded-full focus-visible:ring-0 border border-gray-300 shadow-sm focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
+            />
+            <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 pointer-events-none opacity-50" />
 
-  {/* Search Dropdown */}
-  {showDropdown  && (
-    <div className="absolute top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
-      {isPending()   ? (
-        Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 rounded-md w-full" />
-        ))
-      ) : products?.length > 0  ? (
-        products.map((p: ProductsType) => (
-          <Card
-            key={p._id}
-            className="p-2 rounded-xl shadow-md bg-white cursor-pointer hover:bg-gray-50"
-           onClick={() => {
-            setShowDropdown(false); 
-            setProducts([]);
-            setText('');
-            flush();
-            navigate(`/product-listing?_id=${encodeURIComponent(p._id)}&title=${encodeURIComponent(p.title)}`);
-          }}
+            {/* Search Dropdown */}
+            {showDropdown && (
+              <div className="absolute top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
+                {isPending() ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-20 rounded-md w-full" />
+                  ))
+                ) : products?.length > 0 ? (
+                  products.map((p: ProductsType) => (
+                    <Card
+                      key={p._id}
+                      className="p-2 rounded-xl shadow-md bg-white cursor-pointer hover:bg-gray-50"
+                      onClick={() => {
+                        setShowDropdown(false);
+                        setProducts([]);
+                        setText('');
+                        flush();
+                        navigate(`/product-listing?_id=${encodeURIComponent(p._id)}&title=${encodeURIComponent(p.title)}`);
+                      }}
 
-          >
-            <div className="flex gap-4">
-              <img
-                className="w-14 h-14 object-contain rounded-lg"
-                src={p.image}
-                alt={p.title}
-              />
-              <div className="flex-1">
-                <p className="text-md font-semibold text-orange-600">{p.title}</p>
-                <p className="text-sm text-gray-600 line-clamp-2">{p.description}</p>
+                    >
+                      <div className="flex gap-4">
+                        <img
+                          className="w-14 h-14 object-contain rounded-lg"
+                          src={p.image}
+                          alt={p.title}
+                        />
+                        <div className="flex-1">
+                          <p className="text-md font-semibold text-orange-600">{p.title}</p>
+                          <p className="text-sm text-gray-600 line-clamp-2">{p.description}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 p-2 text-center">No results found.</p>
+                )}
               </div>
-            </div>
-          </Card>
-        ))
-      ) : (
-        <p className="text-sm text-gray-500 p-2 text-center">No results found.</p>
-      )}
-    </div>
-  )}
-</div>
+            )}
+          </div>
 
 
           <div className="flex gap-4 items-center">
-            <Button  variant="secondary" size="icon" className="cursor-pointer"> 
-              <MessageSquareText className="w-5 h-5"/>
+            <TooltipComp key={'messaging'} hoverChildren={<Button variant="secondary" size="icon" className="cursor-pointer">
+                  <MessageSquareText className="w-5 h-5" />
+                </Button>} contentChildren={<p >Messaging</p>}/>
+
+ <TooltipComp key={'notification'} hoverChildren={ <Button variant="secondary" size="icon" className="cursor-pointer">
+              <Bell className="w-5 h-5" />
+            </Button>} contentChildren={<p >Notifications</p>}/>
+
+           
+            <TooltipComp key={'cart'} hoverChildren={<Button variant="secondary" size="icon" className="cursor-pointer">
+              <ShoppingCart className="w-5 h-5" />
+            </Button>} contentChildren={<p >Cart</p>}/>
+            
+            <Button onClick={handleRaiseAReuirement} variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
+              Raise a Requirement
             </Button>
-              <Button  variant="secondary" size="icon" className="cursor-pointer">
-              <Bell className="w-5 h-5"/>
-            </Button>
-             <Button  variant="secondary" size="icon" className="cursor-pointer">
-              <ShoppingCart className="w-5 h-5"/>
-            </Button>
-             <Button onClick={handleRaiseAReuirement}  variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
-            Raise a Requirement
-            </Button>
-               <Button onClick={handleProfileClick}   size="icon" className="cursor-pointer">
-              <User className="w-5 h-5"/>
+            <Button onClick={handleProfileClick} size="icon" className="cursor-pointer">
+              <User className="w-5 h-5" />
             </Button>
           </div>
         </nav>
@@ -221,7 +228,7 @@ const HomeNavbar = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-               <img
+              <img
                 src={saralBuyLogo}
                 className="max-h-8 dark:invert"
                 alt={'company logo'}
@@ -236,13 +243,13 @@ const HomeNavbar = () => {
               <SheetContent className="overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle>
-                     <Link to="/" className="flex items-center gap-2">
-               <img
-                src={saralBuyLogo}
-                className="max-h-8 dark:invert"
-                alt={'company logo'}
-              />
-            </Link>
+                    <Link to="/" className="flex items-center gap-2">
+                      <img
+                        src={saralBuyLogo}
+                        className="max-h-8 dark:invert"
+                        alt={'company logo'}
+                      />
+                    </Link>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-1 flex-col gap-6 p-4">
@@ -255,13 +262,19 @@ const HomeNavbar = () => {
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                   
+
                   </div>
                 </div>
                 <SheetFooter>
-                    <Button onClick={handleRaiseAReuirement}  variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
-            Raise a Requirement
-            </Button>
+                  <Button
+                    onClick={handleRaiseAReuirement}
+                    variant="ghost"
+                    size="lg"
+                    className="border shadow-orange-500 border-orange-500 text-orange-500 transition-all ease-in-out duration-300 hover:bg-orange-500 hover:text-white cursor-pointer"
+                  >
+                    Raise a Requirement
+                  </Button>
+
                 </SheetFooter>
               </SheetContent>
             </Sheet>

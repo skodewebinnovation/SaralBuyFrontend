@@ -14,8 +14,11 @@ import {
 type Props={
   date?: Date
   setDate?: React.Dispatch<React.SetStateAction<Date | undefined>>
+  title?:string,
+  className?:string
+  disabledBeforeDate?:any
 }
-export function DatePicker({ date, setDate }: Props) {
+export function DatePicker({ date, setDate,title,className,disabledBeforeDate }: Props) {
   const [open, setOpen] = React.useState(false)
 
 
@@ -25,14 +28,16 @@ export function DatePicker({ date, setDate }: Props) {
         <Button
           variant="outline"
           data-empty={!date}
-          className="data-[empty=true]:text-muted-foreground flex-1 justify-start text-left font-normal "
+          className={`data-[empty=true]:text-muted-foreground flex-1 justify-start text-left font-normal ${className}`}
         >
           <CalendarIcon />
-          {date ? format(date, "dd-MM-yyyy") : <span>Delivery Date</span>}
+          {date ? format(date, "dd-MM-yyyy") : <span>{title? title:'Select a date'}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
-        <Calendar mode="single" selected={date} onSelect={(date)=>{
+        <Calendar mode="single"  selected={date} 
+        disabled={{before:disabledBeforeDate}}
+        onSelect={(date)=>{
           setDate && setDate(date || undefined)
           setOpen(false)
         }} />

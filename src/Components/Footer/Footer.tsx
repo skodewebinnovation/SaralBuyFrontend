@@ -14,7 +14,7 @@ const Footer = () => {
             
               <img
                 src={saralBuyLogo}
-                className="max-h-20  dark:invert"
+                className="max-h-20  dark:invert mix-blend-light"
                 alt={'company logo'}
               />
             </Link>

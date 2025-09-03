@@ -16,6 +16,7 @@ import { getUserProfile } from "./zustand/userProfile";
 import "@fontsource/poppins/400.css"; // Imports the regular 400 weight
 import "@fontsource/poppins/600.css"; // Imports the bold 700 weight
 import ProductOverView from "./Pages/ProductOverView";
+import ContactVerification from "./Pages/ContactVerification";
 function App() {
  const categories = useCategoriesStore()
  const userProfile = getUserProfile();
@@ -54,11 +55,9 @@ useEffect(() => {
           path="/requirementform/:mainCategory/:subCategory"
           element={<RequirementForm />}
         />
+        <Route path="/contact-verification" element={<ContactVerification/>}/>
       <Route path="*" element={<h1>No Page found</h1>}/>
       </Routes>
-            {/* {
-              !pathname.includes('/product-listing') ? : null
-            } */}
             <Footer/> 
     </Router>
   );
