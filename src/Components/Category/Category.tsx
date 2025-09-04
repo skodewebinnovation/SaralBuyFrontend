@@ -43,7 +43,7 @@ import { electronicCategories } from "@/const/categoriesData";
 
 const Category = () => {
   const navigate = useNavigate();
-  const { categoryId,subCategoryId } = useParams() // getting cID && subCID
+  const { categoryId, subCategoryId } = useParams() // getting cID && subCID
   const [subCategroies, setSubCategoies] = useState([])
   const [date, setDate] = useState<Date | undefined>(undefined)
   const [values, setValues] = useState([2, 10]);
@@ -57,8 +57,8 @@ const Category = () => {
   let { user } = getUserProfile();
   const [open, setOpen] = useState(false)
   const [otpPopup, setOtpPopup] = useState(false);
-  const [brand,setbrand] = useState('')
-  const [brandRenderItems,setBrandRenderItems] = useState<{label:string,value:string}[]>([])
+  const [brand, setbrand] = useState('')
+  const [brandRenderItems, setBrandRenderItems] = useState<{ label: string, value: string }[]>([])
 
   const [number, setNumber] = useState('')
   useEffect(() => {
@@ -73,6 +73,7 @@ const Category = () => {
     if (catByIdData) {
       try {
         const decodedCategoryName = decodeURIComponent(catByIdData?.categoryName).toLowerCase()
+  
         setCurrentCategoryName(decodedCategoryName as CategoryNames || null);
       } catch (e) {
         console.error("Error decoding category name:", e);
@@ -164,7 +165,6 @@ const Category = () => {
   }, [productCreateData])
 
 
-
   return (
     <>
 
@@ -228,20 +228,20 @@ const Category = () => {
                   <Input type="text" placeholder="Title*" className=" bg-white col-span-1 md:col-span-3"  {...register('title')} />
                   <Select
                     value={selectedSubategoryId}
-                    onValueChange={(value) =>{
-                      const selectProductName = catByIdData?.subCategories.find((item:any) => item._id === value)?.name || 'N/A'
-                    const brandsArray = electronicCategories.find((item) =>
-                      item.category.toLowerCase().includes(selectProductName.toLowerCase())
-                    )?.brands
-                    console.log(brandsArray)
-                    if(brandsArray!?.length > 0){
-                       setBrandRenderItems(brandsArray as any)
-                    }
+                    onValueChange={(value) => {
+                      const selectProductName = catByIdData?.subCategories.find((item: any) => item._id === value)?.name || 'N/A'
+                      const brandsArray = electronicCategories.find((item) =>
+                        item.category.toLowerCase().includes(selectProductName.toLowerCase())
+                      )?.brands
+                      console.log(brandsArray)
+                      if (brandsArray!?.length > 0) {
+                        setBrandRenderItems(brandsArray as any)
+                      }
 
-                       setValue('subCategoryId', value);
+                      setValue('subCategoryId', value);
                     }}>
                     <SelectTrigger className="w-full bg-white">
-                      <SelectValue placeholder="Select Category" />
+                      <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
                       {
@@ -249,48 +249,48 @@ const Category = () => {
                       }
                     </SelectContent>
                   </Select>
-                 {
-                  currentCategoryName !== "service" &&(
-                  //    <Select>
-                  //   <SelectTrigger className="w-full bg-white">
-                  //     <SelectValue placeholder="Select Brand" />
-                  //   </SelectTrigger>
-                  //   <SelectContent>
-                  //     <SelectItem value="no_data" >No data</SelectItem>
-                  //   </SelectContent>
-                  // </Select>
-                  
-                <SearchableDropdown setValue={setbrand} value={brand} className="w-full" dropdownTitle="brand"
-                renderItems={brandRenderItems}
-                />
-                  )
-                 }
                   {
-                    currentCategoryName === "electronic" && (
+                    currentCategoryName !== "service" && (
+                      //    <Select>
+                      //   <SelectTrigger className="w-full bg-white">
+                      //     <SelectValue placeholder="Select Brand" />
+                      //   </SelectTrigger>
+                      //   <SelectContent>
+                      //     <SelectItem value="no_data" >No data</SelectItem>
+                      //   </SelectContent>
+                      // </Select>
+
+                      <SearchableDropdown disbaled={!selectedSubategoryId} setValue={setbrand} value={brand} className="w-full" dropdownTitle="Brands"
+                        renderItems={brandRenderItems}
+                      />
+                    )
+                  }
+                  {
+                    currentCategoryName === "electronics" && (
                       <Input type="text" placeholder="₹ Enter a Minimum Budget" {...register('minimumBudget')} className="bg-white" />
                     )
                   }
                   {/* Quantity */}
                   {
                     currentCategoryName !== "service" && (
-                       <Input type="text" placeholder="Quantity*"  {...register('quantity')} className="bg-white col-span-1" />
+                      <Input type="text" placeholder="Quantity*"  {...register('quantity')} className="bg-white col-span-1" />
                     )
                   }
 
-{/* rate a service */}
-{
-  currentCategoryName === "service" &&(
-    <Select
-                  >
-                    <SelectTrigger className="w-full bg-white">
-                      <SelectValue placeholder="Rate a Service" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="no_data" >No data</SelectItem>
-                    </SelectContent>
-                  </Select>
-  )
-}
+                  {/* rate a service */}
+                  {
+                    currentCategoryName === "service" && (
+                      <Select
+                      >
+                        <SelectTrigger className="w-full bg-white">
+                          <SelectValue placeholder="Rate a Service" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="no_data" >No data</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )
+                  }
                   {
                     (currentCategoryName === "automobile" || currentCategoryName === "furniture" || currentCategoryName === "sports" || currentCategoryName === "fashion" || currentCategoryName === "home" || currentCategoryName === "beauty" || currentCategoryName === "industrial") && (
                       <>
@@ -301,7 +301,8 @@ const Category = () => {
                             <SelectValue placeholder="Additional Delivery & Packaging" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="no_data" >No data</SelectItem>
+                            <SelectItem value="yes" >Yes</SelectItem>
+                            <SelectItem value="no" >No</SelectItem>
                           </SelectContent>
                         </Select>
                       </>
@@ -310,23 +311,36 @@ const Category = () => {
                   {/* gender */}
                   {
                     currentCategoryName === "fashion" && (
+                      <Select
+                      >
+                        <SelectTrigger className="w-full bg-white">
+                          <SelectValue placeholder="Gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="gender" >Gender</SelectItem>
+                          <SelectItem value="female" >Female</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )
+                  }
+                  {
+                    (currentCategoryName === "fashion" || currentCategoryName === "beauty") && (
                       <>
-                        <Select
-                        >
-                          <SelectTrigger className="w-full bg-white">
-                            <SelectValue placeholder="Gender" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="no_data" >No data</SelectItem>
-                          </SelectContent>
-                        </Select>
+
                         <Select
                         >
                           <SelectTrigger className="w-full bg-white">
                             <SelectValue placeholder="Type of Accessories" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="no_data" >No data</SelectItem>
+                            <SelectItem value="jewelry" >Jewelry</SelectItem>
+                            <SelectItem value="bags" >Bags</SelectItem>
+                            <SelectItem value="footwear" >Footwear</SelectItem>
+                            <SelectItem value="headware" >Headware</SelectItem>
+                            <SelectItem value="eyeware" >Eyeware</SelectItem>
+                            <SelectItem value="belts" >Belts</SelectItem>
+                            <SelectItem value="scarves_&_wraps" >Belts</SelectItem>
+                            <SelectItem value="watches" >Watches</SelectItem>
                           </SelectContent>
                         </Select>
                       </>
@@ -344,7 +358,10 @@ const Category = () => {
                             <SelectValue placeholder="Fuel Type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="no_data" >No data</SelectItem>
+                            <SelectItem value="petrol" >Petrol</SelectItem>
+                            <SelectItem value="cng" >CNG</SelectItem>
+                            <SelectItem value="hybrid" >Hybrid</SelectItem>
+                            <SelectItem value="electric" >Electric</SelectItem>
                           </SelectContent>
                         </Select>
 
@@ -355,7 +372,19 @@ const Category = () => {
                             <SelectValue placeholder="Model" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="no_data" >No data</SelectItem>
+                            <SelectItem value="brand_new" >Brand New (Unused)</SelectItem>
+                            <SelectItem value="like_new_used_3_months">Like New (Used &lt; 3 Months)</SelectItem>
+                            <SelectItem value="gently_used_3_6_months">Gently Used (3 - 6 Months)</SelectItem>
+                            <SelectItem value="used_6_12_months">Used (6 - 12 Months)</SelectItem>
+                            <SelectItem value="1_year_old">1 Year Old</SelectItem>
+                            <SelectItem value="2_year_old">2 Year Old</SelectItem>
+                            <SelectItem value="3_year_old">3 Year Old</SelectItem>
+                            <SelectItem value="4_year_old">4 Year Old</SelectItem>
+                            <SelectItem value="5_year_old">5 Year Old</SelectItem>
+                            <SelectItem value="more_than_5_year_old">More Than 5 Years Old</SelectItem>
+                            <SelectItem value="vintage_10_plus_years_old">Vintage (10+ Years Old)</SelectItem>
+                            <SelectItem value="unknown">Unknown / Not Sure</SelectItem>
+
                           </SelectContent>
                         </Select>
 
@@ -370,17 +399,6 @@ const Category = () => {
                           </SelectContent>
                         </Select>
 
-                        {/* Transmission */}
-                        <Select
-                        >
-                          <SelectTrigger className="w-full bg-white">
-                            <SelectValue placeholder="Transmission" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="no_data" >No data</SelectItem>
-                          </SelectContent>
-                        </Select>
-
 
                         {/* Transmission */}
                         <Select
@@ -389,7 +407,8 @@ const Category = () => {
                             <SelectValue placeholder="Transmission" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="no_data" >No data</SelectItem>
+                            <SelectItem value="automatic" >Automatic</SelectItem>
+                            <SelectItem value="manual" >Manual</SelectItem>
                           </SelectContent>
                         </Select>
 
@@ -398,7 +417,7 @@ const Category = () => {
                     )
                   }
                   {
-                    (currentCategoryName === "furniture" || currentCategoryName === "sports" || currentCategoryName == "automobile" || currentCategoryName === "home" || currentCategoryName === "beauty") && (
+                    (currentCategoryName === "furniture" || currentCategoryName === "sports" || currentCategoryName == "automobile" || currentCategoryName === "home") && (
                       <>
                         {
                           (productField === 'new_product' || productField === '') && (
@@ -415,7 +434,8 @@ const Category = () => {
                             </Select>
                           )
                         }
-                      
+
+
 
                         {/* product */}
                         {
@@ -490,32 +510,58 @@ const Category = () => {
                           )
                         }
 
+
                       </>
+                    )
+                  }
+
+                  {
+                    productField === 'new_product' && currentCategoryName === "furniture" && (
+                      <Select
+
+                      >
+                        <SelectTrigger className="w-full bg-white">
+                          <SelectValue placeholder="Condition of Product" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="new">New</SelectItem>
+                          <SelectItem value="like_new">Like New </SelectItem>
+                          <SelectItem value="excellent">Excellent </SelectItem>
+                          <SelectItem value="good">Good</SelectItem>
+                          <SelectItem value="fair">Fair</SelectItem>
+                          <SelectItem value="poor">Poor</SelectItem>
+                          <SelectItem value="for_parts_or_repair">For Parts Or Repair</SelectItem>
+                          <SelectItem value="reburbished">Refurbished</SelectItem>
+                          <SelectItem value="vintage">Vintage (Used)</SelectItem>
+                          <SelectItem value="antique">Antique</SelectItem>
+                        </SelectContent>
+                      </Select>
                     )
                   }
 
                   {
                     currentCategoryName === "industrial" && (
                       <>
-                              <Select
-                           >
-                            <SelectTrigger className="w-full bg-white">
-                              <SelectValue placeholder="Construction Tool Type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="new_product">New Product</SelectItem>
-                            </SelectContent>
-                          </Select>
-                              <Select
-                         >
-                            <SelectTrigger className="w-full bg-white">
-                              <SelectValue placeholder="Tool Type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="new_product">New Product</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          </>
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Construction Tool Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="new_product">New Product</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Tool Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="industrial_tool">Industrial Tool</SelectItem>
+                            <SelectItem value="machinery_tool">Machinery Type</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </>
                     )
                   }
 

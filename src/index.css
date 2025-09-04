@@ -173,6 +173,15 @@ body {
   }
 }
 
+@media screen and (max-width:767px) {
+  /* .keen-slider:not([data-keen-slider-disabled]) .keen-slider__slide{
+    overflow: auto !important;
+  }
+  .keen-slider__slide {
+    min-width: 330px !important;
+  } */
+ 
+}
 .requirement-bg {
   position: relative; 
   z-index: 0;       

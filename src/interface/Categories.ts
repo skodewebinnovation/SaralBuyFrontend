@@ -22,7 +22,7 @@ export const CategoryType = {
   beauty: "beauty",
   industrial: "industrial",
   service: "service",
-  electronic: "electronic",
+  electronics: "electronics",
 } as const;
 
 export type CategoryNames = (typeof CategoryType)[keyof typeof CategoryType]

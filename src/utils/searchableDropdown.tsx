@@ -26,8 +26,9 @@ type Props ={
     className?:string;
     dropdownTitle:string;
     renderItems:{value:string,label:string}[];
+    disbaled?:boolean
 }
-export function SearchableDropdown({setValue,className,value,dropdownTitle,renderItems}:Props) {
+export function SearchableDropdown({setValue,className,value,dropdownTitle,renderItems,disbaled}:Props) {
   const [open, setOpen] = React.useState(false)
 //   const [value, setValue] = React.useState("")
 
@@ -35,20 +36,21 @@ export function SearchableDropdown({setValue,className,value,dropdownTitle,rende
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+        disabled={disbaled}
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-[200px] justify-between ${className}`}
+          className={`w-[200px] justify-between ${className} text-gray-500 `}
         >
           {value
-            ? renderItems.find((framework) => framework.value === value)?.label
-            : "Select "+dropdownTitle}
+            ? renderItems.find((framework) => framework.value === value)?.label || dropdownTitle
+            : dropdownTitle}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className={`w-[200px] p-0 ${className}`}>
         <Command>
-          <CommandInput placeholder={dropdownTitle} className="h-9" />
+          <CommandInput placeholder="Search..." className="h-9" />
           <CommandList>
             <CommandEmpty className="text-sm text-gray-600 p-2 text-center">No {dropdownTitle} found</CommandEmpty>
             <CommandGroup>
@@ -57,7 +59,7 @@ export function SearchableDropdown({setValue,className,value,dropdownTitle,rende
                   key={framework.value}
                   value={framework.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
+                    setValue(currentValue)
                     setOpen(false)
                   }}
                 >
