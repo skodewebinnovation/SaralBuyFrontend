@@ -14,9 +14,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useFetch } from "@/helper/use-fetch";
 import productService from "@/services/product.service";
 import { useEffect } from "react";
-import { mergeName } from "@/utils/mergeName";
-import { currencyConvertor } from "@/utils/currencyConvertor";
-import { dateFormatter } from "@/utils/dateFormatter";
+import { mergeName } from "@/helper/mergeName";
+import { currencyConvertor } from "@/helper/currencyConvertor";
+import { dateFormatter } from "@/helper/dateFormatter";
 
 const ProductOverview = () => {
   const {productId} = useParams();

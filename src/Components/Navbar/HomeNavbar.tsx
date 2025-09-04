@@ -1,4 +1,4 @@
-import { Bell, Book, LocateFixed, MapPin, Menu, MessageSquareText, SearchIcon, ShoppingCart, Sunset, Trees, User, Zap } from "lucide-react";
+import { Bell, Book, LocateFixed, MapPin, Menu, MessageSquareText, SearchIcon, ShoppingCart, Sunset, Trees, User, UserRound, Zap } from "lucide-react";
 
 import {
   Accordion,
@@ -87,7 +87,7 @@ const HomeNavbar = () => {
     navigate("/requirement");
   };
   const handleProfileClick = () => {
-    navigate("/profile");
+    navigate("/account");
   };
   const handleInputValue = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -218,7 +218,7 @@ const HomeNavbar = () => {
               Raise a Requirement
             </Button>
             <Button onClick={handleProfileClick} size="icon" className="cursor-pointer">
-              <User className="w-5 h-5" />
+              <UserRound className="w-5 h-5" />
             </Button>
           </div>
         </nav>

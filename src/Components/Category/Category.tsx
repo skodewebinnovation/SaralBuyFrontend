@@ -35,65 +35,84 @@ import { Spinner } from "../ui/shadcn-io/spinner";
 import { getUserProfile } from "@/zustand/userProfile";
 import LoginPopup from "../Popup/LoginPopup";
 import OtpPopup from "../Popup/OTPPopup";
+import type { CategoryNames } from "@/interface/Categories";
+import { SearchableDropdown } from "@/utils/searchableDropdown";
+import { electronicCategories } from "@/const/categoriesData";
+
+
+
 const Category = () => {
   const navigate = useNavigate();
-  const {categoryId} = useParams()
-  const[subCategroies,setSubCategoies]= useState([])
-  const [date,setDate] = useState<Date | undefined> (undefined)
+  const { categoryId,subCategoryId } = useParams() // getting cID && subCID
+  const [subCategroies, setSubCategoies] = useState([])
+  const [date, setDate] = useState<Date | undefined>(undefined)
   const [values, setValues] = useState([2, 10]);
-  const{fn,data:productCreateData,loading} = useFetch(productService.addProduct)
-  const {fn:getCatByIdFn,data:catByIdData} = useFetch(categoryService.getCategoriesById)
-const [image, setImage] = useState<File | null>(null);
-const [fileDoc, setFileDoc] = useState<File | null>(null);
-const imageRef =useRef(null)
-const fileDocRef =useRef(null)
-  let {user} = getUserProfile();
-  const [open,setOpen] = useState(false)
- const [otpPopup, setOtpPopup] = useState(false);
-const [number,setNumber] = useState('')
-  useEffect(()=>{
-   (async()=>{
-    await getCatByIdFn(categoryId)
-   })()
-  },[categoryId])
+  const { fn, data: productCreateData, loading } = useFetch(productService.addProduct)
+  const { fn: getCatByIdFn, data: catByIdData } = useFetch(categoryService.getCategoriesById)
+  const [image, setImage] = useState<File | null>(null);
+  const [fileDoc, setFileDoc] = useState<File | null>(null);
+  const [currentCategoryName, setCurrentCategoryName] = useState<CategoryNames | null>(null)
+  const imageRef = useRef(null)
+  const fileDocRef = useRef(null)
+  let { user } = getUserProfile();
+  const [open, setOpen] = useState(false)
+  const [otpPopup, setOtpPopup] = useState(false);
+  const [brand,setbrand] = useState('')
+  const [brandRenderItems,setBrandRenderItems] = useState<{label:string,value:string}[]>([])
+
+  const [number, setNumber] = useState('')
+  useEffect(() => {
+    (async () => {
+      await getCatByIdFn(categoryId)
+    })()
+  }, [categoryId])
 
 
 
-    useEffect(()=>{
-    if(catByIdData) setSubCategoies((catByIdData as any)?.subCategories)
-  },[catByIdData])
+  useEffect(() => {
+    if (catByIdData) {
+      try {
+        const decodedCategoryName = decodeURIComponent(catByIdData?.categoryName).toLowerCase()
+        setCurrentCategoryName(decodedCategoryName as CategoryNames || null);
+      } catch (e) {
+        console.error("Error decoding category name:", e);
+        setCurrentCategoryName(null);
+      }
+      setSubCategoies((catByIdData as any)?.subCategories)
+    }
+  }, [catByIdData])
 
 
 
-  const {watch,handleSubmit,setValue,formState:{errors},register,getValues,reset} = useForm({
+  const { watch, handleSubmit, setValue, formState: { errors }, register, getValues, reset } = useForm({
     resolver: zodResolver(CategoryFormchema) as any,
-    defaultValues:{
-    title:'',
-    quantity:'',
-    subCategoryId:'',
-    minimumBudget: '',
-    productType:'',  // is new or not
-    oldProductValue:{ // if old one this
-      min:'',
-      max:''
-    },
-    productCondition:'', // if old one this
-    categoryId:'',
-    // section 2
-    image:'',      // store image URL or path
-    document: '',   // store doc/pdf path
-    description: '', 
-    // section 3
-    paymentAndDelivery: {
+    defaultValues: {
+      title: '',
+      quantity: '',
+      subCategoryId: '',
+      minimumBudget: '',
+      productType: '',  // is new or not
+      oldProductValue: { // if old one this
+        min: '',
+        max: ''
+      },
+      productCondition: '', // if old one this
+      categoryId: '',
+      // section 2
+      image: '',      // store image URL or path
+      document: '',   // store doc/pdf path
+      description: '',
+      // section 3
+      paymentAndDelivery: {
         ex_deliveryDate: undefined as Date | undefined,
         paymentMode: '',  // if yes aalow the below field
-        gstNumber:'',
+        gstNumber: '',
         organizationName: '',
         organizationAddress: ''
-    },
-    draft: false,
-    gst_requirement:'',
-   
+      },
+      draft: false,
+      gst_requirement: '',
+
     }
   })
 
@@ -104,337 +123,530 @@ const [number,setNumber] = useState('')
 
 
   useEffect(() => {
-  setValue("oldProductValue.min", values[0].toString());
-  setValue("oldProductValue.max", values[1].toString());
-}, [values, setValue]);
+    setValue("oldProductValue.min", values[0].toString());
+    setValue("oldProductValue.max", values[1].toString());
+  }, [values, setValue]);
 
- async function onSubmit(data:any){
-    if(!user){
-       setOpen(true);
-       return;
+  async function onSubmit(data: any) {
+    if (!user) {
+      setOpen(true);
+      return;
     }
-  const formData = new FormData();
-Object.entries(data).forEach(([key, val]) => {
-  if (typeof val === "object") {
-    formData.append(key, JSON.stringify(val));
-  } else {
-    formData.append(key, val as any);
-  }
-});
-if (image) formData.append("image", image);
-if (fileDoc) formData.append("document", fileDoc);
-    await fn(categoryId,selectedSubategoryId,formData)
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, val]) => {
+      if (typeof val === "object") {
+        formData.append(key, JSON.stringify(val));
+      } else {
+        formData.append(key, val as any);
+      }
+    });
+    if (image) formData.append("image", image);
+    if (fileDoc) formData.append("document", fileDoc);
+    await fn(categoryId, selectedSubategoryId, formData)
   }
 
 
-  useEffect(()=>{
-  for(let i=0;i<Object.entries(errors).length;i++){
-    toast.error(Object.entries(errors)[i][1]?.message)
-    break;
-  }
-  },[errors])
-
-    useEffect(()=>{
-    if(productCreateData){
-       toast.success("Product Created Successfully")
-       setDate(undefined)
-       reset()
-       setImage(null)
-       setFileDoc(null)
+  useEffect(() => {
+    for (let i = 0; i < Object.entries(errors).length; i++) {
+      toast.error(Object.entries(errors)[i][1]?.message)
+      break;
     }
-  },[productCreateData])
+  }, [errors])
+
+  useEffect(() => {
+    if (productCreateData) {
+      toast.success("Product Created Successfully")
+      setDate(undefined)
+      reset()
+      setImage(null)
+      setFileDoc(null)
+    }
+  }, [productCreateData])
+
+
 
   return (
     <>
 
-     {
-      open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
-    }
-    {
-      <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
-    }
-    <div className="w-full max-w-7xl mx-auto p-4">
-      {/* Breadcrumb + Action */}
-      <div className="flex flex-row sm:justify-between justify-end items-center gap-3 mb-6">
-        <Breadcrumb className="sm:block hidden">
-          <BreadcrumbList >
-            <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" onClick={()=>{
-              navigate(-1)
-            }}>
-              <MoveLeft className="h-4 w-4" />
-               <BreadcrumbPage className="capitalize font-semibold  text-gray-500">
-                Selected Product
-              </BreadcrumbPage>
+      {
+        open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
+      }
+      {
+        <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
+      }
+      <div className="w-full max-w-7xl mx-auto p-4">
+        {/* Breadcrumb + Action */}
+        <div className="flex flex-row sm:justify-between justify-end items-center gap-3 mb-6">
+          <Breadcrumb className="sm:block hidden">
+            <BreadcrumbList >
+              <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" onClick={() => {
+                navigate(-1)
+              }}>
+                <MoveLeft className="h-4 w-4" />
+                <BreadcrumbPage className="capitalize font-semibold  text-gray-500">
+                  Selected Product
+                </BreadcrumbPage>
                 <BreadcrumbSeparator />
                 <BreadcrumbPage className="capitalize font-semibold text-orange-600">
-                {decodeURIComponent(catByIdData?.categoryName) || ""}
-              </BreadcrumbPage>
-            </BreadcrumbItem>
+                  {currentCategoryName || ""}
+                </BreadcrumbPage>
+              </BreadcrumbItem>
 
-          </BreadcrumbList>
-        </Breadcrumb>
+            </BreadcrumbList>
+          </Breadcrumb>
 
-        <Button variant={'link'} className="bg-orange-600 cursor-pointer w-32 hover:bg-orange-500  text-white  rounded-md flex items-center gap-2">
-          <PlusIcon className="h-4 w-4" />
-          Add Product
-        </Button>
-      </div>
-
-      {/* Responsive Layout */}
-    <form  onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left Panel */}
-        <div className=" md:col-span-1 lg:col-span-1 bg-white shadow-sm rounded-2xl p-6 border xs:grid xs:grid-cols-2 gap-6  space-y-4">
-        <div className="col-span-1  align-center sm:block flex flex-col justify-center ">
-              <h2 className="text-lg font-semibold mb-2">Tailor Your Experience</h2>
-          <p className="text-sm text-muted-foreground">
-            Please help us tailor the experience by filling out the form below.
-            If this isn’t the category you meant to choose, you can go back and
-            select another one.
-          </p>
+          <Button variant={'link'} className="bg-orange-600 cursor-pointer w-32 hover:bg-orange-500  text-white  rounded-md flex items-center gap-2">
+            <PlusIcon className="h-4 w-4" />
+            Add Product
+          </Button>
         </div>
-            <div className="col-span-1 w-full">
-                    <img src={catByIdData?.image} alt="" loading="lazy" className="m-auto w-full" />
+
+        {/* Responsive Layout */}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Left Panel */}
+            <div className=" md:col-span-1 lg:col-span-1 bg-white shadow-sm rounded-2xl p-6 border xs:grid xs:grid-cols-2 gap-6  space-y-4">
+              <div className="col-span-1  align-center sm:block flex flex-col justify-center ">
+                <h2 className="text-lg font-semibold mb-2">Tailor Your Experience</h2>
+                <p className="text-sm text-muted-foreground">
+                  Please help us tailor the experience by filling out the form below.
+                  If this isn’t the category you meant to choose, you can go back and
+                  select another one.
+                </p>
+              </div>
+              <div className="col-span-1 w-full">
+                <img src={catByIdData?.image} alt="" loading="lazy" className="m-auto w-full" />
+              </div>
             </div>
-        </div>
 
-    
-        <div className="col-span-1 md:col-span-2 flex flex-col gap-6">
-     
-          <div className=" shadow-sm rounded-2xl p-6 border bg-gray-50 ">
-            <h3 className="text-lg font-semibold mb-4">Product Details</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-              <Input type="text" placeholder="Title*" className="col-span-3 bg-white"  {...register('title')}   />
-              <Select 
-              value={selectedSubategoryId}
-              onValueChange={(value)=> setValue('subCategoryId',value)}>
-                <SelectTrigger className="w-full bg-white">
-                  <SelectValue placeholder="Select Category" />
-                </SelectTrigger>
-                <SelectContent>
+
+            <div className="col-span-2 md:col-span-2 flex flex-col gap-6">
+
+              <div className=" shadow-sm rounded-2xl p-6 border bg-gray-50 ">
+                <h3 className="text-lg font-semibold mb-4">Product Details</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                  <Input type="text" placeholder="Title*" className=" bg-white col-span-1 md:col-span-3"  {...register('title')} />
+                  <Select
+                    value={selectedSubategoryId}
+                    onValueChange={(value) =>{
+                      const selectProductName = catByIdData?.subCategories.find((item:any) => item._id === value)?.name || 'N/A'
+                    const brandsArray = electronicCategories.find((item) =>
+                      item.category.toLowerCase().includes(selectProductName.toLowerCase())
+                    )?.brands
+                    console.log(brandsArray)
+                    if(brandsArray!?.length > 0){
+                       setBrandRenderItems(brandsArray as any)
+                    }
+
+                       setValue('subCategoryId', value);
+                    }}>
+                    <SelectTrigger className="w-full bg-white">
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {
+                        catByIdData && subCategroies.map((c: any) => <SelectItem value={c?._id}>{c?.name}</SelectItem>)
+                      }
+                    </SelectContent>
+                  </Select>
+                 {
+                  currentCategoryName !== "service" &&(
+                  //    <Select>
+                  //   <SelectTrigger className="w-full bg-white">
+                  //     <SelectValue placeholder="Select Brand" />
+                  //   </SelectTrigger>
+                  //   <SelectContent>
+                  //     <SelectItem value="no_data" >No data</SelectItem>
+                  //   </SelectContent>
+                  // </Select>
+                  
+                <SearchableDropdown setValue={setbrand} value={brand} className="w-full" dropdownTitle="brand"
+                renderItems={brandRenderItems}
+                />
+                  )
+                 }
                   {
-                  catByIdData &&   subCategroies.map((c:any)=><SelectItem value={c?._id}>{c?.name}</SelectItem>)
+                    currentCategoryName === "electronic" && (
+                      <Input type="text" placeholder="₹ Enter a Minimum Budget" {...register('minimumBudget')} className="bg-white" />
+                    )
                   }
-                </SelectContent>
-              </Select>
-              <Input type="text" placeholder="Quantity*"  {...register('quantity') } className="bg-white"/>
-              <Input type="text" placeholder="Minimum Budget" {...register('minimumBudget')} className="bg-white" />
-             {
-             ( productField === 'new_product' || productField === '')  &&(
-                 <Select 
-              value={productField}
-             onValueChange={(value) => setValue("productType", value)}>
-                <SelectTrigger className="w-full bg-white">
-                  <SelectValue placeholder="Product Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="new_product">New Product</SelectItem>
-                  <SelectItem value="old_product">Old Product</SelectItem>
-                </SelectContent>
-              </Select>
-              )
-             }
-     
+                  {/* Quantity */}
+                  {
+                    currentCategoryName !== "service" && (
+                       <Input type="text" placeholder="Quantity*"  {...register('quantity')} className="bg-white col-span-1" />
+                    )
+                  }
 
-              {
-                productField === 'old_product' &&(
-                  <>
-                   <div className="w-full max-w-md border-[1.5px] border-gray-200 rounded-lg bg-white p-3">
-     <div className="flex justify-between items-center mb-3">
-       <Label className=" font-medium text-gray-500">Old Product</Label>
-       <XIcon className="w-4 h-4 text-gray-400 cursor-pointer" onClick={()=>{
-        setValue('productType','new_product')
-       }}/>
-     </div>
-      <Range
-        values={values}
-        step={1}
-        min={0}
-        max={20}
-        onChange={(vals) => setValues(vals)}
-        renderTrack={({ props, children }) => (
-          <div
-            {...props}
-            className="h-1 w-full bg-gray-300 rounded relative"
-          >
-            <div
-              className="absolute h-1 bg-orange-600 rounded"
-              style={{
-                left: `${(values[0] / 20) * 100}%`,
-                width: `${((values[1] - values[0]) / 20) * 100}%`,
-              }}
-            />
-            {children}
-          </div>
-        )}
-        renderThumb={({ props, index }) => (
-          <div
-            {...props}
-            className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center shadow"
-          />
-        )}
-      />
+{/* rate a service */}
+{
+  currentCategoryName === "service" &&(
+    <Select
+                  >
+                    <SelectTrigger className="w-full bg-white">
+                      <SelectValue placeholder="Rate a Service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="no_data" >No data</SelectItem>
+                    </SelectContent>
+                  </Select>
+  )
+}
+                  {
+                    (currentCategoryName === "automobile" || currentCategoryName === "furniture" || currentCategoryName === "sports" || currentCategoryName === "fashion" || currentCategoryName === "home" || currentCategoryName === "beauty" || currentCategoryName === "industrial") && (
+                      <>
+                        {/* Additional Delivery */}
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Additional Delivery & Packaging" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="no_data" >No data</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </>
+                    )
+                  }
+                  {/* gender */}
+                  {
+                    currentCategoryName === "fashion" && (
+                      <>
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Gender" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="no_data" >No data</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Type of Accessories" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="no_data" >No data</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </>
+                    )
+                  }
 
-      {/* Min/Max Labels */}
-      <div className="flex justify-between items-center mt-3 text-sm">
-      <div className="flex items-center gap-2">
-         <Label className="text-gray-600 text-sm">Min.</Label>
-        <div className="flex items-center gap-1 border rounded px-2 py-1">
-          {values[0].toString().padStart(2, "0")} yr
-        </div>
-      </div>
-        <div  className="flex items-center gap-2">
-            <div className="flex items-center gap-1 border rounded px-2 py-1 ">
-          {values[1]} yr
-        </div>
-        <Label className="text-gray-600 text-sm">Max.</Label>
-        </div>
-      </div>
-    </div>
-      <Select
-      onValueChange={(val)=>setValue('productCondition',val)}
-      >
-                <SelectTrigger className="w-full bg-white">
-                  <SelectValue placeholder="Product Condition" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="like_new">Like New </SelectItem>
-                  <SelectItem value="good">Good</SelectItem>
-                  <SelectItem value="fair">Fair</SelectItem>
-                </SelectContent>
-              </Select>
-                  </>
-                
-                )
-              }
+                  {
+                    currentCategoryName === "automobile" && (
+                      <>
+
+                        {/*  Fuel Type */}
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Fuel Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="no_data" >No data</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        {/* Model */}
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Model" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="no_data" >No data</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        {/* Color */}
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Color" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="no_data" >No data</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        {/* Transmission */}
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Transmission" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="no_data" >No data</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+
+                        {/* Transmission */}
+                        <Select
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Transmission" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="no_data" >No data</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                      </>
+
+                    )
+                  }
+                  {
+                    (currentCategoryName === "furniture" || currentCategoryName === "sports" || currentCategoryName == "automobile" || currentCategoryName === "home" || currentCategoryName === "beauty") && (
+                      <>
+                        {
+                          (productField === 'new_product' || productField === '') && (
+                            <Select
+                              value={productField}
+                              onValueChange={(value) => setValue("productType", value)}>
+                              <SelectTrigger className="w-full bg-white">
+                                <SelectValue placeholder="Product Type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="new_product">New Product</SelectItem>
+                                <SelectItem value="old_product">Old Product</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )
+                        }
+                      
+
+                        {/* product */}
+                        {
+                          productField === 'old_product' && (
+                            <>
+                              <div className="w-full max-w-md border-[1.5px] border-gray-200 rounded-lg bg-white p-3">
+                                <div className="flex justify-between items-center mb-3">
+                                  <Label className=" font-medium text-gray-500">Old Product</Label>
+                                  <XIcon className="w-4 h-4 text-gray-400 cursor-pointer" onClick={() => {
+                                    setValue('productType', 'new_product')
+                                  }} />
+                                </div>
+                                <Range
+                                  values={values}
+                                  step={1}
+                                  min={0}
+                                  max={20}
+                                  onChange={(vals) => setValues(vals)}
+                                  renderTrack={({ props, children }) => (
+                                    <div
+                                      {...props}
+                                      className="h-1 w-full bg-gray-300 rounded relative"
+                                    >
+                                      <div
+                                        className="absolute h-1 bg-orange-600 rounded"
+                                        style={{
+                                          left: `${(values[0] / 20) * 100}%`,
+                                          width: `${((values[1] - values[0]) / 20) * 100}%`,
+                                        }}
+                                      />
+                                      {children}
+                                    </div>
+                                  )}
+                                  renderThumb={({ props, index }) => (
+                                    <div
+                                      {...props}
+                                      className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center shadow"
+                                    />
+                                  )}
+                                />
+
+                                {/* Min/Max Labels */}
+                                <div className="flex justify-between items-center mt-3 text-sm">
+                                  <div className="flex items-center gap-2">
+                                    <Label className="text-gray-600 text-sm">Min.</Label>
+                                    <div className="flex items-center gap-1 border rounded px-2 py-1">
+                                      {values[0].toString().padStart(2, "0")} yr
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1 border rounded px-2 py-1 ">
+                                      {values[1]} yr
+                                    </div>
+                                    <Label className="text-gray-600 text-sm">Max.</Label>
+                                  </div>
+                                </div>
+                              </div>
+                              <Select
+                                onValueChange={(val) => setValue('productCondition', val)}
+                              >
+                                <SelectTrigger className="w-full bg-white">
+                                  <SelectValue placeholder="Product Condition" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="like_new">Like New </SelectItem>
+                                  <SelectItem value="good">Good</SelectItem>
+                                  <SelectItem value="fair">Fair</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </>
+
+                          )
+                        }
+
+                      </>
+                    )
+                  }
+
+                  {
+                    currentCategoryName === "industrial" && (
+                      <>
+                              <Select
+                           >
+                            <SelectTrigger className="w-full bg-white">
+                              <SelectValue placeholder="Construction Tool Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="new_product">New Product</SelectItem>
+                            </SelectContent>
+                          </Select>
+                              <Select
+                         >
+                            <SelectTrigger className="w-full bg-white">
+                              <SelectValue placeholder="Tool Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="new_product">New Product</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          </>
+                    )
+                  }
+
+                </div>
+              </div>
+
+
+              <div className=" shadow-sm rounded-2xl p-6 border bg-gray-50">
+                <h3 className="text-lg font-semibold mb-4">Other Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
+                  <div
+                    onClick={() => (imageRef as any).current?.click()}
+                    className="border-2 border-dashed rounded-lg flex bg-white flex-col items-center justify-center p-6 cursor-pointer"
+                  >
+                    <Upload className="h-6 w-6 mb-2 text-gray-500" />
+                    <span className="text-sm text-muted-foreground">Upload Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      ref={imageRef}
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          setImage(e.target.files[0]);
+                        }
+                      }}
+                    />
+                    {image && (
+                      <p className="text-xs mt-2 text-green-600">
+                        {image.name}
+                      </p>
+                    )}
+                  </div>
+                  <div
+                    onClick={() => (fileDocRef as any).current?.click()}
+                    className="border-2 border-dashed rounded-lg bg-white flex flex-col items-center justify-center p-6 cursor-pointer"
+                  >
+                    <FileUp className="h-6 w-6 mb-2 text-gray-500" />
+                    <span className="text-sm text-muted-foreground">
+                      Browse From Device (doc/pdf)
+                    </span>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      hidden
+                      ref={fileDocRef}
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          setFileDoc(e.target.files[0]);
+                        }
+                      }}
+                    />
+                    {fileDoc && (
+                      <p className="text-xs mt-2 text-green-600">
+                        {fileDoc.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <Textarea placeholder="Description*"  {...register("description")} className="bg-white min-h-24" />
+              </div>
+
+
+              <div className=" shadow-sm rounded-2xl p-6 border bg-gray-50">
+                <h3 className="text-lg font-semibold mb-4">
+                  Payment & Delivery Details
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                  <DatePicker date={date}
+                    title="Delivery Date"
+                    disabledBeforeDate={new Date(new Date().getTime() - 24 * 60 * 60 * 1000)}
+                    setDate={(val) => {
+                      if (val) {
+                        setDate(val);
+                        setValue("paymentAndDelivery.ex_deliveryDate", val as any);
+                      }
+                    }} />
+                  <Select
+                    value={paymentMode}
+                    onValueChange={(value) => {
+                      setValue('paymentAndDelivery.paymentMode', value)
+                    }}
+                  >
+                    <SelectTrigger className="w-full bg-white">
+                      <SelectValue placeholder="Payment Mode" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cash">Cash</SelectItem>
+                      <SelectItem value="card">Card</SelectItem>
+                      <SelectItem value="upi">UPI</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={gstField}
+                    onValueChange={(value) => {
+                      setValue('gst_requirement', value)
+                    }}>
+                    <SelectTrigger className="w-full bg-white">
+                      <SelectValue placeholder="GST Input Required" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yes">Yes</SelectItem>
+                      <SelectItem value="no">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {
+                    gstField === "yes" && (
+                      <>
+                        <Input type="text" placeholder="GST Number" {...register("paymentAndDelivery.gstNumber")} className="bg-white" />
+                        <Input type="text" placeholder="Organization Name"  {...register("paymentAndDelivery.organizationName")} className="bg-white" />
+                        <Input type="text" placeholder="Organization Address" {...register("paymentAndDelivery.organizationAddress")} className="bg-white" />
+                      </>
+                    )
+                  }
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end  gap-3">
+                <Button type="button" variant="outline" className="w-32">Save as Draft</Button>
+                <Button type="submit" className=" text-white w-32">
+                  {
+                    loading ? <Spinner className="w-5 h-5 animate-spin" /> : 'Submit'
+                  }
+                </Button>
+              </div>
             </div>
           </div>
-
-  
-          <div className=" shadow-sm rounded-2xl p-6 border bg-gray-50">
-            <h3 className="text-lg font-semibold mb-4">Other Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
-              <div
-  onClick={() => (imageRef as any).current?.click()}
-  className="border-2 border-dashed rounded-lg flex bg-white flex-col items-center justify-center p-6 cursor-pointer"
->
-  <Upload className="h-6 w-6 mb-2 text-gray-500" />
-  <span className="text-sm text-muted-foreground">Upload Image</span>
-  <input
-    type="file"
-    accept="image/*"
-    hidden
-    ref={imageRef}
-    onChange={(e) => {
-      if (e.target.files?.[0]) {
-        setImage(e.target.files[0]);
-      }
-    }}
-  />
-  {image && (
-    <p className="text-xs mt-2 text-green-600">
-      {image.name}
-    </p>
-  )}
-</div>
-             <div
-  onClick={() => (fileDocRef as any).current?.click()}
-  className="border-2 border-dashed rounded-lg bg-white flex flex-col items-center justify-center p-6 cursor-pointer"
->
-  <FileUp className="h-6 w-6 mb-2 text-gray-500" />
-  <span className="text-sm text-muted-foreground">
-    Browse From Device (doc/pdf)
-  </span>
-  <input
-    type="file"
-    accept=".pdf,.doc,.docx"
-    hidden
-    ref={fileDocRef}
-    onChange={(e) => {
-      if (e.target.files?.[0]) {
-        setFileDoc(e.target.files[0]);
-      }
-    }}
-  />
-  {fileDoc && (
-    <p className="text-xs mt-2 text-green-600">
-      {fileDoc.name}
-    </p>
-  )}
-</div>
-            </div>
-            <Textarea placeholder="Description*"  {...register("description")} className="bg-white min-h-24" />
-          </div>
-
-
-          <div className=" shadow-sm rounded-2xl p-6 border bg-gray-50">
-            <h3 className="text-lg font-semibold mb-4">
-              Payment & Delivery Details
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-              <DatePicker date={date}
-              title="Delivery Date"
-              disabledBeforeDate={new Date(new Date().getTime()- 24 * 60 * 60 * 1000)}
-              setDate={(val)=>{
-                if(val){
-                setDate(val);
-                setValue("paymentAndDelivery.ex_deliveryDate", val as any);
-                }
-              }} />
-              <Select 
-               value={paymentMode}
-              onValueChange={(value)=>{
-                setValue('paymentAndDelivery.paymentMode',value)
-              }}
-              >
-                <SelectTrigger className="w-full bg-white">
-                  <SelectValue placeholder="Payment Mode" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cash">Cash</SelectItem>
-                  <SelectItem value="card">Card</SelectItem>
-                  <SelectItem value="upi">UPI</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-              value={gstField}
-              onValueChange={(value)=>{
-                setValue('gst_requirement',value)
-              }}>
-                <SelectTrigger className="w-full bg-white">
-                  <SelectValue placeholder="GST Input Required"   />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="yes">Yes</SelectItem>
-                  <SelectItem value="no">No</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {
-                gstField === "yes" &&(
-                 <>
-                      <Input type="text" placeholder="GST Number" {...register("paymentAndDelivery.gstNumber")}  className="bg-white"/>
-                     <Input type="text" placeholder="Organization Name"  {...register("paymentAndDelivery.organizationName")} className="bg-white" />
-                      <Input type="text" placeholder="Organization Address" {...register("paymentAndDelivery.organizationAddress")}  className="bg-white"/>
-                 </>
-                )
-              }
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end  gap-3">
-            <Button type="button" variant="outline" className="w-32">Save as Draft</Button>
-            <Button type="submit" className=" text-white w-32">
-              {
-                loading ? <Spinner className="w-5 h-5 animate-spin"/> : 'Submit'
-              }
-            </Button>
-          </div>
-        </div>
+        </form>
       </div>
-    </form>
-    </div>
     </>
   );
 };

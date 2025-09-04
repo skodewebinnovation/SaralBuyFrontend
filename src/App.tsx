@@ -48,7 +48,7 @@ useEffect(() => {
         <Route path="/" element={<Home />} />
         <Route path="/requirement" element={<Requirement/>} />
         <Route path="/category/:categoryId" element={<Category />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/account" element={<Profile />} />
         <Route path="/product-listing" element={<TitleProtectWrapper/>}/>
         <Route path="/product-overview/:productId" element={<ProductOverView/>}/>
         <Route

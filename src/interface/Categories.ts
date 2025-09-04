@@ -11,3 +11,18 @@ export interface Category {
   image: string;
   updatedAt: string; 
 }
+
+
+export const CategoryType = {
+  automobile: "automobile",
+  furniture: "furniture",
+  fashion: "fashion",
+  sports: "sports",
+  home: "home",
+  beauty: "beauty",
+  industrial: "industrial",
+  service: "service",
+  electronic: "electronic",
+} as const;
+
+export type CategoryNames = (typeof CategoryType)[keyof typeof CategoryType]

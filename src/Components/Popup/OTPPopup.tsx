@@ -38,7 +38,7 @@ const OtpPopup:React.FC<Props> = ({open,setOpen,number}) => {
      getProfile.execute();
       setOpen(false);
       if(!(getProfile as any)?.firstName && !(getProfile as any)?.lastName && !(getProfile as any)?.email){
-      navigate('/profile')
+      navigate('/account')
     }
     }
   },[data])
