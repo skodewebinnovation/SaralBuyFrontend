@@ -1,0 +1,2 @@
+1. User can bid own product ?
+2. what is the role of status in bid section ?

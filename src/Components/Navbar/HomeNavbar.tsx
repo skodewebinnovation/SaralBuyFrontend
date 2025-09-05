@@ -180,7 +180,7 @@ const HomeNavbar = () => {
               type="search"
               onInput={handleInputValue}
               onKeyPress={handleKeyPress}
-              placeholder="Search by name, or category..."
+              placeholder="Looking For..."
               className="pl-8 rounded-full focus-visible:ring-0 border border-gray-300 shadow-sm focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
             />
             <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 pointer-events-none opacity-50" />

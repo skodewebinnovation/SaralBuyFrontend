@@ -145,7 +145,7 @@ const ProductOverview = () => {
              </div>
                <div>
               <Label htmlFor="ab" className="mb-2 text-sm">Available Brand</Label>
-              <Input type="text" placeholder="Last Name" id="ab"  className="bg-white" />
+              <Input type="text" placeholder="Available Brand" id="ab"  className="bg-white" />
              </div>
              <div className="col-span-2">
               <Label htmlFor="ab" className="mb-2 text-sm">Earliest Deliver By</Label>
