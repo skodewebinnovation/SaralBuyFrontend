@@ -1,4 +1,4 @@
-import { Bell, Book, LocateFixed, MapPin, Menu, MessageSquareText, SearchIcon, ShoppingCart, Sunset, Trees, User, UserRound, Zap } from "lucide-react";
+import { Bell, Book, MapPin, Menu, MessageSquareText, SearchIcon, ShoppingCart, User, UserRound, Zap } from "lucide-react";
 
 import {
   Accordion,
@@ -25,12 +25,9 @@ import { Card } from "../ui/card";
 import { useFetch } from "@/helper/use-fetch";
 import ProductService from "@/services/product.service";
 import { useEffect, useState } from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../Components/ui/tooltip"
+
 import TooltipComp from "@/utils/tooltip";
+import { getLocation } from "@/helper/locationAPI";
 interface MenuItem {
   title: string;
   url: string;
@@ -74,14 +71,18 @@ const menu: MenuItem[] = [
 ];
 
 
+
 type ProductsType = { title: string, image: string, _id: string, description: string }
+
 
 const HomeNavbar = () => {
   const navigate = useNavigate()
+  
   const { fn, data } = useFetch(ProductService.getSeachProduct)
   const [text, setText] = useState('');
   const [products, setProducts] = useState<ProductsType[]>([]);
   const [value, { isPending, flush }] = useDebounce(text, 1000);
+  const [currenLocation,setCurrentLocation] = useState('')
   const [showDropdown, setShowDropdown] = useState(false);
   const handleRaiseAReuirement = () => {
     navigate("/requirement");
@@ -95,6 +96,31 @@ const HomeNavbar = () => {
     setText(value)
 
   }
+
+
+  console.log(currenLocation)
+   function getGeoLocation(){
+    if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+      async function(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      setCurrentLocation(await getLocation(longitude,latitude))
+     
+    },
+    (err)=>console.log(err),
+      {
+      enableHighAccuracy: true,
+      timeout: 5000, 
+      maximumAge: 0
+    }
+  );
+} else {
+  console.error("Geolocation is not supported by this browser.");
+}
+}
+
+
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const key = e.key.toLowerCase();
@@ -121,6 +147,7 @@ const HomeNavbar = () => {
   useEffect(() => {
     setProducts(data)
   }, [data])
+    useEffect(()=>getGeoLocation(),[])
   return (
     <section className="mb-2 relative z-9">
       <div className="mx-auto bg-gray-50 p-3 sticky top-0">
@@ -139,7 +166,7 @@ const HomeNavbar = () => {
             </Link>
             <div className="flex items-center relative ">
               <MapPin className="w-4 h-4  text-orange-500 rounded-full  absolute top-1/2 left-3  -translate-1/2"></MapPin>
-              <Input placeholder="Location..." className="border-b-[1.5px] bg-transparent pl-6 text-sm border-x-0 border-t-0 shadow-none rounded-none border-b-black focus-visible:ring-0 focus:outline-0 focus:shadow-none " />
+              <Input readOnly placeholder="Location..." className="border-b-[1.5px] bg-transparent pl-6 text-sm border-x-0 border-t-0 shadow-none rounded-none  border-b-black focus-visible:ring-0 focus:outline-0 focus:shadow-none " defaultValue={currenLocation} />
               {/* <NavigationMenu>
                 <NavigationMenuList>
                   {menu.map((item) => renderMenuItem(item))}

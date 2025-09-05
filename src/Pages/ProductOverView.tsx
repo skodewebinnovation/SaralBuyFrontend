@@ -102,7 +102,7 @@ const ProductOverview = () => {
           <div className="flex items-center gap-4 mt-5 ">
             <Button variant="outline" className="min-w-32 text-sm border-gray-400 border-[2px] flex items-center gap-2 hover:bg-transparent cursor-pointer">
               <img src="/icons/Layer_1.png" className="w-4 h-4 "/>
-              Total Bids :<span className="font-semibold">10</span>
+              Total Bids :<span className="font-semibold">0</span>
             </Button>
             <Button className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer " variant="outline" >Add to Cart</Button>
           </div>
@@ -115,11 +115,11 @@ const ProductOverview = () => {
         <div className="lg:col-span-7  rounded-lg p-6 space-y-3 ">
           <h3 className="font-semibold text-orange-600 text-xl">Requirement Specifications</h3>
           <div className="text-sm space-y-2 text-gray-600 ">
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Product Type:</span> Cement</p>
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Brand:</span> Brand XYZ</p>
+            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Product Type:</span> {productResponse?.subCategoryId?.name || "N/A"}</p>
+            <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Brand:</span> {productResponse?.brand || "N/A"}</p>
             <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
             <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(productResponse?.minimumBudget)}</p>
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Additional Delivery & Packaging:</span> Yes</p>
+            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Additional Delivery & Packaging:</span> {productResponse?.additionalDeliveryAndPackage || "N/A"}</p>
             <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Required Delivery Date:</span> {productResponse?.paymentAndDelivery?.ex_deliveryDate && dateFormatter(productResponse?.paymentAndDelivery?.ex_deliveryDate) || 'N/A'}</p>
             <p className="flex items-center justify-between py-2 border-b-2 capitalize"><span className="font-semibold">Payment Mode:</span> {productResponse?.paymentAndDelivery?.paymentMode || 'N/A'}</p>
             <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{productResponse?.documentName ? <span className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600"/> {productResponse?.documentName}</span> : 'N/A'}</p>

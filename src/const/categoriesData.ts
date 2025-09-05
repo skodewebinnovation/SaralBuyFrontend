@@ -1,4 +1,4 @@
-export const electronicCategories = [
+export const electronicCategories= [
   {
     category: "TVs and Screens",
     brands: [
@@ -203,4 +203,4 @@ export const electronicCategories = [
     category: "Other",
     brands: [{ value: "others", label: "Others" }],
   },
-];
+]  as const

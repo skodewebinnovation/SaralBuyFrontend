@@ -39,6 +39,21 @@ import type { CategoryNames } from "@/interface/Categories";
 import { SearchableDropdown } from "@/utils/searchableDropdown";
 import { electronicCategories } from "@/const/categoriesData";
 
+const innerFormImages:Record<string,string>={
+  automobile:"automobileFormImage.png",
+  fashion:"fashionFormImage.png",
+  electronics:"electronicsFormImage.png",
+  home:"homeapplianceFormImage.png",
+  sports:"sportsFormImage.png",
+  furniture:"furnitureFormImage.png",
+  health:"healthFormImage.png",
+  beauty:"beautyFormImage.png",
+  service:"servicesFormImage.png",
+  industrial:"constructionFormImage.png"
+}
+
+
+
 
 
 const Category = () => {
@@ -58,6 +73,7 @@ const Category = () => {
   const [open, setOpen] = useState(false)
   const [otpPopup, setOtpPopup] = useState(false);
   const [brand, setbrand] = useState('')
+
   const [brandRenderItems, setBrandRenderItems] = useState<{ label: string, value: string }[]>([])
 
   const [number, setNumber] = useState('')
@@ -66,6 +82,10 @@ const Category = () => {
       await getCatByIdFn(categoryId)
     })()
   }, [categoryId])
+
+
+
+
 
 
 
@@ -85,6 +105,10 @@ const Category = () => {
 
 
 
+
+  
+
+
   const { watch, handleSubmit, setValue, formState: { errors }, register, getValues, reset } = useForm({
     resolver: zodResolver(CategoryFormchema) as any,
     defaultValues: {
@@ -98,7 +122,7 @@ const Category = () => {
         max: ''
       },
       productCondition: '', // if old one this
-      categoryId: '',
+      categoryId : '',
       // section 2
       image: '',      // store image URL or path
       document: '',   // store doc/pdf path
@@ -113,26 +137,54 @@ const Category = () => {
       },
       draft: false,
       gst_requirement: '',
-
+      
+      // Additional fields for specific categories
+      brand: '',
+      additionalDeliveryAndPackage: '',
+      gender: '',
+      typeOfAccessories: '',
+      fuelType: '',
+      model: '',
+      color: '',
+      transmission: '',
+      conditionOfProduct: '',
+      constructionToolType: '',
+      toolType: '',
+      rateAService: ''
     }
   })
 
-  const gstField = watch("gst_requirement")
+ const gstField = watch("gst_requirement")
   const productField = watch("productType")
-  const selectedSubategoryId = watch("subCategoryId") // this is also id
+  const selectedSubategoryId = watch("subCategoryId")
   const paymentMode = watch("paymentAndDelivery.paymentMode");
+  const additionalDeliveryValue = watch("additionalDeliveryAndPackage");
+  const genderValue = watch("gender");
+  const typeOfAccessoriesValue = watch("typeOfAccessories");
+  const fuelTypeValue = watch("fuelType");
+  const modelValue = watch("model");
+  const colorValue = watch("color");
+  const transmissionValue = watch("transmission");
+  const conditionOfProductValue = watch("conditionOfProduct");
+  const constructionToolTypeValue = watch("constructionToolType");
+  const toolTypeValue = watch("toolType");
+  const rateAServiceValue = watch("rateAService");
 
 
   useEffect(() => {
     setValue("oldProductValue.min", values[0].toString());
     setValue("oldProductValue.max", values[1].toString());
   }, [values, setValue]);
+    useEffect(()=>{
+    setValue('brand',brand)
+  },[brand])
 
   async function onSubmit(data: any) {
     if (!user) {
       setOpen(true);
       return;
     }
+    console.log({data})
     const formData = new FormData();
     Object.entries(data).forEach(([key, val]) => {
       if (typeof val === "object") {
@@ -157,6 +209,7 @@ const Category = () => {
   useEffect(() => {
     if (productCreateData) {
       toast.success("Product Created Successfully")
+      setBrandRenderItems([])
       setDate(undefined)
       reset()
       setImage(null)
@@ -164,6 +217,7 @@ const Category = () => {
     }
   }, [productCreateData])
 
+  useEffect(()=>window.scrollTo(0,0),[])
 
   return (
     <>
@@ -215,7 +269,7 @@ const Category = () => {
                 </p>
               </div>
               <div className="col-span-1 w-full">
-                <img src={catByIdData?.image} alt="" loading="lazy" className="m-auto w-full" />
+                <img src={'/categoryFormImages/'+innerFormImages[currentCategoryName!]} alt="" loading="lazy" className="m-auto w-full" />
               </div>
             </div>
 
@@ -231,7 +285,7 @@ const Category = () => {
                     onValueChange={(value) => {
                       const selectProductName = catByIdData?.subCategories.find((item: any) => item._id === value)?.name || 'N/A'
                       const brandsArray = electronicCategories.find((item) =>
-                        item.category.toLowerCase().includes(selectProductName.toLowerCase())
+                        item.category.toLowerCase() === selectProductName.toLowerCase()
                       )?.brands
                       console.log(brandsArray)
                       if (brandsArray!?.length > 0) {
@@ -267,7 +321,8 @@ const Category = () => {
                   }
                   {
                     currentCategoryName === "electronics" && (
-                      <Input type="text" placeholder="₹ Enter a Minimum Budget" {...register('minimumBudget')} className="bg-white" />
+                      <Input type="text" placeholder="₹ Enter a Minimum Budget" {...register('minimumBudget')}
+                       className="bg-white" />
                     )
                   }
                   {/* Quantity */}
@@ -281,6 +336,8 @@ const Category = () => {
                   {
                     currentCategoryName === "service" && (
                       <Select
+                       value={rateAServiceValue}
+                      onValueChange={(value) => setValue("rateAService", value)}
                       >
                         <SelectTrigger className="w-full bg-white">
                           <SelectValue placeholder="Rate a Service" />
@@ -296,6 +353,8 @@ const Category = () => {
                       <>
                         {/* Additional Delivery */}
                         <Select
+                         value={additionalDeliveryValue}
+                    onValueChange={(value) => setValue("additionalDeliveryAndPackage", value)}
                         >
                           <SelectTrigger className="w-full bg-white">
                             <SelectValue placeholder="Additional Delivery & Packaging" />
@@ -312,6 +371,8 @@ const Category = () => {
                   {
                     currentCategoryName === "fashion" && (
                       <Select
+                       value={genderValue}
+                    onValueChange={(value) => setValue("gender", value)}
                       >
                         <SelectTrigger className="w-full bg-white">
                           <SelectValue placeholder="Gender" />
@@ -328,6 +389,8 @@ const Category = () => {
                       <>
 
                         <Select
+                           value={typeOfAccessoriesValue}
+                    onValueChange={(value) => setValue("typeOfAccessories", value)}
                         >
                           <SelectTrigger className="w-full bg-white">
                             <SelectValue placeholder="Type of Accessories" />
@@ -353,6 +416,8 @@ const Category = () => {
 
                         {/*  Fuel Type */}
                         <Select
+                            value={fuelTypeValue}
+                      onValueChange={(value) => setValue("fuelType", value)}
                         >
                           <SelectTrigger className="w-full bg-white">
                             <SelectValue placeholder="Fuel Type" />
@@ -367,6 +432,8 @@ const Category = () => {
 
                         {/* Model */}
                         <Select
+                         value={modelValue}
+                      onValueChange={(value) => setValue("model", value)}
                         >
                           <SelectTrigger className="w-full bg-white">
                             <SelectValue placeholder="Model" />
@@ -390,6 +457,8 @@ const Category = () => {
 
                         {/* Color */}
                         <Select
+                         value={colorValue}
+                      onValueChange={(value) => setValue("color", value)}
                         >
                           <SelectTrigger className="w-full bg-white">
                             <SelectValue placeholder="Color" />
@@ -402,6 +471,8 @@ const Category = () => {
 
                         {/* Transmission */}
                         <Select
+                          value={transmissionValue}
+                      onValueChange={(value) => setValue("transmission", value)}
                         >
                           <SelectTrigger className="w-full bg-white">
                             <SelectValue placeholder="Transmission" />
@@ -417,7 +488,7 @@ const Category = () => {
                     )
                   }
                   {
-                    (currentCategoryName === "furniture" || currentCategoryName === "sports" || currentCategoryName == "automobile" || currentCategoryName === "home") && (
+                    (currentCategoryName === "furniture" || currentCategoryName === "sports" || currentCategoryName == "automobile" || currentCategoryName === "home" || currentCategoryName === "electronics") && (
                       <>
                         {
                           (productField === 'new_product' || productField === '') && (
@@ -450,7 +521,7 @@ const Category = () => {
                                 </div>
                                 <Range
                                   values={values}
-                                  step={1}
+                                  step={0.1}
                                   min={0}
                                   max={20}
                                   onChange={(vals) => setValues(vals)}
@@ -518,6 +589,8 @@ const Category = () => {
                   {
                     productField === 'new_product' && currentCategoryName === "furniture" && (
                       <Select
+                    value={conditionOfProductValue}
+                    onValueChange={(value) => setValue("conditionOfProduct", value)}
 
                       >
                         <SelectTrigger className="w-full bg-white">
@@ -543,6 +616,8 @@ const Category = () => {
                     currentCategoryName === "industrial" && (
                       <>
                         <Select
+                         value={constructionToolTypeValue}
+                      onValueChange={(value) => setValue("constructionToolType", value)}
                         >
                           <SelectTrigger className="w-full bg-white">
                             <SelectValue placeholder="Construction Tool Type" />
@@ -552,6 +627,8 @@ const Category = () => {
                           </SelectContent>
                         </Select>
                         <Select
+                         value={toolTypeValue}
+                      onValueChange={(value) => setValue("toolType", value)}
                         >
                           <SelectTrigger className="w-full bg-white">
                             <SelectValue placeholder="Tool Type" />
@@ -682,8 +759,8 @@ const Category = () => {
 
               {/* Actions */}
               <div className="flex justify-end  gap-3">
-                <Button type="button" variant="outline" className="w-32">Save as Draft</Button>
-                <Button type="submit" className=" text-white w-32">
+                <Button type="button" variant="outline" className="w-32 cursor-pointer">Save as Draft</Button>
+                <Button type="submit" className=" text-white w-32 cursor-pointer">
                   {
                     loading ? <Spinner className="w-5 h-5 animate-spin" /> : 'Submit'
                   }

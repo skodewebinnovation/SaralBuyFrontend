@@ -2,20 +2,17 @@ import { email, z } from "zod";
 
 export const CategoryFormchema = z.object({
   title: z.string().min(1, "Title is required"), // ensures empty string also fails
-
   subCategoryId: z.string().min(1, "Category is required"), // matches your form
   quantity: z.string().min(1, "Quantity is required"),
-
   minimumBudget: z.string().optional(),
   productType: z.string().optional(),
-
+  
   oldProductValue: z.object({
     min: z.string().optional(),
     max: z.string().optional(),
-  }),
+  }).optional(),
 
   productCondition: z.string().optional(),
-
   image: z.string().optional(),
   document: z.string().optional(),
   description: z.string().min(1, "Description is required"),
@@ -30,6 +27,21 @@ export const CategoryFormchema = z.object({
 
   draft: z.boolean().optional(),
   gst_requirement: z.string().optional(),
+
+
+  brand: z.string().optional(),
+  additionalDeliveryAndPackage: z.string().optional(),
+  gender: z.string().optional(),
+  typeOfAccessories: z.string().optional(),
+  fuelType: z.string().optional(),
+  model: z.string().optional(),
+  color: z.string().optional(),
+  transmission: z.string().optional(),
+  conditionOfProduct: z.string().optional(),
+  constructionToolType: z.string().optional(),
+  toolType: z.string().optional(),
+  rateAService: z.string().optional(),
+
 });
 
 export const ProfileSchema = z.object({
