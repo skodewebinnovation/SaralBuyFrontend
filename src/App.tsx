@@ -20,7 +20,6 @@ import ContactVerification from "./Pages/ContactVerification";
 function App() {
  const categories = useCategoriesStore()
  const userProfile = getUserProfile();
- console.log(userProfile)
 function TitleProtectWrapper() {
   const [searchParams] = useSearchParams();
   // const title = searchParams.get("prt");

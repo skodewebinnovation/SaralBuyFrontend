@@ -43,8 +43,6 @@ const LoginPopup:React.FC<Props> = ({open,setOpen,setNumber,setOtpPopup}) => {
       return;
     }
     await fn(mobileNumber)
-    e.currentTarget.reset();
-
   };
 
   useEffect(()=>{

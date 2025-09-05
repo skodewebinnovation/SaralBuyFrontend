@@ -54,3 +54,13 @@ export const ProfileSchema = z.object({
     message: 'Invalid Aadhaar Number'
   })
 })
+
+export const productOverviewBidSchema = z.object({
+  budgetQuation: z.string().min(1, "Budget Quotation is required"),
+  availableBrand: z.string().min(1, "Available Brand is required"),
+  earliestDeliveryDate: z.
+  union([z.date(),z.undefined()]). // it can be date or undefined
+  refine((value)=> value !== undefined,{   // firsty check if value is not undefined
+    message: 'Earliest Delivery Date is required'
+  })
+});

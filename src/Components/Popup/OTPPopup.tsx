@@ -30,14 +30,14 @@ const OtpPopup:React.FC<Props> = ({open,setOpen,number}) => {
   const handleVerify = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await fn(number,value);
-    e?.currentTarget?.reset();
   }
 
   useEffect(()=>{
     if(data){
-     getProfile.execute();
-      setOpen(false);
-      if(!(getProfile as any)?.firstName && !(getProfile as any)?.lastName && !(getProfile as any)?.email){
+    getProfile.execute();
+    setOpen(false);
+    console.log(getProfile)
+    if(!(getProfile?.user as any)?.firstName && !(getProfile?.user as any)?.lastName && !(getProfile?.user as any)?.email){
       navigate('/account')
     }
     }
