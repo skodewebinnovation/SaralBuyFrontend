@@ -51,8 +51,13 @@ export default function BidingComponent<TData, TValue>({
   return (
     <div className="space-y-4 ">
       {/* 🔍 Search + Sort Buttons */}
-      <div className="flex justify-end items-center gap-4">
-        {/* Search */}
+      <div className="flex justify-between items-center gap-4">
+
+        <p className="font-bold text-3xl whitespace-nowrap sm:text-2xl text-gray-600 border-l-4 border-gray-600 pl-3 tracking-tight">
+          Your Bids
+        </p>
+       <div className="flex items-center gap-4">
+         {/* Search */}
         <div className="relative">
           <Input
             type="text"
@@ -85,6 +90,7 @@ export default function BidingComponent<TData, TValue>({
         >
           <ArrowDownWideNarrow className="w-4 h-4 text-gray-600" />
         </Button>
+       </div>
       </div>
 
       <div className="overflow-hidden rounded-md ">

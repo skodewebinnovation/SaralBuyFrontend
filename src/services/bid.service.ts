@@ -7,5 +7,8 @@ class BidService{
             withCredentials:true
         }).then(res => res.data?.data|| res.data)
     }
+    getAllBids(){
+        return instance.get('/bid/get-all-bid',{withCredentials:true}).then(res => res.data?.data|| res.data)
+    }
 }
 export default new BidService();

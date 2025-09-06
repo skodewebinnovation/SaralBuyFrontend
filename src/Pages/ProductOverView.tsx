@@ -26,6 +26,7 @@ import bidService from "@/services/bid.service";
 import LoginPopup from "@/Components/Popup/LoginPopup";
 import OtpPopup from "@/Components/Popup/OTPPopup";
 import { Spinner } from "@/Components/ui/shadcn-io/spinner";
+import SellerVerificationPopup from "@/Components/Popup/SellerVerificationPopup";
 const ProductOverview = () => {
   const { productId } = useParams();
   const userProfile = getUserProfile()
@@ -35,7 +36,9 @@ const ProductOverview = () => {
    const [open, setOpen] = useState(false)
     const [otpPopup, setOtpPopup] = useState(false);
     const [number, setNumber] = useState('')
-  const { handleSubmit, formState: { errors }, register, reset, control } = useForm({
+    const [sellerVerification,setSellerVerification] = useState(false)
+    const [businessType,setBusinessType] = useState('')
+  const { handleSubmit, formState: { errors }, register, reset, control,getValues } = useForm({
     resolver: zodResolver(productOverviewBidSchema) as any,
     defaultValues: {
       firstName: '',
@@ -49,31 +52,36 @@ const ProductOverview = () => {
     getProductById(productId)
   }, [productId])
 
-  // useEffect(() => {
-  //   if (productResponse) {
-  //     console.log(productResponse)
-  //   }
-  // }, [productResponse])
 
+  async function handleCreteBid(){
+    const sellerId = productResponse.userId._id;
+     let obj ={
+      ...getValues(),
+      status:"active",
+      businessType
+    }
+    if(!businessType){
+        toast.error('business is required !');
+        setSellerVerification(true)
+    }
+    await createBidFn(sellerId,productResponse._id,obj)
 
-  console.log(productResponse)
-  async function onSubmit(data: any) {
+  }
+
+  async function onSubmit() {
     const user = userProfile?.user
     if(!user?._id) return setOpen(true); // means need to login
     if(!productResponse) return console.log('product not found in frontend');
-    const sellerId = productResponse.userId._id; // this is saller id  who is selling the product
-    let obj ={
-      ...data,
-      status:"active"
-    }
-    await createBidFn(sellerId,productResponse._id,obj)
-    
+    console.log(getValues(),2)
+    setSellerVerification(true) 
   }
+   
 
 
   useEffect(()=>{
     if(createBidRes){
       toast.success('Bid created successfully') 
+      setSellerVerification(false)
       reset({
         firstName: userProfile.user.firstName,
         lastName: userProfile.user.lastName,
@@ -114,13 +122,11 @@ const ProductOverview = () => {
   useEffect(() => window.scrollTo(0, 0), [])
   return (
     <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
-      {/* Breadcrumb */}
        {
         open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
       }
-      {
-        <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
-      }
+       <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
+      <SellerVerificationPopup setOpen={setSellerVerification} open={sellerVerification} setValue={setBusinessType} value={businessType} handleCreteBid={handleCreteBid} createBidLoading={createBidLoading}/>
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>
           <BreadcrumbItem className="flex items-center gap-2 cursor-pointer">
@@ -247,11 +253,9 @@ const ProductOverview = () => {
 
           </div>
           <Button
-          disabled={createBidLoading}
+      
           variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
-            {
-              createBidLoading ? <Spinner className="h-5 w-5 animate-spin" /> : 'Create Bid'
-            }
+            Place Bid
           </Button>
         </form>
       </div>
