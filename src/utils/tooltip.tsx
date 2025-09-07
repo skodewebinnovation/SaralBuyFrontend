@@ -11,7 +11,7 @@ type Props={
 const TooltipComp = ({hoverChildren,contentChildren}:Props) => {
     return (
         <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
                 {hoverChildren}
             </TooltipTrigger>
             <TooltipContent>

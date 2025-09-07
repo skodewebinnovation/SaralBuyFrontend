@@ -10,5 +10,8 @@ class BidService{
     getAllBids(){
         return instance.get('/bid/get-all-bid',{withCredentials:true}).then(res => res.data?.data|| res.data)
     }
+    bidOverViewbyId(bidId:string){
+        return instance.get(`/bid/bid-overview/${bidId}`,{withCredentials:true}).then(res => res.data?.data|| res.data)
+    }
 }
 export default new BidService();

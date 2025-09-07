@@ -25,20 +25,22 @@ import { productOverviewBidSchema } from "@/validations/Schema";
 import bidService from "@/services/bid.service";
 import LoginPopup from "@/Components/Popup/LoginPopup";
 import OtpPopup from "@/Components/Popup/OTPPopup";
-import { Spinner } from "@/Components/ui/shadcn-io/spinner";
+import { useSearchParams } from 'react-router-dom';
 import SellerVerificationPopup from "@/Components/Popup/SellerVerificationPopup";
 const ProductOverview = () => {
-  const { productId } = useParams();
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get('productId');
+  const bidId = searchParams.get('bidId');
   const userProfile = getUserProfile()
-  const navigate = useNavigate()
   const { fn: getProductById, data: productResponse, error } = useFetch(productService.getProductById);
-  const { fn: createBidFn, data: createBidRes,loading:createBidLoading } = useFetch(bidService.createBid);
-   const [open, setOpen] = useState(false)
-    const [otpPopup, setOtpPopup] = useState(false);
-    const [number, setNumber] = useState('')
-    const [sellerVerification,setSellerVerification] = useState(false)
-    const [businessType,setBusinessType] = useState('')
-  const { handleSubmit, formState: { errors }, register, reset, control,getValues } = useForm({
+  const { fn: bidOverviewFn, data: bidOverviewRes, loading: bidOverviewLoading } = useFetch(bidService.bidOverViewbyId)
+  const { fn: createBidFn, data: createBidRes, loading: createBidLoading } = useFetch(bidService.createBid);
+  const [open, setOpen] = useState(false)
+  const [otpPopup, setOtpPopup] = useState(false);
+  const [number, setNumber] = useState('')
+  const [sellerVerification, setSellerVerification] = useState(false)
+  const [businessType, setBusinessType] = useState('')
+  const { handleSubmit, formState: { errors }, register, reset, control, getValues } = useForm({
     resolver: zodResolver(productOverviewBidSchema) as any,
     defaultValues: {
       firstName: '',
@@ -49,38 +51,51 @@ const ProductOverview = () => {
     }
   })
   useEffect(() => {
-    getProductById(productId)
-  }, [productId])
+    if (productId) {
+      getProductById(productId)
+    } else if (bidId) {
+      bidOverviewFn(bidId)
+    } else {
+      toast.error('Invalid request')
+    }
+  }, [productId, bidId])
 
 
-  async function handleCreteBid(){
+
+  async function handleCreteBid() {
     const sellerId = productResponse.userId._id;
-     let obj ={
+    let obj = {
       ...getValues(),
-      status:"active",
+      status: "active",
       businessType
     }
-    if(!businessType){
-        toast.error('business is required !');
-        setSellerVerification(true)
+    if (!businessType) {
+      toast.error('business is required !');
+      setSellerVerification(true)
     }
-    await createBidFn(sellerId,productResponse._id,obj)
+    await createBidFn(sellerId, productResponse._id, obj)
 
   }
 
   async function onSubmit() {
-    const user = userProfile?.user
-    if(!user?._id) return setOpen(true); // means need to login
-    if(!productResponse) return console.log('product not found in frontend');
-    console.log(getValues(),2)
-    setSellerVerification(true) 
+    const user = userProfile?.user;
+
+    const currentFormData = getValues();
+
+    if (!user?._id) {
+      localStorage.setItem("preLoginBidForm", JSON.stringify(currentFormData));
+      return setOpen(true);
+    }
+    if (!productResponse) return console.log("product not found in frontend");
+
+    setSellerVerification(true);
   }
-   
 
 
-  useEffect(()=>{
-    if(createBidRes){
-      toast.success('Bid created successfully') 
+
+  useEffect(() => {
+    if (createBidRes) {
+      toast.success('Bid created successfully')
       setSellerVerification(false)
       reset({
         firstName: userProfile.user.firstName,
@@ -90,20 +105,36 @@ const ProductOverview = () => {
         earliestDeliveryDate: undefined
       });
     }
-  },[createBidRes])
+  }, [createBidRes])
 
+  console.log(bidOverviewRes, 12)
 
   useEffect(() => {
     if (userProfile?.user) {
-      reset({
-        firstName: userProfile.user.firstName,
-        lastName: userProfile.user.lastName,
-        budgetQuation: '',
-        availableBrand: '',
-        earliestDeliveryDate: undefined
-      });
+      const savedData = localStorage.getItem("preLoginBidForm");
+
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+
+        reset({
+          ...parsedData,
+          firstName: bidOverviewRes ? bidOverviewRes?.seller?.firstName : userProfile.user.firstName,
+          lastName: bidOverviewRes ? bidOverviewRes?.seller?.lastName : userProfile.user.lastName,
+        });
+
+        localStorage.removeItem("preLoginBidForm");
+      } else {
+        reset({
+          firstName: bidOverviewRes ? bidOverviewRes?.seller?.firstName : userProfile.user.firstName,
+          lastName: bidOverviewRes ? bidOverviewRes?.seller?.lastName : userProfile.user.lastName,
+          budgetQuation: bidOverviewRes ? bidOverviewRes?.budgetQuation : '',
+          availableBrand: bidOverviewRes ? bidOverviewRes?.availableBrand : '',
+          earliestDeliveryDate: bidOverviewRes ? bidOverviewRes?.earliestDeliveryDate : undefined
+        });
+      }
     }
-  }, [userProfile, reset]);
+  }, [userProfile, reset, bidOverviewRes]);
+
 
   useEffect(() => {
     if (error === 'invalid product ID') {
@@ -111,6 +142,7 @@ const ProductOverview = () => {
     }
   }, [])
 
+  console.log(productResponse)
 
   useEffect(() => {
     for (let i = 0; i < Object.entries(errors).length; i++) {
@@ -122,11 +154,11 @@ const ProductOverview = () => {
   useEffect(() => window.scrollTo(0, 0), [])
   return (
     <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
-       {
+      {
         open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
       }
-       <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
-      <SellerVerificationPopup setOpen={setSellerVerification} open={sellerVerification} setValue={setBusinessType} value={businessType} handleCreteBid={handleCreteBid} createBidLoading={createBidLoading}/>
+      <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
+      <SellerVerificationPopup setOpen={setSellerVerification} open={sellerVerification} setValue={setBusinessType} value={businessType} handleCreteBid={handleCreteBid} createBidLoading={createBidLoading} />
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>
           <BreadcrumbItem className="flex items-center gap-2 cursor-pointer">
@@ -144,7 +176,7 @@ const ProductOverview = () => {
         {/* Image */}
         <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-68 ">
           <img
-            src={productResponse?.image}
+            src={bidOverviewRes ? bidOverviewRes?.product?.image : productResponse?.image}
             alt="Product"
             className="object-contain h-full w-full"
           />
@@ -153,11 +185,12 @@ const ProductOverview = () => {
         {/* Product Info */}
         <div className="lg:col-span-8 bg-white rounded-lg p-4 space-y-4">
           <h2 className="text-sm font-medium mb-2">
-            Date : 12-2-2025
+            Date : {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.createdAt : productResponse?.createdAt)}
           </h2>
 
           <h2 className="text-xl font-bold capitalize">
-            {productResponse?.title}
+            {
+              bidOverviewRes ? bidOverviewRes?.product?.title : productResponse?.title}
           </h2>
           <p className="text-sm text-gray-600">
             {productResponse?.description}
@@ -167,15 +200,15 @@ const ProductOverview = () => {
           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-2 pr-3 border-r-2 py-1 w-32">
               <UserRound className="w-5 h-5 " />
-              <span className="capitalize">{mergeName(productResponse?.userId) || 'N/A'}</span>
+              <span className="capitalize">{mergeName(bidOverviewRes ? bidOverviewRes?.buyer : productResponse?.userId) || 'N/A'}</span>
             </div>
             <div className="flex items-center gap-2  pr-3 border-r-2 py-1 w-32">
               <MapPin className="w-4 h-4 " />
-              <span className="capitalize">{productResponse?.userId?.address || 'N/A'}</span>
+              <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.buyer?.address : productResponse?.userId?.address || 'N/A'}</span>
             </div>
             <div className="flex items-center gap-2 py-1 w-32">
               <List className="w-4 h-4 " />
-              <span className="capitalize">{productResponse?.quantity || 'N/A'} units</span>
+              <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.product?.quantity : productResponse?.quantity || 'N/A'} units</span>
             </div>
           </div>
 
@@ -196,14 +229,28 @@ const ProductOverview = () => {
         <div className="lg:col-span-7  rounded-lg p-6 space-y-3 ">
           <h3 className="font-semibold text-orange-600 text-xl">Requirement Specifications</h3>
           <div className="text-sm space-y-2 text-gray-600 ">
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Product Type:</span> {productResponse?.subCategoryId?.name || "N/A"}</p>
-            <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Brand:</span> {productResponse?.brand || "N/A"}</p>
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(productResponse?.minimumBudget)}</p>
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Additional Delivery & Packaging:</span> {productResponse?.additionalDeliveryAndPackage || "N/A"}</p>
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Required Delivery Date:</span> {productResponse?.paymentAndDelivery?.ex_deliveryDate && dateFormatter(productResponse?.paymentAndDelivery?.ex_deliveryDate) || 'N/A'}</p>
-            <p className="flex items-center justify-between py-2 border-b-2 capitalize"><span className="font-semibold">Payment Mode:</span> {productResponse?.paymentAndDelivery?.paymentMode || 'N/A'}</p>
-            <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{productResponse?.documentName ? <span className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" /> {productResponse?.documentName}</span> : 'N/A'}</p>
+            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Product Type:</span> {(bidOverviewRes ? bidOverviewRes?.product?.subCategory?.name : productResponse?.subCategoryId?.name )|| "N/A"}</p>
+            <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Brand:</span> {(bidOverviewRes ? bidOverviewRes?.product?.brand : productResponse?.brand) || "N/A"}</p>
+            {productResponse?.categoryId?.categoryName === "industrial" && (
+
+              <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
+            )}
+            {
+              (bidOverviewRes?.product?.minimumBudget || productResponse?.minimumBudget) && (
+
+  <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.minimumBudget
+              : productResponse?.minimumBudget)}</p>
+              )
+            }
+          
+            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : productResponse?.additionalDeliveryAndPackage )|| "N/A"}</p>
+
+            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Required Delivery Date:</span> {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.paymentAndDelivery?.ex_deliveryDate :productResponse?.paymentAndDelivery?.ex_deliveryDate) || 'N/A'}</p>
+
+
+            <p className="flex items-center justify-between py-2 border-b-2 capitalize"><span className="font-semibold">Payment Mode:</span> {bidOverviewRes? bidOverviewRes?.product?.paymentAndDelivery?.paymentMode : productResponse?.paymentAndDelivery?.paymentMode || 'N/A'}</p>
+            <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(productResponse?.documentName || bidOverviewRes?.product?.documentName) ? <span className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" /> {productResponse?.documentName || bidOverviewRes?.product?.documentName}</span> : 'N/A'}</p>
+            
           </div>
         </div>
 
@@ -212,20 +259,20 @@ const ProductOverview = () => {
           <h3 className="font-semibold text-orange-600">Fill the Details to Place Bid</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
-           {
-            userProfile?.user?._id && (
-              <>
-               <div>
-              <Label htmlFor="firstName" className="mb-2 text-sm">First Name</Label>
-              <Input type="text" readOnly placeholder="First Name" id="firstName" {...register("firstName")} className="bg-white" />
-            </div>
-            <div>
-              <Label htmlFor="lastName" className="mb-2 text-sm">Last Name</Label>
-              <Input type="text" readOnly placeholder="Last Name" id="lastName" {...register("lastName")} className="bg-white" />
-            </div>
-              </>
-            )
-           }
+            {
+              userProfile?.user?._id && (
+                <>
+                  <div>
+                    <Label htmlFor="firstName" className="mb-2 text-sm">First Name</Label>
+                    <Input type="text" readOnly placeholder="First Name" id="firstName" {...register("firstName")} className="bg-white" />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName" className="mb-2 text-sm">Last Name</Label>
+                    <Input type="text" readOnly placeholder="Last Name" id="lastName" {...register("lastName")} className="bg-white" />
+                  </div>
+                </>
+              )
+            }
             <div>
               <Label htmlFor="bq" className="mb-2 text-sm">Budget Quotation</Label>
               <Input type="text" placeholder="₹ 00" id="bq" className="bg-white" {...register('budgetQuation')} />
@@ -252,11 +299,20 @@ const ProductOverview = () => {
             </div>
 
           </div>
-          <Button
-      
-          variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
-            Place Bid
-          </Button>
+          {
+            !bidOverviewRes ? (
+              <Button
+                variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
+                Place Bid
+              </Button>
+            ) :
+              (
+                <Button
+                  variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
+                  Update Bid
+                </Button>
+              )
+          }
         </form>
       </div>
     </div>

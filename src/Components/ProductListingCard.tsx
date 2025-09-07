@@ -23,7 +23,7 @@ const ProductListingCard = ({product}:{product:any}) => {
     // if(!(user as any)?.firstName && !(user as any)?.lastName && !(user as any)?.email){
     //   return navigate('/profile')
     // }
-    return navigate('/product-overview/'+product._id)
+    return navigate('/product-overview?productId=' + product._id);
   }
   return (
     <>
@@ -53,13 +53,13 @@ const ProductListingCard = ({product}:{product:any}) => {
             </h2>
 
 
-            <div className="flex items-center text-sm text-gray-700 gap-2 space-y-1">
+            <div className="flex items-center text-sm text-gray-700 gap-2 space-y-1 capitalize">
             <User size={16} /> {product?.userId?.firstName+ " "+ product?.userId?.lastName || 'No Name found'}
             </div>
             <div className="flex items-center text-sm text-gray-700 gap-2 line-clamp-1">
             <MapPin size={16} /> {product?.userId?.address|| 'No Address found'}
             </div>
-            <div className="flex items-center text-sm text-gray-700 gap-2">
+            <div className="flex items-center text-sm text-gray-700 gap-2 capitalize">
             <List size={16} /> {product?.quantity} units
             </div>
             </div>

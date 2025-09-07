@@ -1,8 +1,8 @@
 import { email, z } from "zod";
 
 export const CategoryFormchema = z.object({
-  title: z.string().min(1, "Title is required"), // ensures empty string also fails
-  subCategoryId: z.string().min(1, "Category is required"), // matches your form
+  title: z.string().min(1, "Title is required"), 
+  subCategoryId: z.string().min(1, "Category is required"), 
   quantity: z.string().min(1, "Quantity is required"),
   minimumBudget: z.string().optional(),
   productType: z.string().optional(),
@@ -59,7 +59,7 @@ export const productOverviewBidSchema = z.object({
   budgetQuation: z.string().min(1, "Budget Quotation is required"),
   availableBrand: z.string().min(1, "Available Brand is required"),
   earliestDeliveryDate: z.
-  union([z.date(),z.undefined()]). // it can be date or undefined
+  union([z.coerce.date(),z.undefined()]). // it can be date or undefined
   refine((value)=> value !== undefined,{   // firsty check if value is not undefined
     message: 'Earliest Delivery Date is required'
   })

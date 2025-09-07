@@ -37,7 +37,7 @@ import LoginPopup from "../Popup/LoginPopup";
 import OtpPopup from "../Popup/OTPPopup";
 import type { CategoryNames } from "@/interface/Categories";
 import { SearchableDropdown } from "@/utils/searchableDropdown";
-import { electronicCategories } from "@/const/categoriesData";
+import { electronicCategories,constructionIndustrialCategories,fashionCategories,furnitureCategories,homeAppliancesCategories,beautyCategories,sportCategories,vehicleCategories,serviceCategories} from "@/const/categoriesData";
 
 const innerFormImages:Record<string,string>={
   automobile:"automobileFormImage.png",
@@ -53,7 +53,30 @@ const innerFormImages:Record<string,string>={
 }
 
 
-
+  function getSubCategories(categoryName:string){
+    switch(categoryName){
+      case "automobile":
+        return vehicleCategories;
+      case "fashion":
+        return fashionCategories;
+      case "electronics":
+        return electronicCategories;
+      case "home":
+        return homeAppliancesCategories;
+      case "sports":
+        return sportCategories;
+      case "furniture":
+        return furnitureCategories;
+      case "beauty":
+        return beautyCategories;
+      case "industrial":
+        return constructionIndustrialCategories;
+      case "service":
+        return serviceCategories;
+      default:
+        return []
+    }
+  }
 
 
 const Category = () => {
@@ -73,10 +96,13 @@ const Category = () => {
   const [open, setOpen] = useState(false)
   const [otpPopup, setOtpPopup] = useState(false);
   const [brand, setbrand] = useState('')
-
+const [subCategoriesData, setSubCategoriesData] = useState<{category:string,brands:{label:string,value:string}[]}[]>([])
   const [brandRenderItems, setBrandRenderItems] = useState<{ label: string, value: string }[]>([])
 
   const [number, setNumber] = useState('')
+
+
+
   useEffect(() => {
     (async () => {
       await getCatByIdFn(categoryId)
@@ -85,15 +111,11 @@ const Category = () => {
 
 
 
-
-
-
-
   useEffect(() => {
     if (catByIdData) {
       try {
         const decodedCategoryName = decodeURIComponent(catByIdData?.categoryName).toLowerCase()
-  
+        setSubCategoriesData(getSubCategories(decodedCategoryName))
         setCurrentCategoryName(decodedCategoryName as CategoryNames || null);
       } catch (e) {
         console.error("Error decoding category name:", e);
@@ -148,7 +170,7 @@ const Category = () => {
       color: '',
       transmission: '',
       conditionOfProduct: '',
-      constructionToolType: '',
+      // constructionToolType: '',
       toolType: '',
       rateAService: ''
     }
@@ -166,7 +188,7 @@ const Category = () => {
   const colorValue = watch("color");
   const transmissionValue = watch("transmission");
   const conditionOfProductValue = watch("conditionOfProduct");
-  const constructionToolTypeValue = watch("constructionToolType");
+  // const constructionToolTypeValue = watch("constructionToolType");
   const toolTypeValue = watch("toolType");
   const rateAServiceValue = watch("rateAService");
 
@@ -175,28 +197,35 @@ const Category = () => {
     setValue("oldProductValue.min", values[0].toString());
     setValue("oldProductValue.max", values[1].toString());
   }, [values, setValue]);
+  
     useEffect(()=>{
     setValue('brand',brand)
   },[brand])
 
-  async function onSubmit(data: any) {
-    if (!user) {
-      setOpen(true);
-      return;
-    }
-    console.log({data})
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, val]) => {
-      if (typeof val === "object") {
-        formData.append(key, JSON.stringify(val));
-      } else {
-        formData.append(key, val as any);
-      }
-    });
-    if (image) formData.append("image", image);
-    if (fileDoc) formData.append("document", fileDoc);
-    await fn(categoryId, selectedSubategoryId, formData)
+
+async function onSubmit(data: any) {
+  if (!user) {
+    setOpen(true);
+    return;
   }
+
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, val]) => {
+    if (!val || val === '' || key === 'image' || key === 'document') return;
+    
+    if (typeof val === "object") {
+      formData.append(key, JSON.stringify(val));
+    } else {
+      formData.append(key, val as any);
+    }
+  });
+
+  if (image) formData.append("image", image);      
+  if (fileDoc) formData.append("document", fileDoc); 
+  await fn(categoryId, selectedSubategoryId, formData);
+}
+
 
 
   useEffect(() => {
@@ -223,7 +252,7 @@ const Category = () => {
     <>
 
       {
-        open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
+        open && <LoginPopup open={open} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
       }
       {
         <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
@@ -284,7 +313,7 @@ const Category = () => {
                     value={selectedSubategoryId}
                     onValueChange={(value) => {
                       const selectProductName = catByIdData?.subCategories.find((item: any) => item._id === value)?.name || 'N/A'
-                      const brandsArray = electronicCategories.find((item) =>
+                      const brandsArray = subCategoriesData.find((item) =>
                         item.category.toLowerCase() === selectProductName.toLowerCase()
                       )?.brands
                       console.log(brandsArray)
@@ -615,7 +644,7 @@ const Category = () => {
                   {
                     currentCategoryName === "industrial" && (
                       <>
-                        <Select
+                        {/* <Select
                          value={constructionToolTypeValue}
                       onValueChange={(value) => setValue("constructionToolType", value)}
                         >
@@ -625,7 +654,7 @@ const Category = () => {
                           <SelectContent>
                             <SelectItem value="new_product">New Product</SelectItem>
                           </SelectContent>
-                        </Select>
+                        </Select> */}
                         <Select
                          value={toolTypeValue}
                       onValueChange={(value) => setValue("toolType", value)}

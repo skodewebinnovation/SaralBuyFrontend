@@ -16,19 +16,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../Components/ui/table";
-import { Input } from "../ui/input";
+} from "./ui/table";
+import { Input } from "./ui/input";
 import { ArrowDownNarrowWide, ArrowDownWideNarrow, ArrowUpNarrowWide, Search } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "./ui/button";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  title?:string
 }
 
 export default function BidingComponent<TData, TValue>({
   columns,
   data,
+  title
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -51,11 +53,13 @@ export default function BidingComponent<TData, TValue>({
   return (
     <div className="space-y-4 ">
       {/* 🔍 Search + Sort Buttons */}
-      <div className="flex justify-between items-center gap-4">
+      <div className={`flex ${title ? 'justify-between  gap-4' :"justify-end"} items-center`}>
 
-        <p className="font-bold text-3xl whitespace-nowrap sm:text-2xl text-gray-600 border-l-4 border-gray-600 pl-3 tracking-tight">
+       {
+        title &&  <p className="font-bold text-3xl whitespace-nowrap sm:text-2xl text-gray-600 border-l-4 border-gray-600 pl-3 tracking-tight">
           Your Bids
         </p>
+       }
        <div className="flex items-center gap-4">
          {/* Search */}
         <div className="relative">

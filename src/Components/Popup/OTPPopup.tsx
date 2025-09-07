@@ -32,16 +32,20 @@ const OtpPopup:React.FC<Props> = ({open,setOpen,number}) => {
     await fn(number,value);
   }
 
-  useEffect(()=>{
-    if(data){
+useEffect(() => {
+  if (data) {
     getProfile.execute();
     setOpen(false);
-    console.log(getProfile)
-    if(!(getProfile?.user as any)?.firstName && !(getProfile?.user as any)?.lastName && !(getProfile?.user as any)?.email){
-      navigate('/account')
+  }
+}, [data]);
+useEffect(() => {
+  if (getProfile.user) {
+    const { firstName, lastName, email } = getProfile.user as any;
+    if (!firstName && !lastName && !email) {
+      navigate("/account");
     }
-    }
-  },[data])
+  }
+}, [getProfile.user]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

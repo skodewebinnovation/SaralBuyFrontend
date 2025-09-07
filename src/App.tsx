@@ -2,9 +2,8 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useSearchParams, Navigate } from "react-router-dom";
 //Pages
 import Home from "./Pages/Home";
-import Profile from "./Pages/Profile";
+import Profile from "./Pages/profile/Profile";
 import "./App.css";
-import RequirementForm from "./Pages/RequirementForm";
 import HomeNavbar from "./Components/Navbar/HomeNavbar";
 import Footer from "./Components/Footer/Footer";
 import Category from "./Components/Category/Category";
@@ -17,6 +16,13 @@ import "@fontsource/poppins/400.css"; // Imports the regular 400 weight
 import "@fontsource/poppins/600.css"; // Imports the bold 700 weight
 import ProductOverView from "./Pages/ProductOverView";
 import ContactVerification from "./Pages/ContactVerification";
+import  BidRequirements from "./Pages/profile/BidRequirements";
+import Chatbot from "./Pages/Chatbot";
+import BidListing from "./Pages/profile/BidListing";
+import { AccountSettings } from "./Components/Profile/account-setting";
+import Notification from "./Components/Profile/notification";
+import Cart from "./Pages/profile/cart";
+import Deal from "./Pages/profile/Deal";
 function App() {
  const categories = useCategoriesStore()
  const userProfile = getUserProfile();
@@ -47,14 +53,18 @@ useEffect(() => {
         <Route path="/" element={<Home />} />
         <Route path="/requirement" element={<Requirement/>} />
         <Route path="/category/:categoryId" element={<Category />} />
-        <Route path="/account" element={<Profile />} />
+        <Route path="/account" element={<Profile />}  >
+          <Route path="" element={<AccountSettings/>} index/>
+          <Route path="bid" element={<BidListing/>}/>
+          <Route path="cart" element={<Cart/>}/>
+          <Route path="deal" element={<Deal/>}/>
+          <Route path="requirements" element={<BidRequirements/>}/>
+          <Route path="notification" element={<Notification/>}/>
+        </Route>
         <Route path="/product-listing" element={<TitleProtectWrapper/>}/>
-        <Route path="/product-overview/:productId" element={<ProductOverView/>}/>
-        <Route
-          path="/requirementform/:mainCategory/:subCategory"
-          element={<RequirementForm />}
-        />
+       <Route path="/product-overview" element={<ProductOverView />} />
         <Route path="/contact-verification" element={<ContactVerification/>}/>
+        <Route path="/chat" element={<Chatbot/>}/>
       <Route path="*" element={<h1>No Page found</h1>}/>
       </Routes>
             <Footer/> 
