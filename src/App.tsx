@@ -16,7 +16,7 @@ import "@fontsource/poppins/400.css"; // Imports the regular 400 weight
 import "@fontsource/poppins/600.css"; // Imports the bold 700 weight
 import ProductOverView from "./Pages/ProductOverView";
 import ContactVerification from "./Pages/ContactVerification";
-import  BidRequirements from "./Pages/profile/BidRequirements";
+import  BidRequirements from "./Pages/profile/Requirements";
 import Chatbot from "./Pages/Chatbot";
 import BidListing from "./Pages/profile/BidListing";
 import { AccountSettings } from "./Components/Profile/account-setting";
