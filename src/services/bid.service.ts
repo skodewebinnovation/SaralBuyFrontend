@@ -12,6 +12,9 @@ class BidService{
     }
     bidOverViewbyId(bidId:string){
         return instance.get(`/bid/bid-overview/${bidId}`,{withCredentials:true}).then(res => res.data?.data|| res.data)
+    };
+    updateUserBidDets(id:string,dataObj:any){
+        return instance.put(`/bid/update-bid-user-dets/${id}`,dataObj,{withCredentials:true}).then(res => res.data?.data|| res.data)
     }
 }
 export default new BidService();

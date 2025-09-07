@@ -56,7 +56,9 @@ export const ProfileSchema = z.object({
 })
 
 export const productOverviewBidSchema = z.object({
-  budgetQuation: z.string().min(1, "Budget Quotation is required"),
+  budgetQuation: z.coerce.number({
+    error:'Budget Quation is required'
+  }).positive("Budget Quation must be positive"),
   availableBrand: z.string().min(1, "Available Brand is required"),
   earliestDeliveryDate: z.
   union([z.coerce.date(),z.undefined()]). // it can be date or undefined

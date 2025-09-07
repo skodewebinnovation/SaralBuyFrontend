@@ -27,13 +27,15 @@ import LoginPopup from "@/Components/Popup/LoginPopup";
 import OtpPopup from "@/Components/Popup/OTPPopup";
 import { useSearchParams } from 'react-router-dom';
 import SellerVerificationPopup from "@/Components/Popup/SellerVerificationPopup";
+import { Spinner } from "@/Components/ui/shadcn-io/spinner";
 const ProductOverview = () => {
   const [searchParams] = useSearchParams();
   const productId = searchParams.get('productId');
   const bidId = searchParams.get('bidId');
   const userProfile = getUserProfile()
   const { fn: getProductById, data: productResponse, error } = useFetch(productService.getProductById);
-  const { fn: bidOverviewFn, data: bidOverviewRes, loading: bidOverviewLoading } = useFetch(bidService.bidOverViewbyId)
+  const { fn: bidOverviewFn, data: bidOverviewRes, loading: bidOverviewLoading,setData:setBidOverviewRes } = useFetch(bidService.bidOverViewbyId)
+  const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading} = useFetch(bidService.updateUserBidDets)
   const { fn: createBidFn, data: createBidRes, loading: createBidLoading } = useFetch(bidService.createBid);
   const [open, setOpen] = useState(false)
   const [otpPopup, setOtpPopup] = useState(false);
@@ -60,6 +62,9 @@ const ProductOverview = () => {
     }
   }, [productId, bidId])
 
+  // useEffect(()=>{
+  //   if(bidOverviewRes)    console.log(setBidOverviewRes({...bidOverviewRes,myName:'Shubham'}))
+  // },[bidOverviewLoading])
 
 
   async function handleCreteBid() {
@@ -77,19 +82,28 @@ const ProductOverview = () => {
 
   }
 
-  async function onSubmit() {
+  async function onSubmit(data:any) {
     const user = userProfile?.user;
-
     const currentFormData = getValues();
-
     if (!user?._id) {
       localStorage.setItem("preLoginBidForm", JSON.stringify(currentFormData));
       return setOpen(true);
     }
-    if (!productResponse) return console.log("product not found in frontend");
+    if (!productResponse && !bidOverviewRes) return console.log("product && bid not found in frontend");
 
-    setSellerVerification(true);
+    if(productResponse){
+      setSellerVerification(true);
+    }else{
+      await updateUserBidDets(bidId,data)
+    }
   }
+
+
+  useEffect(()=>{
+    if(updateUserBidDetsRes){
+      toast.success('Bid updated successfully')
+    }
+  },[updateUserBidDetsRes])
 
 
 
@@ -107,7 +121,6 @@ const ProductOverview = () => {
     }
   }, [createBidRes])
 
-  console.log(bidOverviewRes, 12)
 
   useEffect(() => {
     if (userProfile?.user) {
@@ -275,7 +288,7 @@ const ProductOverview = () => {
             }
             <div>
               <Label htmlFor="bq" className="mb-2 text-sm">Budget Quotation</Label>
-              <Input type="text" placeholder="₹ 00" id="bq" className="bg-white" {...register('budgetQuation')} />
+              <Input type="number" placeholder="₹ 00" id="bq" className="bg-white" {...register('budgetQuation')} />
             </div>
             <div>
               <Label htmlFor="ab" className="mb-2 text-sm">Available Brand</Label>
@@ -308,8 +321,14 @@ const ProductOverview = () => {
             ) :
               (
                 <Button
+                disabled={updateUserBidDetsLoading}
                   variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
-                  Update Bid
+                  {
+                    updateUserBidDetsLoading ?
+                    <Spinner className="w-5 h-5 animate-spin"/>
+                    :
+                    'Update Bid'
+                  }
                 </Button>
               )
           }
