@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Search, Send, Menu, X, Circle } from 'lucide-react'
+import { Search, Send, Menu, X, Circle, List, LayoutGrid, Paperclip } from 'lucide-react'
 import { Input } from '../Components/ui/input'
 import { Button } from '../Components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../Components/ui/avatar'
@@ -11,48 +11,23 @@ import { fallBackName } from '@/helper/fallBackName'
 const contacts = [
   {
     id: 1,
-    name: 'Eten Hunt',
+    name: 'Shubham Sharma',
     message: 'Thank you very much, I\'m glad...',
     time: '22 m Ago',
     avatar: 'https://github.com/shubhamsharma20007.png',
     isOnline: true
   },
-  {
-    id: 2,
-    name: 'Jakob Saris',
-    message: 'You - Sure! let me tell you about w...',
-    time: '22 m Ago',
-    avatar: 'https://github.com/shubhamsharma20007.png',
-    isOnline: false
-  },
-  {
-    id: 3,
-    name: 'Jeremy Zucker',
-    message: 'You - Sure! let me teach you about ...',
-    time: '4 m Ago',
-    avatar: 'https://github.com/shubhamsharma20007.png',
-    isOnline: false
-  },
-  {
-    id: 4,
-    name: 'Nadia Lauren',
-    message: 'Is there anything I can help? Just ...',
-    time: '6 m Ago',
-    avatar: 'https://github.com/shubhamsharma20007.png',
-    isOnline: false
-  },
-  {
-    id: 5,
-    name: 'Jeremy Zucker',
-    message: 'You - Sure! let me teach you about ...',
-    time: '8 m Ago',
-    avatar: 'https://github.com/shubhamsharma20007.png',
-    isOnline: false
-  }
+
 ]
 
 const messages = [
   { id: 1, text: 'Hey!', sender: 'other', time: 'Today 11:51' },
+  { id: 2, text: 'I had few offers for your product requirement', sender: 'other', time: 'Today 11:53' },
+  { id: 3, text: 'Yes Please I be glad to ans you query', sender: 'user', time: 'Today 11:56' },
+    { id: 1, text: 'Hey!', sender: 'other', time: 'Today 11:51' },
+  { id: 2, text: 'I had few offers for your product requirement', sender: 'other', time: 'Today 11:53' },
+  { id: 3, text: 'Yes Please I be glad to ans you query', sender: 'user', time: 'Today 11:56' },
+    { id: 1, text: 'Hey!', sender: 'other', time: 'Today 11:51' },
   { id: 2, text: 'I had few offers for your product requirement', sender: 'other', time: 'Today 11:53' },
   { id: 3, text: 'Yes Please I be glad to ans you query', sender: 'user', time: 'Today 11:56' }
 ]
@@ -66,7 +41,7 @@ const ContactsList = ({ onSelectContact }: { onSelectContact: (contact: any) => 
 
   return (
     <div className="h-full flex flex-col bg-chat-sidebar border-r-0 border-chat-border">
-      
+
       {/* Fixed Search Input Header */}
       <div className="p-4  border-b border-chat-border">
         <h2 className="text-lg font-semibold mb-2 text-gray-600 ">Messaging</h2>
@@ -139,90 +114,90 @@ const ChatArea = ({ selectedContact }: { selectedContact: any }) => {
   return (
     <div className="flex-1 flex flex-col  border-1 rounded-md overflow-hidden">
       {/* Chat Header */}
-      <div className="p-4 border-b border-chat-border bg-background">
+      <div className=" border-b border-chat-border bg-background">
         <div className='bg-gray-100 flex justify-between items-center '>
-            <p></p>
+          <p></p>
 
         </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="relative">
+
+
+        <div className="flex justify-between items-center space-x-2 bg-gray-100 p-2">
+          <p className="text-sm text-muted-foreground font-semibold">Looking for 5 Industrial Drill Machines</p>
+          <div className="flex items-center justify-end mt-1">
+            <List className='w-4 h-4' />
+            <Badge variant="secondary" className="text-sm">5 units</Badge>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-3 p-3 bg-orange-50">
+          <div className='flex justify-between items-center w-full'>
+            <div className="relative flex items-center gap-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage src={selectedContact.avatar} alt={selectedContact.name} />
                 <AvatarFallback>{selectedContact.name.charAt(0)}</AvatarFallback>
               </Avatar>
-              {selectedContact.isOnline && (
-                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-chat-online border-2 border-white rounded-full"></div>
-              )}
-            </div>
-            <div>
-              <h3 className="font-medium text-foreground">{selectedContact.name}</h3>
-              <div className="flex items-center space-x-2">
-                <Circle className="h-2 w-2 fill-chat-online text-chat-online" />
-                <span className="text-sm text-muted-foreground">Online</span>
+              <div>
+                <div className='flex items-center space-x-4'>
+                  <h3 className="font-semibold text-gray-700">{selectedContact.name}</h3>
+                  <div className="flex items-center space-x-2">
+                    <Circle className="h-2 w-2  overflow-hidden bg-green-600 rounded-full border-0 text-transparent" />
+                    <span className="text-sm text-muted-foreground">Online</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground">Looking for 5 Industrial Drill Machines</p>
-              <div className="flex items-center justify-end space-x-2 mt-1">
-                <Badge variant="secondary" className="text-xs">5 units</Badge>
-              </div>
+            <div className='flex items-center gap-3'>
+              <Button variant="outline" size="sm" className="text-orange-600 hover:text-orange-600 bg-transparent cursor-pointer hover:bg-transparent border-orange-600 w-32 text-sm font-medium ">
+                Close Deal
+              </Button>
+              <LayoutGrid className='w-5 h-5 text-gray-600' />
             </div>
-            <Button variant="outline" size="sm" className="text-orange-600 border-orange-600 hover:bg-orange-50">
-              Close Deal
-            </Button>
           </div>
         </div>
+
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1  overflow-y-auto p-4 space-y-6">
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex flex-col ${message.sender === 'user' ? 'items-end' : 'items-start'
+              }`}
           >
             <div
-              className={`max-w-[70%] px-4 py-2 rounded-lg ${
-                message.sender === 'user'
-                  ? 'bg-chat-bubble-sent text-white'
-                  : 'bg-chat-bubble-received text-foreground'
-              }`}
+              className={`max-w-[70%] px-4 py-2 ${message.sender === 'user'
+                  ? 'bg-gray-500 text-white rounded-tl-lg rounded-bl-lg rounded-br-lg'
+                  : 'bg-gray-600 text-white rounded-tr-lg rounded-bl-lg rounded-br-lg'
+                }`}
             >
               <p className="text-sm">{message.text}</p>
             </div>
+            <span className="text-xs text-muted-foreground mt-1">{message.time}</span>
           </div>
         ))}
-        {messages.length > 0 && (
-          <div className="flex justify-end">
-            <span className="text-xs text-muted-foreground">
-              {messages[messages.length - 1].time}
-            </span>
-          </div>
-        )}
       </div>
+
 
       {/* Message Input */}
       <div className="p-4 border-t border-chat-border bg-background">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-5">
           <div className="flex-1 relative">
             <Input
               placeholder="Type your message"
               value={messageText}
               onChange={(e) => setMessageText(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="pr-12 bg-chat-message-bg border-chat-border"
+              className="p-5 bg-gray-100 rounded-full text-sm placeholder:text-sm placeholder:font-medium tracking-wide focus-visible:ring-0 border-0 "
             />
-            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground">
-              😊
-            </button>
+          </div>
+          <div className='p-1 rounded-full border-2 border-gray-500 cursor-pointer hover:bg-gray-100' >
+            <Paperclip className='w-4 h-4 text-gray-700'/>
           </div>
           <Button
             onClick={handleSendMessage}
-            size="sm"
-            className="bg-chat-bubble-sent hover:bg-chat-bubble-sent/90"
+            size="icon"
+            className="cursor-pointer"
           >
             <Send className="h-4 w-4" />
           </Button>
