@@ -792,10 +792,10 @@ const handleSubmitAllForms = async () => {
         productsData.push(productData);
 
         if (formData.image && allowedFields.includes('image')) {
-          formDataToSend.append(`image_${index}`, formData.image);
+          formDataToSend.append(`image`, formData.image);
         }
         if (formData.document && allowedFields.includes('document')) {
-          formDataToSend.append(`document_${index}`, formData.document);
+          formDataToSend.append(`document`, formData.document);
         }
       }
       
