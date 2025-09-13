@@ -197,7 +197,7 @@ const ChatArea = ({ selectedContact }: { selectedContact: any }) => {
           <Button
             onClick={handleSendMessage}
             size="icon"
-            className="cursor-pointer"
+            className="cursor-pointer w-12"
           >
             <Send className="h-4 w-4" />
           </Button>

@@ -40,7 +40,7 @@ const ProductListingCard = ({product}:{product:any}) => {
         <div className="w-28 h-28 flex-shrink-0">
             <img
   
-            src={product?.image}
+            src={product?.image || 'https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg'}
             alt="Construction Material"
             className="w-full h-full object-contain rounded-lg"
             />

@@ -1,6 +1,6 @@
-import { email, z } from "zod";
+import { z } from "zod";
 
-export const CategoryFormchema = z.object({
+export const CategoryFormSchema = z.object({
   title: z.string().min(1, "Title is required"), 
   subCategoryId: z.string().min(1, "Category is required"), 
   quantity: z.string().min(1, "Quantity is required"),

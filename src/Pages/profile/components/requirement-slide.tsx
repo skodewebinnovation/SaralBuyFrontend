@@ -31,7 +31,7 @@ function Arrow({ disabled, left, onClick }: {
   );
 }
 
-const RequirementSlider = ({ products,tab }: { products: any[],tab:string}) => {
+const RequirementSlider = ({ products,tab }: { products: any[],tab?:string}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
@@ -82,7 +82,8 @@ const RequirementSlider = ({ products,tab }: { products: any[],tab:string}) => {
       <div className='flex-1 flex justify-between items-end flex-col space-y-6'>
         <p className="text-sm text-gray-600 font-medium whitespace-nowrap">Dated: 10-10-2025</p>
         <div>
-          {
+       {
+        tab && ( 
             tab ==="requirements" ?
              <Button size={'default'} className='cursor-pointer text-xs'>
             Total Bids: <span className='font-bold'>10</span>
@@ -93,7 +94,8 @@ const RequirementSlider = ({ products,tab }: { products: any[],tab:string}) => {
             Submit Draft
           </Button>
 
-          }
+          )
+       }
          
         </div>
       </div>

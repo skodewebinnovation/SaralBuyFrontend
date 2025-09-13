@@ -2,8 +2,8 @@
 import instance from "@/lib/instance";
 
 class ProductService{
-  addProduct(categoryId:string,subCategoryId:string,productObj:any){
-    return instance.post(`/product/add-product/${categoryId}/${subCategoryId}`,productObj,{
+  addProduct(categoryId:string,subCategoryId:string,productObj:any,isMultiple:boolean){
+    return instance.post(`/product/add-product/${categoryId}/${subCategoryId}/${isMultiple}`,productObj,{
       withCredentials:true
     }).then(res => res.data?.data|| res.data)
   }

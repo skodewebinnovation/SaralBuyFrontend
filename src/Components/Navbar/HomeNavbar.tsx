@@ -209,7 +209,7 @@ const HomeNavbar = () => {
                       <div className="flex gap-4">
                         <img
                           className="w-14 h-14 object-contain rounded-lg"
-                          src={p.image}
+                          src={p.image || 'https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg'}
                           alt={p.title}
                         />
                         <div className="flex-1">
