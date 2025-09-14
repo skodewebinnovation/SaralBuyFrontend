@@ -35,7 +35,7 @@ const ItemCard = ({categoryName,subCategories,image,_id}:{categoryName:string,su
       >
         {subCategories.map((item:any, index) => (
           <div
-            onClick={() => navigate(`/category/${_id}`)}
+            onClick={() => navigate(`/category/${_id}/${item._id}`)}
             key={index}
             className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer flex items-center justify-between border-b last:border-none"
           >

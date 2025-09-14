@@ -2,17 +2,13 @@
 import { format } from "date-fns";
 import { Button } from "../Components/ui/button";
 import { User, MapPin, List } from "lucide-react";
-import { getUserProfile } from "@/zustand/userProfile";
 import { useState } from "react";
-import LoginPopup from "./Popup/LoginPopup";
-import OtpPopup from "./Popup/OTPPopup";
 import { useNavigate } from "react-router-dom";
+import Authentication from "./auth/Authentication";
 const ProductListingCard = ({product}:{product:any}) => {
   console.log(product)
   // let {user} = getUserProfile();
   const [open,setOpen] = useState(false)
- const [otpPopup, setOtpPopup] = useState(false);
- const [number,setNumber] = useState('')
  const navigate = useNavigate()
 
   const handleSendOtp =()=>{
@@ -27,12 +23,7 @@ const ProductListingCard = ({product}:{product:any}) => {
   }
   return (
     <>
-    {
-      open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
-    }
-    {
-      <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
-    }
+    <Authentication setOpen={setOpen} open={open}/>
       <div className='py-3 px-4 bg-white rounded-lg border shadow-sm '>
       <span className="border-2 border-gray-600 text-gray-600 min-w-32 text-center rounded-full mb-4 inline-block p-1  max-w-fit px-3 text-sm font-semibold capitalize">{product?.categoryId?.categoryName || 'No Type'}</span>
       {/* image */}

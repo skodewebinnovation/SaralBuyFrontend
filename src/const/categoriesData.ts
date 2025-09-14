@@ -656,7 +656,7 @@ export const sportCategories = [
     ]
   },
   {
-    category: "Sportswear",
+    category: "Sportswears",
     brands: [
       { value: "nike", label: "Nike" },
       { value: "adidas", label: "Adidas" },
@@ -1004,7 +1004,7 @@ export const constructionIndustrialCategories = [
     ]
   },
   {
-    category: "Tiles & Marbles",
+    category: "Tiles & Marbels",
     brands: [
       { value: "kajaria", label: "Kajaria" },
       { value: "somany", label: "Somany" },

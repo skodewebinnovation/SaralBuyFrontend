@@ -14,16 +14,14 @@ import { toast } from "sonner"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ProfileSchema } from "@/validations/Schema"
 import { useNavigate } from "react-router-dom"
-import LoginPopup from "../Popup/LoginPopup"
-import OtpPopup from "../Popup/OTPPopup"
+import Authentication from "../auth/Authentication"
+
 export function AccountSettings() {
   const docRef = useRef<HTMLInputElement | null>(null)
   const [fileDoc, setFileDoc] = useState<File | null>(null)
   const { user, setUser } = getUserProfile()
   const navigate = useNavigate()
-  const [open, setOpen] = useState(false)
-  const [otpPopup, setOtpPopup] = useState(false);
-  const [number, setNumber] = useState('')
+  const [open,setOpen]= useState(false)
   const { fn: updateProfilefn, data: updateProfileRes, loading } = useFetch(userService.updateProfile)
   const { handleSubmit, formState: { errors }, register, reset } = useForm({
     resolver: zodResolver(ProfileSchema),
@@ -72,8 +70,6 @@ export function AccountSettings() {
     if (updateProfileRes) {
       setUser(updateProfileRes);
       toast.success('Profile updated successfully')
-      navigate(-1)
-
     }
   }, [updateProfileRes])
 
@@ -89,12 +85,7 @@ export function AccountSettings() {
   return (
     <div className="space-y-6">
       {/* Personal Details */}
-      {
-        open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
-      }
-      {
-        <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
-      }
+    <Authentication setOpen={setOpen} open={open} />
       <Card>
         <CardHeader>
           <CardTitle>Personal Details</CardTitle>

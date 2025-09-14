@@ -51,7 +51,7 @@ useEffect(() => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-md w-full p-6 space-y-3">
     
-        <div className="h-20 flex justify-center">
+        <div className="h-16 flex justify-center">
           <img
             src={saralBuyLogo}
             alt="Logo"

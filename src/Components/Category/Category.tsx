@@ -31,12 +31,10 @@ import productService from "@/services/product.service";
 import categoryService from "@/services/category.service";
 import { Spinner } from "../ui/shadcn-io/spinner";
 import { getUserProfile } from "@/zustand/userProfile";
-import LoginPopup from "../Popup/LoginPopup";
-import OtpPopup from "../Popup/OTPPopup";
-import type { CategoryNames } from "@/interface/Categories";
 import { SearchableDropdown } from "@/utils/searchableDropdown";
 import { electronicCategories,constructionIndustrialCategories,fashionCategories,furnitureCategories,homeAppliancesCategories,beautyCategories,sportCategories,vehicleCategories,serviceCategories} from "@/const/categoriesData";
 import { getCategorySpecificFields } from "@/const/categoriesFormdataFields";
+import Authentication from "../auth/Authentication";
 
 const innerFormImages= {
   automobile:"automobileFormImage.png",
@@ -85,10 +83,11 @@ const CategoryForm = ({
   subCategoriesData, 
   onFormDataChange,
   onRemoveForm,
-  showRemoveButton = false
+  showRemoveButton = false,
+  resetForm = false 
 }: any) => {
   const [date, setDate] = useState(undefined);
-  const [values, setValues] = useState([2, 10]);
+  const [values, setValues] = useState([0, 2]);
   const [image, setImage] = useState(null);
   const [fileDoc, setFileDoc] = useState(null);
   const [brand, setbrand] = useState('');
@@ -96,7 +95,7 @@ const CategoryForm = ({
   const imageRef = useRef(null);
   const fileDocRef = useRef<HTMLInputElement>(null);
 
-  const { watch, handleSubmit, setValue, formState: { errors }, register, getValues, reset } = useForm({
+  const { watch, setValue, formState: { errors }, register, getValues, reset:resetFormHook } = useForm({
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
       title: '',
@@ -174,6 +173,26 @@ const CategoryForm = ({
     setValue('brand', brand);
   }, [brand, setValue]);
 
+
+   useEffect(() => {
+    if (resetForm) {
+      resetFormHook();
+      setDate(undefined);
+      setValues([0, 2]);
+      setImage(null);
+      setFileDoc(null);
+      setbrand('');
+      setBrandRenderItems([]);
+      
+      // Clear file inputs
+      if (imageRef.current) (imageRef as any).current.value = '';
+      if (fileDocRef.current) fileDocRef.current.value = '';
+    }
+  }, [resetForm, resetFormHook]);
+
+  
+
+
   return (
     <div className=" relative">
       {showRemoveButton && (
@@ -225,7 +244,7 @@ const CategoryForm = ({
                 onValueChange={(value) => {
                   const selectProductName = catByIdData?.subCategories.find((item:any) => item._id === value)?.name || 'N/A';
                   const brandsArray = subCategoriesData.find((item:any) =>
-                    item.category.toLowerCase() === selectProductName.toLowerCase()
+                    item.category.replace(/\s+/g,'').toLowerCase() === selectProductName.replace(/\s+/g,'').toLowerCase()
                   )?.brands;
                   
                   if (brandsArray?.length > 0) {
@@ -235,7 +254,7 @@ const CategoryForm = ({
                 }}
               >
                 <SelectTrigger className="w-full bg-white">
-                  <SelectValue placeholder="Category" />
+                  <SelectValue placeholder="Category*" />
                 </SelectTrigger>
                 <SelectContent>
                   {catByIdData && subCategroies.map((c:any) => 
@@ -250,7 +269,7 @@ const CategoryForm = ({
                   setValue={setbrand} 
                   value={brand} 
                   className="w-full" 
-                  dropdownTitle="Brands"
+                  dropdownTitle="Brands*"
                   renderItems={brandRenderItems}
                 />
               )}
@@ -549,15 +568,23 @@ const CategoryForm = ({
                 className="border-2 border-dashed rounded-lg flex bg-white flex-col items-center justify-center p-6 cursor-pointer"
               >
                 <Upload className="h-6 w-6 mb-2 text-gray-500" />
-                <span className="text-sm text-muted-foreground">Upload Image</span>
+                <span className="text-sm text-muted-foreground">Upload Image*</span>
                 <input
                   type="file"
                   accept="image/*"
                   hidden
                   ref={imageRef}
-                  onChange={(e:any) => {
+                  onChange={(e: any) => {
                     if (e.target.files?.[0]) {
-                      setImage(e.target.files[0]);
+                      const newImage = e.target.files[0];
+                      setImage(newImage);
+                      const currentFormData = {
+                        ...getValues(),
+                        image: newImage,
+                        document: fileDoc,
+                        formIndex: formIndex
+                      };
+                      onFormDataChange(formIndex, currentFormData);
                     }
                   }}
                 />
@@ -578,11 +605,21 @@ const CategoryForm = ({
                   accept=".pdf,.doc,.docx"
                   hidden
                   ref={fileDocRef}
-                  onChange={(e:any) => {
-                    if (e.target.files?.[0]) {
-                      setFileDoc(e.target.files[0]);
-                    }
-                  }}
+
+                onChange={(e: any) => {
+                  if (e.target.files?.[0]) {
+                    const newDocument = e.target.files[0];
+                    setFileDoc(newDocument);
+
+                    const currentFormData = {
+                      ...getValues(),
+                      image: image,
+                      document: newDocument,
+                      formIndex: formIndex
+                    };
+                    onFormDataChange(formIndex, currentFormData);
+                  }
+                }}
                 />
                 {fileDoc && (
                   <p className="text-xs mt-2 text-green-600">{(fileDoc as any).name}</p>
@@ -668,6 +705,13 @@ const CategoryForm = ({
   );
 };
 
+//  const hasValidForms = formsArray.some((formData:any) => 
+//     formData.title && formData.description && formData.subCategoryId  && formData.image && formData.brand
+//   );
+
+
+
+
 // Main Category Component
 const Category = () => {
   const navigate = useNavigate();
@@ -680,11 +724,9 @@ const Category = () => {
   const [currentCategoryName, setCurrentCategoryName] = useState<string|null>(null);
   let { user } = getUserProfile();
   const [open, setOpen] = useState(false);
-  const [otpPopup, setOtpPopup] = useState(false);
   const [subCategoriesData, setSubCategoriesData] = useState([]);
-  const [number, setNumber] = useState('');
-  const [isDraft,setIsDraft] = useState(false);
-
+  const [resetForms, setResetForms] = useState(false);
+  const [buttonTye,setButtonType] = useState<boolean|null>(null)
   useEffect(() => {
     (async () => {
       await getCatByIdFn(categoryId);
@@ -704,6 +746,40 @@ const Category = () => {
       setSubCategoies(catByIdData?.subCategories || []);
     }
   }, [catByIdData]);
+
+
+  const isValidForms = (forms:any[],isDraft:boolean)=>{
+  for(let i =0;i < forms.length;i++){
+    if(!forms[i].title){
+      toast.error(`Title is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
+      return false
+    }
+    // this is name of category
+    else if(!forms[i].subCategoryId  && !isDraft){
+      toast.error(`Category is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
+        return false
+    } 
+    else if(!forms[i].brand && currentCategoryName?.toLowerCase() !== 'service' && !isDraft){
+      toast.error(`Brand is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
+        return false
+    }
+    else if(!forms[i].quantity && currentCategoryName?.toLowerCase() !== 'service' && !isDraft){
+      toast.error(`Quantity is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
+        return false
+    }
+    else if (!forms[i].image && !isDraft) {
+      toast.error(`Image is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`);
+      return false;
+    }
+    else if(!forms[i].description && !isDraft){
+      toast.error(`Description is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
+        return false
+    }
+
+   
+  }
+  return true
+}
 
   const handleAddForm = () => {
     const newFormIndex = forms.length > 0 ? Math.max(...forms) + 1 : 0;
@@ -728,7 +804,8 @@ const Category = () => {
     }));
   };
 
-const handleSubmitAllForms = async () => {
+const handleSubmitAllForms = async (isDraft:boolean) => {
+  setButtonType(isDraft ? true:false)
   if (!user) {
     setOpen(true);
     return;
@@ -736,24 +813,31 @@ const handleSubmitAllForms = async () => {
 
   const formsArray = Object.values(formsData) as any
 
-  const hasValidForms = formsArray.some((formData:any) => 
-    formData.title && formData.description && formData.subCategoryId
-  );
+    const hasValidForms = isValidForms(formsArray,isDraft);
   
-  if (!hasValidForms) {
-    toast.error("Please fill at least one form");
-    return;
-  }
+  if (!hasValidForms) return
 
   const invalidForms: any[] = [];
+   const formsMissingImage: any[] = [];
   formsArray.forEach((formData: any, index:number) => {
     if (!formData.title || !formData.description || !formData.subCategoryId) {
       invalidForms.push(index + 1);
     }
   });
 
-  if (invalidForms.length > 0) {
-    toast.error(`Please fill required fields in form(s): ${invalidForms.join(", ")}`);
+ if (invalidForms.length > 0 && !isDraft) {
+    // Create detailed error message
+    let errorMessage = "Please fill required fields:\n";
+    
+    invalidForms.forEach(({ formNumber, missingFields }) => {
+      errorMessage += `Form ${formNumber}: ${missingFields.join(', ')}\n`;
+    });
+    
+    if (formsMissingImage.length > 0) {
+      errorMessage += `\nImage is required for form(s): ${formsMissingImage.join(', ')}`;
+    }
+    
+    toast.error(errorMessage);
     return;
   }
 
@@ -766,7 +850,7 @@ const handleSubmitAllForms = async () => {
       // Create a single FormData for multiple products
       const formDataToSend = new FormData();
       const productsData = [];
-      for (const [index, formData] of formsArray.entries() as any) {
+      for (const [_, formData] of formsArray.entries() as any) {
         const productData: any = {};
         
         allowedFields.forEach(field => {
@@ -806,7 +890,7 @@ const handleSubmitAllForms = async () => {
       console.log('Multiple products data:', productsData);
       
       // Send all products at once
-      await fn(categoryId, formsArray[0].subCategoryId, formDataToSend, true);
+      await fn(categoryId, formsArray[0].subCategoryId || subCategoryId, formDataToSend, true);
     } else {
 
       const formData = formsArray[0];
@@ -848,22 +932,19 @@ const handleSubmitAllForms = async () => {
         console.log(key, value);
       }
       
-      await fn(categoryId, formData.subCategoryId, formDataToSend, false);
+      await fn(categoryId, formData.subCategoryId || subCategoryId, formDataToSend, false);
     }
 
-    toast.success(`${formsArray.length} product form(s) ${isDraft ? 'saved as draft' : 'submitted'} successfully!`,{
-      duration:2000,
-     onAutoClose() {
-         window.location.reload()
-         window.scrollTo(0, 0);
-     },
-    })
+    toast.success(`${formsArray.length} product form(s) ${isDraft ? 'saved as draft' : 'submitted'} successfully!`)
   
-    // Clear forms after successful submission if not draft
-    // if (!isDraft) {
-    //   setForms([0]);
-    //   setFormsData({});
-    // }
+      setResetForms(true);
+      setTimeout(() => {
+        setForms([0]);
+        setFormsData({});
+        setResetForms(false);
+      }, 100);
+      window.scrollTo(0, 0);
+  
   } catch (error) {
     console.error("Error submitting forms:", error);
     toast.error(`Failed to ${isDraft ? 'save draft' : 'submit forms'}. Please try again.`);
@@ -874,6 +955,7 @@ const handleSubmitAllForms = async () => {
     if (productCreateData) {
       // toast.success("Product Created Successfully");
       // Reset forms
+      setButtonType(null)
       setForms([0]);
       setFormsData({});
     }
@@ -883,9 +965,7 @@ const handleSubmitAllForms = async () => {
 
   return (
     <>
-      {open && <LoginPopup open={open} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />}
-      <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
-      
+    <Authentication setOpen={setOpen} open={open} />
       <div className="w-full max-w-7xl mx-auto p-4">
         {/* Breadcrumb + Action */}
         <div className="flex flex-row sm:justify-between justify-end items-center gap-3 mb-6">
@@ -933,33 +1013,29 @@ const handleSubmitAllForms = async () => {
               subCategoriesData={subCategoriesData}
               onFormDataChange={handleFormDataChange}
               onRemoveForm={handleRemoveForm}
-              showRemoveButton={arrayIndex > 0} // Only show remove button for forms after the first one
+              showRemoveButton={arrayIndex > 0}
+                resetForm={resetForms}
             />
           ))}
         </div>
 
         {/* Global Actions - Single Submit and Draft buttons for all forms */}
-        <div className="flex justify-end gap-3 mt-8 mb-6">
+        <div className="flex justify-end gap-3 my-5">
           <Button 
             type="button" 
             variant="outline" 
             className="w-32 cursor-pointer"
-            onClick={()=>{
-              setIsDraft(true)
-             return handleSubmitAllForms()
-            }}
+             onClick={() => handleSubmitAllForms(true)}
           >
-            Save as Draft
+             {loading && buttonTye ? <Spinner className="w-5 h-5 animate-spin" /> : ' Save as Draft'}
+           
           </Button>
           <Button 
             type="button" 
             className="text-white w-32 cursor-pointer bg-orange-600 hover:bg-orange-500"
-           onClick={()=>{
-            setIsDraft(false)
-             return handleSubmitAllForms()
-            }}
+            onClick={() => handleSubmitAllForms(false)}
           >
-            {loading ? <Spinner className="w-5 h-5 animate-spin" /> : `Submit ${Object.keys(formsData).length > 1 ? 'All' : ''}`}
+            {loading && !buttonTye ? <Spinner className="w-5 h-5 animate-spin" /> : `Submit ${Object.keys(formsData).length > 1 ? 'All' : ''}`}
           </Button>
         </div>
 

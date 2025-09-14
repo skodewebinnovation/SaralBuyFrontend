@@ -28,6 +28,7 @@ import OtpPopup from "@/Components/Popup/OTPPopup";
 import { useSearchParams } from 'react-router-dom';
 import SellerVerificationPopup from "@/Components/Popup/SellerVerificationPopup";
 import { Spinner } from "@/Components/ui/shadcn-io/spinner";
+import Authentication from "@/Components/auth/Authentication";
 const ProductOverview = () => {
   const [searchParams] = useSearchParams();
   const productId = searchParams.get('productId');
@@ -38,8 +39,6 @@ const ProductOverview = () => {
   const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading} = useFetch(bidService.updateUserBidDets)
   const { fn: createBidFn, data: createBidRes, loading: createBidLoading } = useFetch(bidService.createBid);
   const [open, setOpen] = useState(false)
-  const [otpPopup, setOtpPopup] = useState(false);
-  const [number, setNumber] = useState('')
   const [sellerVerification, setSellerVerification] = useState(false)
   const [businessType, setBusinessType] = useState('')
   const { handleSubmit, formState: { errors }, register, reset, control, getValues } = useForm({
@@ -167,10 +166,9 @@ const ProductOverview = () => {
   useEffect(() => window.scrollTo(0, 0), [])
   return (
     <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
-      {
-        open && <LoginPopup open={true} setOpen={setOpen} setNumber={setNumber} setOtpPopup={setOtpPopup} />
-      }
-      <OtpPopup open={otpPopup} setOpen={setOtpPopup} number={number} />
+     {
+     <Authentication setOpen={setOpen} open={open} />
+     }
       <SellerVerificationPopup setOpen={setSellerVerification} open={sellerVerification} setValue={setBusinessType} value={businessType} handleCreteBid={handleCreteBid} createBidLoading={createBidLoading} />
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>

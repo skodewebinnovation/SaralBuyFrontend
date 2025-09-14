@@ -16,5 +16,8 @@ class BidService{
     updateUserBidDets(id:string,dataObj:any){
         return instance.put(`/bid/update-bid-user-dets/${id}`,dataObj,{withCredentials:true}).then(res => res.data?.data|| res.data)
     }
+    getThreeLatestBids(){
+        return instance.get('/bid/get-three-latest-bid',{withCredentials:true}).then(res => res.data?.data|| res.data)
+    }
 }
 export default new BidService();

@@ -57,8 +57,8 @@ const LoginPopup:React.FC<Props> = ({open,setOpen,setNumber,setOtpPopup}) => {
     <>    
     <Dialog open={open} onOpenChange={setOpen} >
       <DialogContent >
-    <form onSubmit={handleSendOTP} className=" p-6 max-w-md inline-block space-y-5 ">
-        <div className="h-20 flex justify-center">
+    <form onSubmit={handleSendOTP} className=" p-3 max-w-md inline-block space-y-5 ">
+        <div className="h-16 flex justify-center">
           <img
             src={saralBuyLogo}
             alt="Logo"
@@ -70,7 +70,7 @@ const LoginPopup:React.FC<Props> = ({open,setOpen,setNumber,setOtpPopup}) => {
          <DialogTitle className=" text-gray-800 text-3xl font-extrabold ">Login here</DialogTitle>
          <DialogTitle className=" text-sm text-gray-600">  Enter your Phone Number to Sign In / Sign Up Your Account</DialogTitle>
        </div>
-        <div className="space-y-4 w-full">
+        <div className="space-y-5 w-full">
           <Input
             className="w-full py-5"
             type="text"

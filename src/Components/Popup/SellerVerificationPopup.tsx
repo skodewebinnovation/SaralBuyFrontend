@@ -41,12 +41,12 @@ const SellerVerificationPopup:React.FC<Props> = ({open,setOpen,setValue,value,ha
          <DialogHeader className=" text-black text-3xl font-extrabold ">Seller Verification</DialogHeader>
          <DialogTitle className=" text-sm text-gray-600"> Placing Bid as an Individual or Business Owner?</DialogTitle>
        </div>
-     <div className="space-y-6">
+     <div className="space-y-5">
     <Select onValueChange={(value) => setValue?.(value)} value={value}>
-      <SelectTrigger id="userType" className="w-full py-6 rounded-md border border-gray-300">
+      <SelectTrigger id="userType" className="w-full py-5 rounded-md border border-gray-300">
         <SelectValue placeholder="Select" />
       </SelectTrigger>
-      <SelectContent className="p-2">
+      <SelectContent className="">
         <SelectItem value="individual" className="dropdown-hover">Individual</SelectItem>
         <SelectItem value="business" className="dropdown-hover">Business Owner</SelectItem>
       </SelectContent>
