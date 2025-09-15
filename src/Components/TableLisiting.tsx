@@ -18,19 +18,23 @@ import {
   TableRow,
 } from "./ui/table";
 import { Input } from "./ui/input";
-import { ArrowDownNarrowWide, ArrowDownWideNarrow, ArrowUpNarrowWide, Search } from "lucide-react";
+import { ArrowDownWideNarrow, ArrowUpNarrowWide, ListFilter, Search } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  title?:string
+  title?:string;
+  [key: string]: any;
 }
 
-export default function BidingComponent<TData, TValue>({
+export default function TableListing<TData, TValue>({
   columns,
   data,
-  title
+  title,
+  filters= true,
+  colorPalette,
+  target
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -51,16 +55,20 @@ export default function BidingComponent<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4 ">
+    <div className={`space-y-4  rounded-md ${colorPalette ? `bg-${colorPalette}-50 p-4 rounded-lg` : ''}`}>
       {/* 🔍 Search + Sort Buttons */}
-      <div className={`flex ${title ? 'justify-between  gap-4' :"justify-end"} items-center`}>
+     
+     
+         <div className={`flex ${title ? 'justify-between  gap-4' :"justify-end"} items-center`}>
 
        {
-        title &&  <p className="font-bold text-3xl whitespace-nowrap sm:text-2xl text-gray-600 border-l-4 border-gray-600 pl-3 tracking-tight">
-          Your Bids
+        title &&  <p className={`font-bold text-3xl whitespace-nowrap sm:text-2xl text-${colorPalette}-600 border-l-4 border-${colorPalette}-600 pl-3 tracking-tight`}>
+          {title}
         </p>
        }
-       <div className="flex items-center gap-4">
+     {
+      filters && (
+          <div className="flex items-center gap-4">
          {/* Search */}
         <div className="relative">
           <Input
@@ -95,7 +103,18 @@ export default function BidingComponent<TData, TValue>({
           <ArrowDownWideNarrow className="w-4 h-4 text-gray-600" />
         </Button>
        </div>
+      )
+     }
+     {
+      target === "requirementOverview" &&(
+         <Button variant={'ghost'} size={'icon'} className=' w-24 flex gap-2 items-center justify-center text-sm font-medium rounded-md text-gray-700 bg-transparent border-1 hover:bg-transparent cursor-pointer border-gray-700'>
+            Date
+            <ListFilter className='w-5 h-5' />
+          </Button>
+      )
+     }
       </div>
+   
 
       <div className="overflow-hidden rounded-md ">
         <Table>

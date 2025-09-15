@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
+import React from "react";
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
+} from "../../Components/ui/dialog";
 import {
   Select,
   SelectContent,

@@ -1,5 +1,4 @@
-//Default
-import React from "react";
+
 import { useNavigate } from "react-router-dom";
 
 //Logo and Icons

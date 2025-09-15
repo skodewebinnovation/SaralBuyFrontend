@@ -1,5 +1,5 @@
 //Default
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 
 //Images and Banners
 import smartPhoneBanner from "../../image/Banners/smartPhoneBanner.png";

@@ -1,22 +1,22 @@
-import BidingComponent from '@/Components/bid-component'
+import BidingComponent from '@/Components/TableLisiting'
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { dateFormatter } from '@/helper/dateFormatter';
 import { fallBackName } from '@/helper/fallBackName';
-import { mergeName } from '@/helper/mergeName';
 import { useFetch } from '@/helper/use-fetch';
 import bidService from '@/services/bid.service';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Trash2Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import SkeletonTable from '@/const/tableSkeleton';
+import TableListing from '@/Components/TableLisiting';
 
 const BidListing = () => {
     const [data, setData] = useState([])
     const navigate = useNavigate()
-    const { fn: fetchBidsFn, data: fetchBidsResponse } = useFetch(bidService.getAllBids)
+    const { fn: fetchBidsFn, data: fetchBidsResponse,loading:bidLoading } = useFetch(bidService.getAllBids)
     const columns: ColumnDef<any>[] = [
         {
             accessorKey: "avtar",
@@ -95,7 +95,11 @@ const BidListing = () => {
     }, [fetchBidsResponse]);
 
     return (
-        <BidingComponent data={data} columns={columns} />
+       <>
+       {
+        bidLoading ? <SkeletonTable/> : <TableListing data={data} columns={columns} filters={true}  title='Your Bids'/>
+       }
+       </>
     )
 }
 

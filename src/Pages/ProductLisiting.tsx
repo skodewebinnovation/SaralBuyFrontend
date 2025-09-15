@@ -13,16 +13,8 @@ import { Label } from "../Components/ui/label"
 import { RadioGroup, RadioGroupItem } from "../Components/ui/radio-group"
 import { useCategoriesStore } from '@/zustand/getCategories'
 import { Range } from "react-range";
-import RecentProductCard from '@/Components/RecentProductCard'
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSearchParams } from 'react-router-dom'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "../Components/ui/breadcrumb";
 import { Spinner } from '../Components/ui/shadcn-io/spinner';
 import productService from '@/services/product.service'
 import ProductListingCard from '@/Components/ProductListingCard'

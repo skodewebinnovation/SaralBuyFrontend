@@ -13,14 +13,13 @@ import { Spinner } from "../ui/shadcn-io/spinner"
 import { toast } from "sonner"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ProfileSchema } from "@/validations/Schema"
-import { useNavigate } from "react-router-dom"
+
 import Authentication from "../auth/Authentication"
 
 export function AccountSettings() {
   const docRef = useRef<HTMLInputElement | null>(null)
   const [fileDoc, setFileDoc] = useState<File | null>(null)
   const { user, setUser } = getUserProfile()
-  const navigate = useNavigate()
   const [open,setOpen]= useState(false)
   const { fn: updateProfilefn, data: updateProfileRes, loading } = useFetch(userService.updateProfile)
   const { handleSubmit, formState: { errors }, register, reset } = useForm({
@@ -86,7 +85,7 @@ export function AccountSettings() {
     <div className="space-y-6">
       {/* Personal Details */}
     <Authentication setOpen={setOpen} open={open} />
-      <Card>
+      <Card className="shadow-none">
         <CardHeader>
           <CardTitle>Personal Details</CardTitle>
         </CardHeader>

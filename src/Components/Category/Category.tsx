@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import  { useEffect, useRef, useState } from "react";
+import {useNavigate, useParams } from "react-router-dom";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -95,7 +95,7 @@ const CategoryForm = ({
   const imageRef = useRef(null);
   const fileDocRef = useRef<HTMLInputElement>(null);
 
-  const { watch, setValue, formState: { errors }, register, getValues, reset:resetFormHook } = useForm({
+  const { watch, setValue, formState: {  }, register, getValues, reset:resetFormHook } = useForm({
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
       title: '',
@@ -483,7 +483,7 @@ const CategoryForm = ({
                               {children}
                             </div>
                           )}
-                          renderThumb={({ props, index }) => (
+                          renderThumb={({ props }) => (
                             <div
                               {...props}
                               className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center shadow"

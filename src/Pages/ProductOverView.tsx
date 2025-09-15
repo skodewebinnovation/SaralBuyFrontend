@@ -1,4 +1,4 @@
-import { Gavel, Home, List, MapPin, Paperclip, UserRound } from "lucide-react";
+import { Home, List, MapPin, Paperclip, UserRound } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,7 +10,6 @@ import { Button } from "../Components/ui/button";
 import { Input } from "../Components/ui/input";
 import { Label } from "../Components/ui/label";
 import { DatePicker } from "@/utils/DatePicker";
-import { useNavigate, useParams } from "react-router-dom";
 import { useFetch } from "@/helper/use-fetch";
 import productService from "@/services/product.service";
 import { useEffect, useState } from "react";
@@ -23,8 +22,6 @@ import { getUserProfile } from "@/zustand/userProfile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { productOverviewBidSchema } from "@/validations/Schema";
 import bidService from "@/services/bid.service";
-import LoginPopup from "@/Components/Popup/LoginPopup";
-import OtpPopup from "@/Components/Popup/OTPPopup";
 import { useSearchParams } from 'react-router-dom';
 import SellerVerificationPopup from "@/Components/Popup/SellerVerificationPopup";
 import { Spinner } from "@/Components/ui/shadcn-io/spinner";
@@ -35,7 +32,7 @@ const ProductOverview = () => {
   const bidId = searchParams.get('bidId');
   const userProfile = getUserProfile()
   const { fn: getProductById, data: productResponse, error } = useFetch(productService.getProductById);
-  const { fn: bidOverviewFn, data: bidOverviewRes, loading: bidOverviewLoading,setData:setBidOverviewRes } = useFetch(bidService.bidOverViewbyId)
+  const { fn: bidOverviewFn, data: bidOverviewRes } = useFetch(bidService.bidOverViewbyId)
   const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading} = useFetch(bidService.updateUserBidDets)
   const { fn: createBidFn, data: createBidRes, loading: createBidLoading } = useFetch(bidService.createBid);
   const [open, setOpen] = useState(false)

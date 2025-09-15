@@ -6,14 +6,12 @@ import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
 import { useFetch } from "@/helper/use-fetch";
 import authService from "@/services/auth.service";
 import { toast } from "sonner";
 import { Spinner } from "../ui/shadcn-io/spinner";
-import OtpPopup from "./OTPPopup";
 type Props={
   open:boolean;
   setOpen:React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,8 +22,6 @@ type Props={
 const LoginPopup:React.FC<Props> = ({open,setOpen,setNumber,setOtpPopup}) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
- 
   const {fn,data,loading} = useFetch(authService.sendOtp)
 
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {

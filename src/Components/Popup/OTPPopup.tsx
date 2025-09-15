@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
 import { useFetch } from "@/helper/use-fetch";
 import { Button } from "../ui/button";

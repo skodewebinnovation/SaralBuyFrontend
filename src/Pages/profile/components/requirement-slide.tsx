@@ -4,6 +4,7 @@ import { CircleChevronLeft, CircleChevronRight, MoveRight } from 'lucide-react';
 
 import { Button } from '@/Components/ui/button';
 import ProductCard from './product-card';
+import { useNavigate } from 'react-router-dom';
 
 function Arrow({ disabled, left, onClick }: {
   disabled: boolean
@@ -31,9 +32,10 @@ function Arrow({ disabled, left, onClick }: {
   );
 }
 
-const RequirementSlider = ({ products,tab }: { products: any[],tab?:string}) => {
+const RequirementSlider = ({ products,tab,target }: { products: any[],tab?:string,target:string}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const navigate = useNavigate()
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slides: {
@@ -47,12 +49,23 @@ const RequirementSlider = ({ products,tab }: { products: any[],tab?:string}) => 
       setLoaded(true);
     },
   });
+  const handleNavigate =(id:string)=>{
+    if(target === 'bid'){
+      // fallback
+    }else{
+      navigate('/account/requirements/'+id)
+    }
+  }
 
   return (
     <div className='flex justify-between items-center gap-4 w-full'>
       <div ref={sliderRef} className="keen-slider w-full max-w-4xl relative">
         {products.map((product) => (
-          <div key={product.id} className="keen-slider__slide">
+          <div key={product.id} className="keen-slider__slide cursor-pointer"
+          onClick={()=>{
+            handleNavigate(product.id)
+          }}
+          >
             <ProductCard product={product} />
           </div>
         ))}

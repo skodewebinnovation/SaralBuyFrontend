@@ -48,10 +48,10 @@ const Requirement = () => {
 
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-6 space-y-6 px-4">
+    <div className="w-full max-w-7xl mx-auto  space-y-6 px-4">
       <div className='grid space-y-5 w-full'>
         <div className='flex justify-between items-center font-semibold w-full'>
-          <p className="font-bold text-3xl border-l-4 whitespace-nowrap border-gray-600 pl-3 tracking-tight text-gray-600">
+          <p className="font-bold text-3xl whitespace-nowrap sm:text-2xl border-l-4  border-gray-600 pl-3 tracking-tight text-gray-600">
             Requirements
           </p>
           <Button variant={'ghost'} size={'icon'} className=' w-24 flex gap-2 items-center justify-center text-sm font-medium rounded-md text-gray-700 bg-transparent border-1 hover:bg-transparent cursor-pointer border-gray-700'>
@@ -71,7 +71,7 @@ const Requirement = () => {
 
             {[1, 2, 3, 4].map((item, idx) => (
               <div key={idx} className='border border-gray-300 p-4 rounded-md w-full mb-2 relative'>
-                <RequirementSlider products={products} tab={tab} />
+                <RequirementSlider products={products} tab={tab} target="requirement" />
               </div>
             ))}
 
@@ -88,7 +88,8 @@ const Requirement = () => {
                   <SquarePen className='h-4 w-4 ' />
                 </div>
 
-                <RequirementSlider products={products} tab={tab} />
+{/*  this is for bids */}
+                <RequirementSlider products={products} tab={tab}  target="bid"/>
               </div>
             ))}
 

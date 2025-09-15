@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { XCircleIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
