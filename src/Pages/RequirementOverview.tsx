@@ -12,7 +12,7 @@ const dummyData = [
     avtar: "https://github.com/shubhamsharma20007.png",
     date: "2025-09-15",
     bid_buy: "Shubham Sharma",
-    product: "Web App Development",
+    // product: "Web App Development",
     bid_amount: "₹25,000",
     chat_message: "Interested in more details?",
     action: "chat"
@@ -21,7 +21,7 @@ const dummyData = [
     avtar: "https://github.com/shubhamsharma20007.png",
     date: "2025-09-12",
     bid_buy: "Ravi Kumar",
-    product: "Mobile App",
+    // product: "Mobile App",
     bid_amount: "₹30,000",
     chat_message: "Please contact ASAP.",
     action: "chat"
@@ -30,7 +30,7 @@ const dummyData = [
     avtar: "https://github.com/shubhamsharma20007.png",
     date: "2025-09-10",
     bid_buy: "Neha Verma",
-    product: "Landing Page Design",
+    // product: "Landing Page Design",
     bid_amount: "₹12,000",
     chat_message: "Can deliver in 3 days.",
     action: "chat"
@@ -41,29 +41,29 @@ const RequirementOverview = () => {
   const navigate = useNavigate()
 
   const columns: ColumnDef<any>[] = [
-    // {
-    //   accessorKey: "avtar",
-    //   header: "",
-    //   size: 60,
-    //   cell: ({ row }) => {
-    //     const image = row.original.avtar
-    //     const name = row.original.bid_buy || "NA"
-    //     const initials = name
-    //       .split(" ")
-    //       .map((n: string) => n[0])
-    //       .join("")
-    //       .toUpperCase()
+    {
+      accessorKey: "avtar",
+      header: "",
+      size: 60,
+      cell: ({ row }) => {
+        const image = row.original.avtar
+        const name = row.original.bid_buy || "NA"
+        const initials = name
+          .split(" ")
+          .map((n: string) => n[0])
+          .join("")
+          .toUpperCase()
 
-    //     return (
-    //       <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2">
-    //         <Avatar className="w-10 h-10">
-    //           <AvatarImage src={image} alt={name} />
-    //           <AvatarFallback>{initials}</AvatarFallback>
-    //         </Avatar>
-    //       </div>
-    //     )
-    //   }
-    // },
+        return (
+          <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2">
+            <Avatar className="w-10 h-10 ">
+              <AvatarImage src={image} alt={name}  className='rounded-full'/>
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+          </div>
+        )
+      }
+    },
     {
       accessorKey: "date",
       header: "Date",
@@ -72,10 +72,10 @@ const RequirementOverview = () => {
       accessorKey: "bid_buy",
       header: "Bid By",
     },
-    {
-      accessorKey: "product",
-      header: "Product",
-    },
+    // {
+    //   accessorKey: "product",
+    //   header: "Product",
+    // },
     {
       accessorKey: "bid_amount",
       header: "Bid Amount",
