@@ -210,15 +210,15 @@ const ProductOverview = () => {
 
           {/* Meta Info */}
           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-            <div className="flex items-center gap-2 pr-3 border-r-2 py-1 w-32">
+            <div className="flex items-center gap-2 pr-3 border-r-2 py-1 min-w-32 max-w-[25%]">
               <UserRound className="w-5 h-5 " />
               <span className="capitalize">{mergeName(bidOverviewRes ? bidOverviewRes?.buyer : productResponse?.userId) || 'N/A'}</span>
             </div>
-            <div className="flex items-center gap-2  pr-3 border-r-2 py-1 w-32">
+            <div className="flex items-center gap-2  pr-3 border-r-2 py-1 min-w-32   max-w-[50%]">
               <MapPin className="w-4 h-4 " />
-              <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.buyer?.address : productResponse?.userId?.address || 'N/A'}</span>
+              <span className=" line-clamp-2">{bidOverviewRes ? bidOverviewRes?.buyer?.address : productResponse?.userId?.address || 'N/A'}</span>
             </div>
-            <div className="flex items-center gap-2 py-1 w-32">
+            <div className="flex items-center gap-2 py-1 min-w-32 max-w-[25%]">
               <List className="w-4 h-4 " />
               <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.product?.quantity : productResponse?.quantity || 'N/A'} units</span>
             </div>
@@ -255,7 +255,7 @@ const ProductOverview = () => {
               )
             }
           
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : productResponse?.additionalDeliveryAndPackage )|| "N/A"}</p>
+            <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : productResponse?.additionalDeliveryAndPackage )|| "N/A"}</p>
 
             <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Required Delivery Date:</span> {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.paymentAndDelivery?.ex_deliveryDate :productResponse?.paymentAndDelivery?.ex_deliveryDate) || 'N/A'}</p>
 

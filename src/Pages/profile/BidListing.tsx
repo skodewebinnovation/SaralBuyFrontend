@@ -36,8 +36,8 @@ const BidListing = () => {
             header: "Date",
         },
         {
-            accessorKey: "bid_to",
-            header: "Bid To",
+            accessorKey: "product",
+            header: "Product",
         },
         {
             accessorKey: "min_budget",
@@ -45,7 +45,7 @@ const BidListing = () => {
         },
         {
             accessorKey: "your_budget",
-            header: "Your Budget",
+            header: "Budget",
         },
         {
             accessorKey: "status",
@@ -84,7 +84,8 @@ const BidListing = () => {
             const formattedData = fetchBidsResponse.map((item: any) => ({
                 _id: item._id,
                 date: dateFormatter(item.createdAt),
-                bid_to: mergeName(item.buyer),
+                // bid_to: mergeName(item.buyer),
+                product: item.product.title,
                 min_budget: item?.product?.minimumBudget,
                 your_budget: item?.budgetQuation,
                 status: item?.status || "active",
