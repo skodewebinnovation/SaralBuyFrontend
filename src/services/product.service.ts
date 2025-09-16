@@ -22,6 +22,11 @@ class ProductService{
     },
   });
 }
+getDrafts(){
+  return instance.get('/product/get-draft-products',{
+    withCredentials:true
+  }).then(res => res.data?.data|| res.data)
+}
 
 }
 export default new ProductService();

@@ -986,11 +986,10 @@ const handleSubmitAllForms = async (isDraft:boolean) => {
 
           <Button 
             variant={'link'} 
-            className="bg-orange-600 cursor-pointer w-32 hover:bg-orange-500 text-white rounded-md flex items-center gap-2"
+            className="bg-orange-600 cursor-pointer w-32 text-sm hover:bg-orange-500 text-white rounded-md flex items-center "
             onClick={handleAddForm}
           >
-            <PlusIcon className="h-4 w-4" />
-            Add Product
+            <PlusIcon className="h-4 w-4" />Add Product
           </Button>
         </div>
 
@@ -1024,6 +1023,7 @@ const handleSubmitAllForms = async (isDraft:boolean) => {
           <Button 
             type="button" 
             variant="outline" 
+             disabled={loading}
             className="w-32 cursor-pointer"
              onClick={() => handleSubmitAllForms(true)}
           >
@@ -1032,6 +1032,7 @@ const handleSubmitAllForms = async (isDraft:boolean) => {
           </Button>
           <Button 
             type="button" 
+            disabled={loading}
             className="text-white w-32 cursor-pointer bg-orange-600 hover:bg-orange-500"
             onClick={() => handleSubmitAllForms(false)}
           >

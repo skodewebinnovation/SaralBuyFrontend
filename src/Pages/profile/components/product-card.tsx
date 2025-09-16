@@ -1,24 +1,25 @@
+import { dateFormatter } from "@/helper/dateFormatter"
 
-const ProductCard = ({ product }:{product:any}) => {
+const ProductCard = ({ product }: { product: any }) => {
   return (
     <div className='w-full border p-2 rounded-md shadow-sm bg-white'>
       <div className='flex gap-4'>
         <div className='w-24 h-24 flex-shrink-0'>
           <img
-            src={product.image}
+            src={product.image || '/no-image.webp'}
             alt={product.name}
             className='w-full h-full object-cover rounded-md'
           />
         </div>
         <div className='flex flex-col justify-between text-sm'>
-        <div>
-              <span className="text-orange-400 bg-orange-50 rounded-full inline-block px-3 py-1 text-xs">
-            {product.category}
-          </span>
-        </div>
-          <p className='font-medium'>{product.name}</p>
-          <p>Delivery By: <strong>{product.deliveryDate}</strong></p>
-          <p>QTY: <strong>{product.quantity}</strong></p>
+          <div>
+            <span className="text-orange-400 bg-orange-50 rounded-full inline-block px-3 py-1 text-xs capitalize">
+              {product?.categoryId?.categoryName}
+            </span>
+          </div>
+          <p className='font-medium capitalize line-clamp-1'>{product.title}</p>
+          <p>Delivery By: <strong>{dateFormatter(product?.paymentAndDelivery?.ex_deliveryDate) || 'N/A'}</strong></p>
+          <p>QTY: <strong>{product.quantity || 'N/A'}</strong></p>
         </div>
       </div>
     </div>

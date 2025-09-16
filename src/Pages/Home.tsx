@@ -81,7 +81,7 @@ const Home = () => {
             bidResponseLoading ?
               <ItemSkeleton />
               :
-              bids.length > 0 && <SwiperSlider title="Your Bids" target="bids" color="gray" data={bids} />
+              bids.length > 0  ? <SwiperSlider title="Your Bids" target="bids" color="gray" data={bids} /> : <SwiperSlider title="Your Bids" target="bids" color="gray" data={[]} />
           }
           {
             drafts.length > 0 && <SwiperSlider title="Your Drafts" target="drafts" color="orange" data={drafts} />

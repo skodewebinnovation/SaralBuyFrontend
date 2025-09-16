@@ -6,53 +6,66 @@ import { ListFilter, SquarePen, } from 'lucide-react';
 import "keen-slider/keen-slider.min.css"
 
 import RequirementSlider from './components/requirement-slide';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useFetch } from '@/helper/use-fetch';
+import productService from '@/services/product.service';
 import bidService from '@/services/bid.service';
 
-const products = [
-  {
-    id: 1,
-    image: 'https://media.istockphoto.com/id/1188462138/photo/variety-of-sport-accessories-on-wooden-surface.jpg?s=612x612&w=0&k=20&c=y2l7DYNkxbVteZy-Kx_adCzm-soTRbiEypje4j8ENe0=',
-    category: 'Stationary',
-    name: 'Children Books',
-    deliveryDate: '10-10-2025',
-    quantity: 10
-  },
-  {
-    id: 2,
-    image: 'https://media.istockphoto.com/id/1188462138/photo/variety-of-sport-accessories-on-wooden-surface.jpg?s=612x612&w=0&k=20&c=y2l7DYNkxbVteZy-Kx_adCzm-soTRbiEypje4j8ENe0=',
-    category: 'Stationary',
-    name: 'Children Books',
-    deliveryDate: '10-10-2025',
-    quantity: 10
-  },
-  {
-    id: 3,
-    image: 'https://media.istockphoto.com/id/1188462138/photo/variety-of-sport-accessories-on-wooden-surface.jpg?s=612x612&w=0&k=20&c=y2l7DYNkxbVteZy-Kx_adCzm-soTRbiEypje4j8ENe0=',
-    category: 'Electronics',
-    name: 'Digital Tablet',
-    deliveryDate: '15-10-2025',
-    quantity: 5
-  },
-  {
-    id: 4,
-    image: 'https://media.istockphoto.com/id/1188462138/photo/variety-of-sport-accessories-on-wooden-surface.jpg?s=612x612&w=0&k=20&c=y2l7DYNkxbVteZy-Kx_adCzm-soTRbiEypje4j8ENe0=',
-    category: 'Sports',
-    name: 'Sports Equipment',
-    deliveryDate: '12-10-2025',
-    quantity: 15
-  }
-];
 const Requirement = () => {
   const [tab, setTab] = useState('requirements')
+  const {fn:getDrafts,data:getDraftsRes} = useFetch(productService.getDrafts)
+const [drafts,setDrafts] = useState<any>([])
+const [requirements, setRequirements] = useState<any>([
+  {
+    _id: '1',
+    image: '/no-image.webp',
+    category: 'Stationary',
+    name: 'Children Books',
+    ex_deliveryDate: '2025-10-10',
+    quantity: 10,
+  },
+  {
+    _id: '2',
+       image: '/no-image.webp',
+    category: 'Electronics',
+    name: 'Wireless Headphones',
+    ex_deliveryDate: '2025-11-15',
+    quantity: 25,
+  },
+  {
+    _id: '3',
+      image: '/no-image.webp',
+    category: 'Furniture',
+    name: 'Office Chairs',
+    ex_deliveryDate: '2025-09-25',
+    quantity: 50,
+  },
+])
 
-  useEffect(() => {
+  useEffect(()=>{
+    if(tab === 'requirements'){
+
+    }else{
+      getDrafts()
+
+    }
+  },[tab])
+
+
+ useEffect(() => {
+    if (getDraftsRes && getDraftsRes?.length > 0) {
+     setDrafts(getDraftsRes)
+    }
+  }, [getDraftsRes]);
+
+
+    useEffect(() => {
     bidService.getMyRequirements().then(res => {
       console.log("My Requirements:", res);
     }).catch(err => {
       console.error("Failed to fetch my requirements", err);
-    });
-  }, []);
+    })})
+
 
   return (
     <div className="w-full max-w-7xl mx-auto  space-y-6 px-4">
@@ -76,9 +89,9 @@ const Requirement = () => {
 
           <TabsContent value="requirements" className='w-full overflow-hidden '>
 
-            {[1, 2, 3, 4].map((item, idx) => (
+            {requirements.map((item:any, idx:number) => (
               <div key={idx} className='border border-gray-300 p-4 rounded-md w-full mb-2 relative'>
-                <RequirementSlider products={products} tab={tab} target="requirement" />
+                <RequirementSlider product={item} tab={tab} target="requirement" />
               </div>
             ))}
 
@@ -86,23 +99,17 @@ const Requirement = () => {
 
           </TabsContent>
 
-          <TabsContent value="drafts" className='w-full overflow-hidden '>
+        <TabsContent value="drafts" className='w-full overflow-hidden'>
+  {drafts.length > 0 && drafts.map((item: any, idx: number) => (
+    <div key={idx} className='border border-gray-300 p-4 rounded-md w-full mb-2 relative'>
+      <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400 rounded-md p-1 cursor-pointer'>
+        <SquarePen className='h-4 w-4' />
+      </div>
+      <RequirementSlider product={item} tab={tab} target="bid" />
+    </div>
+  ))}
+</TabsContent>
 
-            {[1, 2, 3, 4].map((item, idx) => (
-              <div key={idx} className='border border-gray-300 p-4 rounded-md w-full mb-2 relative'>
-
-                <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400  rounded-md p-1 cursor-pointer'>
-                  <SquarePen className='h-4 w-4 ' />
-                </div>
-
-{/*  this is for bids */}
-                <RequirementSlider products={products} tab={tab}  target="bid"/>
-              </div>
-            ))}
-
-
-
-          </TabsContent>
         </Tabs>
       </div>
     </div>

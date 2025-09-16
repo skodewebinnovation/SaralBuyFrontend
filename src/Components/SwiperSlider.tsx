@@ -21,7 +21,6 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
   const navigate = useNavigate()
 
 
-
   return (
     <Card className={`shadow-none p-5 bg-${color}-50`}>
       {/* Header */}
@@ -29,7 +28,9 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
         <p className={`font-bold text-2xl border-l-4 border-${color}-600 pl-3 tracking-tight text-${color}-600`}>
           {title}
         </p>
-        <button className={`text-md text-${color}-600 hover:underline font-semibold cursor-pointer`}
+        <button 
+        disabled={!data.length }
+        className={`text-md text-${color}-600 hover:underline  font-semibold  ${!data.length ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         onClick={()=>{  
           target === 'bids' ? navigate('/account/bid') : navigate('/account/requirements')
         }}>
@@ -39,7 +40,8 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
 
       {/* Slider */}
       <div ref={sliderRef} className="keen-slider  ">
-        { data.map((item) => (
+        {data.length > 0 ?
+         data.map((item) => (
           <div key={item.id} className="keen-slider__slide ">
             <Card className="flex flex-row items-center justify-around gap-4 p-4 rounded-xl   shadow border border-gray-200">
               {/* Image */}
@@ -86,7 +88,13 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
               </div>
             </Card>
           </div>
-        ))}
+        ))
+      :
+        <div className="h-full w-full flex-col flex justify-center items-center">
+           <img src="/observed.svg" width="20%" />
+           <p className="text-gray-500 text-sm">No Bids Registered</p>
+        </div>
+      }
       </div>
     </Card>
   );

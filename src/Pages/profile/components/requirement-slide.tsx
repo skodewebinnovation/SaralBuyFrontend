@@ -5,6 +5,7 @@ import { CircleChevronLeft, CircleChevronRight, MoveRight } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import ProductCard from './product-card';
 import { useNavigate } from 'react-router-dom';
+import { dateFormatter } from '@/helper/dateFormatter';
 
 function Arrow({ disabled, left, onClick }: {
   disabled: boolean
@@ -31,11 +32,11 @@ function Arrow({ disabled, left, onClick }: {
     </div>
   );
 }
-
-const RequirementSlider = ({ products,tab,target }: { products: any[],tab?:string,target:string}) => {
+const RequirementSlider = ({ product, tab, target }: { product: any, tab?: string, target: string }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slides: {
@@ -49,43 +50,46 @@ const RequirementSlider = ({ products,tab,target }: { products: any[],tab?:strin
       setLoaded(true);
     },
   });
-  const handleNavigate =(id:string)=>{
-    if(target === 'bid'){
-      // fallback
-    }else{
-      navigate('/account/requirements/'+id)
-    }
-  }
+
+  const handleNavigate = (id: string) => {
+    if (target === 'bid') return;
+    navigate('/account/requirements/' + id);
+  };
+
+
+  const products = product?.subProducts?.length > 0 ? product.subProducts : [product];
 
   return (
     <div className='flex justify-between items-center gap-4 w-full'>
       <div ref={sliderRef} className="keen-slider w-full max-w-4xl relative">
-        {products.map((product) => (
-          <div key={product.id} className="keen-slider__slide cursor-pointer"
-          onClick={()=>{
-            handleNavigate(product.id)
-          }}
+        {products.map((prt: any) => (
+          <div
+            key={prt._id}
+            className={`keen-slider__slide ${target === 'requirement' ? 'cursor-pointer' : ''}`}
+            onClick={() => handleNavigate(prt._id)}
           >
-            <ProductCard product={product} />
+            <ProductCard product={prt} />
           </div>
         ))}
 
-        {loaded && instanceRef.current && (
+        {loaded && instanceRef.current && products.length > 2 && (
           <>
             <Arrow
+
               left
               onClick={(e: any) => {
                 e.stopPropagation();
                 instanceRef.current?.prev();
               }}
               disabled={currentSlide === 0}
+              
             />
             <Arrow
               onClick={(e: any) => {
                 e.stopPropagation();
                 instanceRef.current?.next();
               }}
-              disabled={currentSlide === instanceRef.current.track.details.slides.length - 1}
+              disabled={currentSlide === instanceRef.current.track.details?.slides.length - 1}
             />
           </>
         )}
@@ -93,27 +97,25 @@ const RequirementSlider = ({ products,tab,target }: { products: any[],tab?:strin
 
       {/* Right Side Info */}
       <div className='flex-1 flex justify-between items-end flex-col space-y-6'>
-        <p className="text-sm text-gray-600 font-medium whitespace-nowrap">Dated: 10-10-2025</p>
+        <p className="text-sm text-gray-600 font-medium whitespace-nowrap">
+          Dated: {dateFormatter(product?.createdAt) || 'N/A'}
+        </p>
         <div>
-       {
-        tab && ( 
-            tab ==="requirements" ?
-             <Button size={'default'} className='cursor-pointer text-xs'>
-            Total Bids: <span className='font-bold'>10</span>
-            <MoveRight className='w-5 h-5' />
-          </Button>
-          :
-           <Button size={'default'} className='cursor-pointer text-xs'>
-            Submit Draft
-          </Button>
-
-          )
-       }
-         
+          {tab === "requirements" ? (
+            <Button size={'default'} className='cursor-pointer text-xs'>
+              Total Bids: <span className='font-bold'>10</span>
+              <MoveRight className='w-5 h-5' />
+            </Button>
+          ) : (
+            <Button size={'default'} className='cursor-pointer text-xs'>
+              Submit Draft
+            </Button>
+          )}
         </div>
       </div>
     </div>
   );
 };
+
 
 export default RequirementSlider;

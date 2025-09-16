@@ -201,7 +201,7 @@ const ProductOverview = () => {
         {/* Image */}
         <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-68 ">
           <img
-            src={bidOverviewRes ? bidOverviewRes?.product?.image : productResponse?.image || 'https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg'}      
+            src={bidOverviewRes ? bidOverviewRes?.product?.image : productResponse?.image}      
             alt="Product"
             
             className="object-contain h-full w-full"
