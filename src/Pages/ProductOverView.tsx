@@ -64,7 +64,11 @@ const ProductOverview = () => {
 
 
   async function handleCreteBid() {
-    const sellerId = productResponse.userId._id;
+    if (!productResponse) return;
+    const buyerId = productResponse.userId?._id;
+    const productId = productResponse._id;
+    const sellerId = userProfile?.user._id;
+    const budgetAmount = Number(getValues().budgetQuation) || 0;
     let obj = {
       ...getValues(),
       status: "active",
@@ -74,8 +78,21 @@ const ProductOverview = () => {
       toast.error('business is required !');
       setSellerVerification(true)
     }
-    await createBidFn(sellerId, productResponse._id, obj)
-
+    try {
+      await createBidFn(buyerId, productId, obj);
+      toast.success('Bid placed successfully');
+  
+      try {
+        await bidService.createRequirement({ productId, sellerId, buyerId, budgetAmount });
+        setTimeout(() => {
+          toast.success('Requirement created successfully');
+        }, 800); // 800ms delay
+      } catch (err) {
+        toast.error('Failed to create requirement');
+      }
+    } catch (err) {
+      toast.error('Failed to place bid');
+    }
   }
 
   async function onSubmit(data:any) {

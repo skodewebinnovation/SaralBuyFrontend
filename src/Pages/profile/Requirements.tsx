@@ -6,7 +6,9 @@ import { ListFilter, SquarePen, } from 'lucide-react';
 import "keen-slider/keen-slider.min.css"
 
 import RequirementSlider from './components/requirement-slide';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import bidService from '@/services/bid.service';
+
 const products = [
   {
     id: 1,
@@ -44,8 +46,13 @@ const products = [
 const Requirement = () => {
   const [tab, setTab] = useState('requirements')
 
-
-
+  useEffect(() => {
+    bidService.getMyRequirements().then(res => {
+      console.log("My Requirements:", res);
+    }).catch(err => {
+      console.error("Failed to fetch my requirements", err);
+    });
+  }, []);
 
   return (
     <div className="w-full max-w-7xl mx-auto  space-y-6 px-4">
