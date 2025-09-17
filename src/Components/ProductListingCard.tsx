@@ -1,7 +1,7 @@
 
 import { format } from "date-fns";
 import { Button } from "../Components/ui/button";
-import { User, MapPin, List } from "lucide-react";
+import { User, MapPin, List, UserCircle } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Authentication from "./auth/Authentication";
@@ -45,9 +45,9 @@ const ProductListingCard = ({product}:{product:any}) => {
 
 
             <div className="flex items-center text-sm text-gray-700 gap-2 space-y-1 capitalize">
-            <User size={16} /> {product?.userId?.firstName+ " "+ product?.userId?.lastName || 'No Name found'}
+            <UserCircle size={16} /> {product?.userId?.firstName+ " "+ product?.userId?.lastName || 'No Name found'}
             </div>
-            <div className="flex items-center text-sm text-gray-700 gap-2 line-clamp-1">
+            <div className="flex items-center text-sm  text-gray-700 gap-2 line-clamp-1">
             <MapPin size={16} /> {product?.userId?.address|| 'No Address found'}
             </div>
             <div className="flex items-center text-sm text-gray-700 gap-2 capitalize">

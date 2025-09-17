@@ -1,4 +1,4 @@
-import { Home, List, MapPin, Paperclip, UserRound } from "lucide-react";
+import { Home, List, MapPin, Paperclip, User, UserCircle } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -80,17 +80,9 @@ const ProductOverview = () => {
     }
     try {
       await createBidFn(buyerId, productId, obj);
-      toast.success('Bid placed successfully');
-  
-      try {
-        await bidService.createRequirement({ productId, sellerId, buyerId, budgetAmount });
-        setTimeout(() => {
-          toast.success('Requirement created successfully');
-        }, 800); // 800ms delay
-      } catch (err) {
-        toast.error('Failed to create requirement');
-      }
+      await bidService.createRequirement({ productId, sellerId, buyerId, budgetAmount });
     } catch (err) {
+      console.log(err);
       toast.error('Failed to place bid');
     }
   }
@@ -160,7 +152,7 @@ const ProductOverview = () => {
       }
     }
   }, [userProfile, reset, bidOverviewRes]);
-
+console.log(bidOverviewRes)
 
   useEffect(() => {
     if (error === 'invalid product ID') {
@@ -177,7 +169,6 @@ const ProductOverview = () => {
     }
   }, [errors])
 
-  useEffect(() => window.scrollTo(0, 0), [])
   return (
     <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
      {
@@ -186,11 +177,15 @@ const ProductOverview = () => {
       <SellerVerificationPopup setOpen={setSellerVerification} open={sellerVerification} setValue={setBusinessType} value={businessType} handleCreteBid={handleCreteBid} createBidLoading={createBidLoading} />
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>
-          <BreadcrumbItem className="flex items-center gap-2 cursor-pointer">
+          <BreadcrumbItem className="flex items-center gap-2 ">
             <Home className="h-4 w-4" />
             <BreadcrumbSeparator />
             <BreadcrumbPage className="capitalize font-regular text-gray-500">
-              Industrial & Construction Materials
+              Product
+            </BreadcrumbPage>
+               <BreadcrumbSeparator />
+            <BreadcrumbPage className="capitalize font-regular text-gray-500">
+              {bidOverviewRes ? bidOverviewRes?.product?.title : productResponse?.title}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -224,15 +219,15 @@ const ProductOverview = () => {
 
           {/* Meta Info */}
           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-            <div className="flex items-center gap-2 pr-3 border-r-2 py-1 min-w-32 max-w-[25%]">
-              <UserRound className="w-5 h-5 " />
+            <div className="flex items-center gap-1 pr-3 border-r-2 py-1 min-w-32 max-w-[25%]">
+              <UserCircle className="w-5 h-5 " />
               <span className="capitalize">{mergeName(bidOverviewRes ? bidOverviewRes?.buyer : productResponse?.userId) || 'N/A'}</span>
             </div>
-            <div className="flex items-center gap-2  pr-3 border-r-2 py-1 min-w-32   max-w-[50%]">
+            <div className="flex items-center gap-1  pr-3 border-r-2 py-1 min-w-32   max-w-[50%]">
               <MapPin className="w-4 h-4 " />
               <span className=" line-clamp-2">{bidOverviewRes ? bidOverviewRes?.buyer?.address : productResponse?.userId?.address || 'N/A'}</span>
             </div>
-            <div className="flex items-center gap-2 py-1 min-w-32 max-w-[25%]">
+            <div className="flex items-center gap-1 py-1 min-w-32 max-w-[25%]">
               <List className="w-4 h-4 " />
               <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.product?.quantity : productResponse?.quantity || 'N/A'} units</span>
             </div>
@@ -242,9 +237,11 @@ const ProductOverview = () => {
           <div className="flex items-center gap-4 mt-5 ">
             <Button variant="outline" className="min-w-32 text-sm border-gray-400 border-[2px] flex items-center gap-2 hover:bg-transparent cursor-pointer">
               <img src="/icons/Layer_1.png" className="w-4 h-4 " />
-              Total Bids :<span className="font-semibold">0</span>
+              Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount :  productResponse?.totalBidCount || 0}</span>
             </Button>
-            <Button className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer " variant="outline" >Add to Cart</Button>
+           {
+            !bidOverviewRes &&  <Button className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer " variant="outline" >Add to Cart</Button>
+           }
           </div>
         </div>
       </div>
