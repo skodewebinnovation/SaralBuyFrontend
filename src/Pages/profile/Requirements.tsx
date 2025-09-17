@@ -10,11 +10,13 @@ import { useEffect, useState } from 'react';
 import { useFetch } from '@/helper/use-fetch';
 import productService from '@/services/product.service';
 import bidService from '@/services/bid.service';
+import { useNavigate } from 'react-router-dom';
 
 const Requirement = () => {
   const [tab, setTab] = useState('requirements')
   const {fn:getDrafts,data:getDraftsRes} = useFetch(productService.getDrafts)
 const [drafts,setDrafts] = useState<any>([])
+const navigate = useNavigate()
 const [requirements, setRequirements] = useState<any>([
   {
     _id: '1',
@@ -57,6 +59,10 @@ const [requirements, setRequirements] = useState<any>([
      setDrafts(getDraftsRes)
     }
   }, [getDraftsRes]);
+
+
+  console.log(getDraftsRes)
+
 
 
     useEffect(() => {
@@ -102,8 +108,12 @@ const [requirements, setRequirements] = useState<any>([
         <TabsContent value="drafts" className='w-full overflow-hidden'>
   {drafts.length > 0 && drafts.map((item: any, idx: number) => (
     <div key={idx} className='border border-gray-300 p-4 rounded-md w-full mb-2 relative'>
-      <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400 rounded-md p-1 cursor-pointer'>
-        <SquarePen className='h-4 w-4' />
+      <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400 rounded-md p-1 cursor-pointer'
+      onClick={()=>{
+        navigate('/update-draft/'+item._id)
+      }}
+      >
+        <SquarePen className='h-5 w-5' />
       </div>
       <RequirementSlider product={item} tab={tab} target="bid" />
     </div>

@@ -23,6 +23,7 @@ import Deal from "./Pages/profile/Deal";
 import Cart from "./Pages/profile/Cart";
 import { useLocation } from "react-router-dom";
 import RequirementOverview from "./Pages/RequirementOverview";
+import UpdateDraft from "./Pages/UpdateProductDraft";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -54,6 +55,7 @@ export default function AppRouters() {
         <Route path="/product-listing" element={ <ProductLisiting/>}/>
        <Route path="/product-overview" element={<ProductOverView />} />
         <Route path="/contact-verification" element={<ContactVerification/>}/>
+        <Route path="/update-draft/:productId" element={<UpdateDraft/>}/>
         <Route path="/chat" element={<Chatbot/>}/>
       <Route path="*" element={<h1>No Page found</h1>}/>
       </Routes>

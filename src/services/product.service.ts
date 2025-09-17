@@ -28,5 +28,16 @@ getDrafts(){
   }).then(res => res.data?.data|| res.data)
 }
 
+getDraftById(productId:string){
+  return instance.get('/product/get-draft-product/'+productId,{
+    withCredentials:true
+  }).then(res => res.data?.data|| res.data)
+}
+updateDraft(payload:{draft:boolean,productId:string,mainProductId:string}){
+  return instance.patch('/product/updatedraft',payload,{
+    withCredentials:true
+  }).then(res => res.data?.data|| res.data)
+}
+
 }
 export default new ProductService();

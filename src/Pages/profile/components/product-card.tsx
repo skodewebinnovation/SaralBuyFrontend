@@ -8,7 +8,7 @@ const ProductCard = ({ product }: { product: any }) => {
           <img
             src={product.image || '/no-image.webp'}
             alt={product.name}
-            className='w-full h-full object-cover rounded-md'
+            className='w-full h-full object-contain rounded-md'
           />
         </div>
         <div className='flex flex-col justify-between text-sm'>
@@ -17,7 +17,7 @@ const ProductCard = ({ product }: { product: any }) => {
               {product?.categoryId?.categoryName}
             </span>
           </div>
-          <p className='font-medium capitalize line-clamp-1'>{product.title}</p>
+          <p className=' capitalize line-clamp-1 font-semibold'>{product.title}</p>
           <p>Delivery By: <strong>{dateFormatter(product?.paymentAndDelivery?.ex_deliveryDate) || 'N/A'}</strong></p>
           <p>QTY: <strong>{product.quantity || 'N/A'}</strong></p>
         </div>

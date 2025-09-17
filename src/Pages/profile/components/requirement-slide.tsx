@@ -6,6 +6,7 @@ import { Button } from '@/Components/ui/button';
 import ProductCard from './product-card';
 import { useNavigate } from 'react-router-dom';
 import { dateFormatter } from '@/helper/dateFormatter';
+import { toast } from 'sonner';
 
 function Arrow({ disabled, left, onClick }: {
   disabled: boolean
@@ -59,6 +60,23 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
 
   const products = product?.subProducts?.length > 0 ? product.subProducts : [product];
 
+function handleSubmitDraft(targetProduct: any) {
+  const resArr = targetProduct?.subProducts?.length > 0 ? targetProduct.subProducts : [targetProduct];
+  console.log(resArr)
+
+  // Check if any item is invalid
+  const hasInvalid = resArr.some((item: any) =>
+    !item.description || !item.image || item.quantity <= 0 || !item.categoryId
+  );
+
+  if (hasInvalid) {
+    toast.error('Please complete all required fields in the draft before proceeding.');
+    return;
+  }
+  // DO THE API CALL HERE
+  // toast.success('Draft submitted successfully!');
+}
+
   return (
     <div className='flex justify-between items-center gap-4 w-full'>
       <div ref={sliderRef} className="keen-slider w-full max-w-4xl relative">
@@ -107,7 +125,9 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
               <MoveRight className='w-5 h-5' />
             </Button>
           ) : (
-            <Button size={'default'} className='cursor-pointer text-xs'>
+            <Button size={'default'} className='cursor-pointer text-xs' onClick={()=>{
+              handleSubmitDraft(product)
+            }}>
               Submit Draft
             </Button>
           )}
