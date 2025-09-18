@@ -1,20 +1,20 @@
-import { Button } from "../ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
-import { Textarea } from "../ui/textarea"
+import { Button } from "../../../Components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "../../../Components/ui/card"
+import { Input } from "../../../Components/ui/input"
+import { Label } from "../../../Components/ui/label"
+import { Textarea } from "../../../Components/ui/textarea"
 import { Upload } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useEffect, useRef, useState } from "react"
 import { useFetch } from "@/helper/use-fetch"
 import userService from "@/services/user.service"
 import { getUserProfile } from "@/zustand/userProfile"
-import { Spinner } from "../ui/shadcn-io/spinner"
+import { Spinner } from "../../../Components/ui/shadcn-io/spinner"
 import { toast } from "sonner"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ProfileSchema } from "@/validations/Schema"
 
-import Authentication from "../auth/Authentication"
+import Authentication from "../../../Components/auth/Authentication"
 
 export function AccountSettings() {
   const docRef = useRef<HTMLInputElement | null>(null)

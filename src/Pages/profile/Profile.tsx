@@ -9,8 +9,31 @@ import { Outlet } from "react-router-dom";
 import { SquarePen } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "../../Components/ui/avatar";
 import { NavLink } from 'react-router-dom';
-
-
+import { useFetch } from "@/helper/use-fetch";
+import userService from "@/services/user.service";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import { getUserProfile } from "@/zustand/userProfile";
+import { fallBackName } from "@/helper/fallBackName";
+import { Spinner } from "@/Components/ui/shadcn-io/spinner";
+ const getRoutePath = (value: string) => {
+    switch (value) {
+      case 'profile':
+        return '/account';
+      case 'your_biding':
+        return '/account/bid';
+      case 'requirements':
+        return '/account/requirements';
+      case 'your_deal':
+        return '/account/deal';
+      case 'notifications':
+        return '/account/notification';
+      case 'cart':
+        return '/account/cart';
+      default:
+        return '/account';
+    }
+  };
 
 
 const tags = [
@@ -39,24 +62,23 @@ const tags = [
 ]
 
 const Profile = () => {
-  const getRoutePath = (value: string) => {
-    switch (value) {
-      case 'profile':
-        return '/account';
-      case 'your_biding':
-        return '/account/bid';
-      case 'requirements':
-        return '/account/requirements';
-      case 'your_deal':
-        return '/account/deal';
-      case 'notifications':
-        return '/account/notification';
-      case 'cart':
-        return '/account/cart';
-      default:
-        return '/account';
+  const {user,setUser} = getUserProfile()
+   const { fn: updateProfilefn, data: updateProfileRes, loading:updateProfileLoading } = useFetch(userService.updateProfile)
+  const avatarRef = useRef<HTMLInputElement>(null)
+   const handleUpdateProfile = async () => {
+    const formData = new FormData()
+   if(avatarRef.current && avatarRef.current.files){
+    formData.append('image', avatarRef.current.files[0])
+   }
+   await updateProfilefn(formData)
+   }
+
+   useEffect(()=>{
+    if(updateProfileRes){
+      setUser(updateProfileRes)
+      toast.success('Profile updated successfully')
     }
-  };
+   },[updateProfileRes])
 
   return (
     <div className="w-full max-w-7xl mx-auto py-6 space-y-6 px-4">
@@ -77,12 +99,30 @@ const Profile = () => {
           <div className="hidden md:block space-y-2 bg-gray-50 p-4 rounded-md  sticky top-4  self-start">
             <div className='flex justify-center items-center mt-2 mb-5 relative'>
               <div className='relative'>
-                <Avatar className='w-28 h-28 ring-orange-200 ring-2'>
-                  <AvatarImage src="https://avatars.githubusercontent.com/u/108955538?v=4" />
-                  <AvatarFallback>SS</AvatarFallback>
+                <Avatar className='w-28 h-28 border-orange-200 border-3 border-dotted   flex '>
+                {
+                  updateProfileLoading ? 
+                  <div className="h-full w-full  flex items-center justify-center">
+                    <Spinner className="w-5 h-5 text-orange-500"/>
+                    
+                  </div>:
+                  <AvatarImage src={user?.profileImage} className="w-full h-full object-contain rounded-full"/>
+                }
+                
+                {
+                  !updateProfileLoading && user?.profileImage && <AvatarFallback>{fallBackName(`${user?.firstName} ${user?.lastName}`)}</AvatarFallback>
+                }
                 </Avatar>
-                <button className="absolute bottom-2 cursor-pointer right-0 bg-white p-1 rounded-full shadow-md hover:bg-gray-100">
-                  <SquarePen className='w-4 h-4' />
+                <input type="file" name="image" hidden id="" ref={avatarRef} onChange={handleUpdateProfile} />
+                <button
+                disabled={updateProfileLoading}
+                onClick={(e)=>{
+                  e.preventDefault()
+                  if(avatarRef){
+                    avatarRef.current?.click()
+                  }
+                }}  className="absolute bottom-4 cursor-pointer right-0 bg-white p-1 rounded-full shadow-md hover:bg-gray-100">
+                  <SquarePen className='w-4 h-4  text-orange-500' />
                 </button>
               </div>
             </div>
