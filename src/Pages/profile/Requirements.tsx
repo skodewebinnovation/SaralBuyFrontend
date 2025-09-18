@@ -16,49 +16,49 @@ import { SliderSkeleton } from '@/const/CustomSkeletons';
 
 const Requirement = () => {
   const [tab, setTab] = useState('requirements')
-  const {fn:getDrafts,data:getDraftsRes,loading:getDraftLoading} = useFetch(productService.getDrafts)
-const [drafts,setDrafts] = useState<any>([])
-const navigate = useNavigate()
-const [requirements, setRequirements] = useState<any>([
-  {
-    _id: '1',
-    image: '/no-image.webp',
-    category: 'Stationary',
-    name: 'Children Books',
-    ex_deliveryDate: '2025-10-10',
-    quantity: 10,
-  },
-  {
-    _id: '2',
-       image: '/no-image.webp',
-    category: 'Electronics',
-    name: 'Wireless Headphones',
-    ex_deliveryDate: '2025-11-15',
-    quantity: 25,
-  },
-  {
-    _id: '3',
+  const { fn: getDrafts, data: getDraftsRes, loading: getDraftLoading } = useFetch(productService.getDrafts)
+  const [drafts, setDrafts] = useState<any>([])
+  const navigate = useNavigate()
+  const [requirements, setRequirements] = useState<any>([
+    {
+      _id: '1',
       image: '/no-image.webp',
-    category: 'Furniture',
-    name: 'Office Chairs',
-    ex_deliveryDate: '2025-09-25',
-    quantity: 50,
-  },
-])
+      category: 'Stationary',
+      name: 'Children Books',
+      ex_deliveryDate: '2025-10-10',
+      quantity: 10,
+    },
+    {
+      _id: '2',
+      image: '/no-image.webp',
+      category: 'Electronics',
+      name: 'Wireless Headphones',
+      ex_deliveryDate: '2025-11-15',
+      quantity: 25,
+    },
+    {
+      _id: '3',
+      image: '/no-image.webp',
+      category: 'Furniture',
+      name: 'Office Chairs',
+      ex_deliveryDate: '2025-09-25',
+      quantity: 50,
+    },
+  ])
 
-  useEffect(()=>{
-    if(tab === 'requirements'){
+  useEffect(() => {
+    if (tab === 'requirements') {
 
-    }else{
+    } else {
       getDrafts()
 
     }
-  },[tab])
+  }, [tab])
 
 
- useEffect(() => {
+  useEffect(() => {
     if (getDraftsRes && getDraftsRes?.length > 0) {
-     setDrafts(getDraftsRes)
+      setDrafts(getDraftsRes)
     }
   }, [getDraftsRes]);
 
@@ -67,12 +67,13 @@ const [requirements, setRequirements] = useState<any>([
 
 
 
-    useEffect(() => {
+  useEffect(() => {
     bidService.getMyRequirements().then(res => {
       console.log("My Requirements:", res);
     }).catch(err => {
       console.error("Failed to fetch my requirements", err);
-    })})
+    })
+  })
 
 
   return (
@@ -97,7 +98,7 @@ const [requirements, setRequirements] = useState<any>([
 
           <TabsContent value="requirements" className='w-full overflow-hidden '>
 
-            {requirements.map((item:any, idx:number) => (
+            {requirements.map((item: any, idx: number) => (
               <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
                 <RequirementSlider product={item} tab={tab} target="requirement" />
               </div>
@@ -107,30 +108,33 @@ const [requirements, setRequirements] = useState<any>([
 
           </TabsContent>
 
-        <TabsContent value="drafts" className='w-full overflow-hidden'>
-                
-                {
-                  getDraftLoading ?
-                new Array(3).fill(0).map(_=><SliderSkeleton/>) :
-                  drafts.length > 0 && drafts.map((item: any, idx: number) => (
-    <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
-      <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400 rounded-md p-1 cursor-pointer'
-      onClick={()=>{
-        navigate('/update-draft/'+item._id)
-      }}
-      >
-       <TooltipComp
-       hoverChildren={ <SquarePen className='h-5 w-5' />}
-       contentChildren={<p>Edit Draft</p>}
-       ></TooltipComp>
-      </div>
+          <TabsContent value="drafts" className='w-full overflow-hidden'>
 
-      <RequirementSlider product={item} tab={tab} target="bid" />
-    </div>
-  ))
-                }
-  
-</TabsContent>
+            {
+              getDraftLoading ?
+                new Array(3).fill(0).map(_ => <SliderSkeleton />) :
+                drafts.length > 0 ? drafts.map((item: any, idx: number) => (
+                  <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
+                    <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400 rounded-md p-1 cursor-pointer'
+                      onClick={() => {
+                        navigate('/update-draft/' + item._id)
+                      }}
+                    >
+                      <TooltipComp
+                        hoverChildren={<SquarePen className='h-5 w-5' />}
+                        contentChildren={<p>Edit Draft</p>}
+                      ></TooltipComp>
+                    </div>
+
+                    <RequirementSlider product={item} tab={tab} target="bid" />
+                  </div>
+                )) : <div className='w-full h-[300px]  flex flex-col items-center justify-center'>
+                    <img src="/observed.svg" width="10%" />
+                    <p className="text-gray-500 text-sm">No Bids Founds</p>
+                </div>
+            }
+
+          </TabsContent>
 
         </Tabs>
       </div>
