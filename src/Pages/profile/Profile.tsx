@@ -106,7 +106,7 @@ const Profile = () => {
                     <Spinner className="w-5 h-5 text-orange-500"/>
                     
                   </div>:
-                  <AvatarImage src={user?.profileImage} className="w-full h-full object-contain rounded-full"/>
+                  <AvatarImage src={user?.profileImage || '/avatar.jpg'} className="w-full h-full object-contain rounded-full"/>
                 }
                 
                 {

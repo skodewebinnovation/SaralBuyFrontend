@@ -51,25 +51,22 @@ const Home = () => {
   useEffect(() => {
     getLatestThreeBidsFn()
   }, [])
-  useEffect(() => {
-    console.log(getLatestBidsThreeRes)
-    if (getLatestBidsThreeRes) {
-      getLatestBidsThreeRes.map((bid: any) => {
-        setBids((prev: any) => {
-          return [...prev, {
-            _id: bid._id,
-            date: dateFormatter(bid.createdAt),
-            category: bid.productId.categoryId.categoryName,
-            title: bid.productId.title,
-            deliveryDate: dateFormatter(bid.earliestDeliveryDate),
-            totalBids: bid.bidCount || 0,
-            image: bid.productId.image,
-          }]
-        })
-      })
-    }
+ useEffect(() => {
+  if (getLatestBidsThreeRes) {
+    const formattedBids = getLatestBidsThreeRes.map((bid: any) => ({
+      _id: bid._id,
+      date: dateFormatter(bid.createdAt),
+      category: bid.productId?.categoryId?.categoryName || "N/A",
+      title: bid.productId?.title || "Untitled",
+      deliveryDate: dateFormatter(bid.earliestDeliveryDate),
+      totalBids: bid.bidCount || 0,
+      image: bid.productId?.image || "/observed.svg",
+    }));
 
-  }, [getLatestBidsThreeRes])
+    setBids(formattedBids);
+  }
+}, [getLatestBidsThreeRes]);
+
   return (
     <main className="relative min-h-screen ">
       <div className="w-full max-w-7xl mx-auto px-4">
@@ -81,10 +78,10 @@ const Home = () => {
             bidResponseLoading ?
               <ItemSkeleton />
               :
-              bids.length > 0  ? <SwiperSlider title="Your Bids" target="bids" color="gray" data={bids} /> : <SwiperSlider title="Your Bids" target="bids" color="gray" data={[]} />
+              bids.length > 0  ? <SwiperSlider key={'bid'} title="Your Bids" target="bids" color="gray" data={bids} /> : <SwiperSlider title="Your Bids" target="bids" color="gray" data={[]} />
           }
           {
-            drafts.length > 0 && <SwiperSlider title="Your Drafts" target="drafts" color="orange" data={drafts} />
+            drafts.length > 0 && <SwiperSlider key={'draft'} title="Your Drafts" target="drafts" color="orange" data={drafts} />
           }
         </div>
       </div>

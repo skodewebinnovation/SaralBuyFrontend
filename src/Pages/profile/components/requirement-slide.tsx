@@ -37,7 +37,7 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
-
+ const modifiedProducts = [product, ...(product?.product?.subProducts || [])];
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slides: {
@@ -77,10 +77,12 @@ function handleSubmitDraft(targetProduct: any) {
   // toast.success('Draft submitted successfully!');
 }
 
+ 
+
   return (
     <div className='flex justify-between items-center gap-4 w-full'>
       <div ref={sliderRef} className="keen-slider w-full max-w-4xl relative">
-        {products.map((prt: any) => (
+        {modifiedProducts.map((prt: any) => (
           <div
             key={prt._id}
             className={`keen-slider__slide ${target === 'requirement' ? 'cursor-pointer' : ''}`}
@@ -116,12 +118,12 @@ function handleSubmitDraft(targetProduct: any) {
       {/* Right Side Info */}
       <div className='flex-1 flex justify-between items-end flex-col space-y-6'>
         <p className="text-sm text-gray-600 font-medium whitespace-nowrap">
-          Dated: {dateFormatter(product?.createdAt) || 'N/A'}
+          Dated: {dateFormatter(product?.product?.createdAt) || 'N/A'}
         </p>
         <div>
           {tab === "requirements" ? (
             <Button size={'default'} className='cursor-pointer text-xs'>
-              Total Bids: <span className='font-bold'>10</span>
+              Total Bids: <span className='font-bold'>{product?.product?.totalBidCount || 0}</span>
               <MoveRight className='w-5 h-5' />
             </Button>
           ) : (

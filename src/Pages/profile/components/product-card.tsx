@@ -1,12 +1,14 @@
 import { dateFormatter } from "@/helper/dateFormatter"
 
 const ProductCard = ({ product }: { product: any }) => {
+  product = product.product || product || {}
+  console.log(product)
   return (
     <div className='w-full border p-2 border-gray-200 rounded-md shadow-sm bg-white'>
       <div className='flex gap-4'>
         <div className='w-24 h-24 flex-shrink-0'>
           <img
-            src={product.image || '/no-image.webp'}
+            src={product.image  || '/no-image.webp'}
             alt={product.name}
             className='w-full h-full object-contain rounded-md'
           />

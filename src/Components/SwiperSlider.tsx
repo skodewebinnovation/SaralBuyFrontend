@@ -21,6 +21,7 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
   const navigate = useNavigate()
 
 
+
   return (
     <Card className={`shadow-none p-5 bg-${color}-50`}>
       {/* Header */}
@@ -40,9 +41,9 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
 
       {/* Slider */}
       <div ref={sliderRef} className="keen-slider  ">
-        {data.length > 0 ?
+        {data.length > 0?
          data.map((item) => (
-          <div key={item.id} className="keen-slider__slide ">
+          <div key={item._id}  className="keen-slider__slide ">
             <Card className="flex flex-row items-center justify-around gap-4 p-4 rounded-xl   shadow border border-gray-200">
               {/* Image */}
               <div className="h-24 w-24 flex-shrink-0">

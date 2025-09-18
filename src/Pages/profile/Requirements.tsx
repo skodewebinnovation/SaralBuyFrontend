@@ -17,38 +17,14 @@ import { SliderSkeleton } from '@/const/CustomSkeletons';
 const Requirement = () => {
   const [tab, setTab] = useState('requirements')
   const { fn: getDrafts, data: getDraftsRes, loading: getDraftLoading } = useFetch(productService.getDrafts)
+  const { fn: getMyRequirements, data: getMyRequirementsRes, loading: getMyRequirementsLoading } = useFetch(bidService.getMyRequirements)
   const [drafts, setDrafts] = useState<any>([])
+  const [requirements, setRequirements] = useState<any>([])
   const navigate = useNavigate()
-  const [requirements, setRequirements] = useState<any>([
-    {
-      _id: '1',
-      image: '/no-image.webp',
-      category: 'Stationary',
-      name: 'Children Books',
-      ex_deliveryDate: '2025-10-10',
-      quantity: 10,
-    },
-    {
-      _id: '2',
-      image: '/no-image.webp',
-      category: 'Electronics',
-      name: 'Wireless Headphones',
-      ex_deliveryDate: '2025-11-15',
-      quantity: 25,
-    },
-    {
-      _id: '3',
-      image: '/no-image.webp',
-      category: 'Furniture',
-      name: 'Office Chairs',
-      ex_deliveryDate: '2025-09-25',
-      quantity: 50,
-    },
-  ])
 
   useEffect(() => {
     if (tab === 'requirements') {
-
+    getMyRequirements()
     } else {
       getDrafts()
 
@@ -62,19 +38,12 @@ const Requirement = () => {
     }
   }, [getDraftsRes]);
 
-
-  console.log(getDraftsRes)
-
-
-
-  useEffect(() => {
-    bidService.getMyRequirements().then(res => {
-      console.log("My Requirements:", res);
-    }).catch(err => {
-      console.error("Failed to fetch my requirements", err);
-    })
-  })
-
+    useEffect(() => {
+    if (getMyRequirementsRes && getMyRequirementsRes?.length > 0) {
+      console.log(getMyRequirementsRes)
+      setRequirements(getMyRequirementsRes)
+    }
+  }, [getMyRequirementsRes]);
 
   return (
     <div className="w-full max-w-7xl mx-auto  space-y-6 px-4">
@@ -98,11 +67,26 @@ const Requirement = () => {
 
           <TabsContent value="requirements" className='w-full overflow-hidden '>
 
-            {requirements.map((item: any, idx: number) => (
+            {/* {requirements.map((item: any, idx: number) => (
               <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
                 <RequirementSlider product={item} tab={tab} target="requirement" />
               </div>
-            ))}
+            ))} */}
+
+
+               {
+              getMyRequirementsLoading ?
+                new Array(3).fill(0).map(_ => <SliderSkeleton />) :
+                requirements.length > 0 ? requirements.map((item: any, idx: number) => (
+                  <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
+
+                <RequirementSlider product={item} tab={tab} target="requirement" />
+                  </div>
+                )) : <div className='w-full h-[300px]  flex flex-col items-center justify-center'>
+                    <img src="/observed.svg" width="10%" />
+                    <p className="text-gray-500 text-sm">No Requirement's Found</p>
+                </div>
+            }
 
 
 
@@ -130,7 +114,7 @@ const Requirement = () => {
                   </div>
                 )) : <div className='w-full h-[300px]  flex flex-col items-center justify-center'>
                     <img src="/observed.svg" width="10%" />
-                    <p className="text-gray-500 text-sm">No Bids Founds</p>
+                    <p className="text-gray-500 text-sm">No Bid's Found</p>
                 </div>
             }
 

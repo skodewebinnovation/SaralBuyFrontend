@@ -1,4 +1,4 @@
-import { Home, List, MapPin, Paperclip, User, UserCircle } from "lucide-react";
+import { Box, Home, List, MapPin, Paperclip, User, UserCircle } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -31,9 +31,9 @@ const ProductOverview = () => {
   const productId = searchParams.get('productId');
   const bidId = searchParams.get('bidId');
   const userProfile = getUserProfile()
-  const { fn: getProductById, data: productResponse, error } = useFetch(productService.getProductById);
+  const { fn: getProductById, data: productResponse, error, setData: setProductResponse } = useFetch(productService.getProductById);
   const { fn: bidOverviewFn, data: bidOverviewRes } = useFetch(bidService.bidOverViewbyId)
-  const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading} = useFetch(bidService.updateUserBidDets)
+  const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading } = useFetch(bidService.updateUserBidDets)
   const { fn: createBidFn, data: createBidRes, loading: createBidLoading } = useFetch(bidService.createBid);
   const [open, setOpen] = useState(false)
   const [sellerVerification, setSellerVerification] = useState(false)
@@ -58,6 +58,23 @@ const ProductOverview = () => {
     }
   }, [productId, bidId])
 
+  useEffect(() => {
+    if (productResponse && Array.isArray(productResponse)) {
+      const mainProduct = productResponse[0];
+      const products =
+        mainProduct?.subProducts?.length > 0
+          ? mainProduct.subProducts
+          : [mainProduct];
+
+      setProductResponse({
+        ...mainProduct,
+        products,
+      });
+      console.log(productResponse)
+    }
+  }, [productResponse]);
+
+
   // useEffect(()=>{
   //   if(bidOverviewRes)    console.log(setBidOverviewRes({...bidOverviewRes,myName:'Shubham'}))
   // },[bidOverviewLoading])
@@ -65,8 +82,8 @@ const ProductOverview = () => {
 
   async function handleCreteBid() {
     if (!productResponse) return;
-    const buyerId = productResponse.userId?._id;
-    const productId = productResponse._id;
+    const buyerId = productResponse?.mainProduct.userId?._id;
+    const productId = productResponse?.mainProduct._id;
     const sellerId = userProfile?.user._id;
     const budgetAmount = Number(getValues().budgetQuation) || 0;
     let obj = {
@@ -79,9 +96,9 @@ const ProductOverview = () => {
       setSellerVerification(true)
     }
     try {
-      await  Promise.all([
+      await Promise.all([
         createBidFn(buyerId, productId, obj),
-       bidService.createRequirement({ productId, sellerId, buyerId, budgetAmount })
+        bidService.createRequirement({ productId, sellerId, buyerId, budgetAmount })
       ])
     } catch (err) {
       console.log(err);
@@ -89,7 +106,7 @@ const ProductOverview = () => {
     }
   }
 
-  async function onSubmit(data:any) {
+  async function onSubmit(data: any) {
     const user = userProfile?.user;
     const currentFormData = getValues();
     if (!user?._id) {
@@ -98,19 +115,19 @@ const ProductOverview = () => {
     }
     if (!productResponse && !bidOverviewRes) return console.log("product && bid not found in frontend");
 
-    if(productResponse){
+    if (productResponse) {
       setSellerVerification(true);
-    }else{
-      await updateUserBidDets(bidId,data)
+    } else {
+      await updateUserBidDets(bidId, data)
     }
   }
 
 
-  useEffect(()=>{
-    if(updateUserBidDetsRes){
+  useEffect(() => {
+    if (updateUserBidDetsRes) {
       toast.success('Bid updated successfully')
     }
-  },[updateUserBidDetsRes])
+  }, [updateUserBidDetsRes])
 
 
 
@@ -154,7 +171,7 @@ const ProductOverview = () => {
       }
     }
   }, [userProfile, reset, bidOverviewRes]);
-console.log(bidOverviewRes)
+  console.log(bidOverviewRes)
 
   useEffect(() => {
     if (error === 'invalid product ID') {
@@ -162,7 +179,7 @@ console.log(bidOverviewRes)
     }
   }, [])
 
-  console.log(productResponse)
+
 
   useEffect(() => {
     for (let i = 0; i < Object.entries(errors).length; i++) {
@@ -173,9 +190,9 @@ console.log(bidOverviewRes)
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
-     {
-     <Authentication setOpen={setOpen} open={open} />
-     }
+      {
+        <Authentication setOpen={setOpen} open={open} />
+      }
       <SellerVerificationPopup setOpen={setSellerVerification} open={sellerVerification} setValue={setBusinessType} value={businessType} handleCreteBid={handleCreteBid} createBidLoading={createBidLoading} />
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>
@@ -185,7 +202,7 @@ console.log(bidOverviewRes)
             <BreadcrumbPage className="capitalize font-regular text-gray-500">
               Product
             </BreadcrumbPage>
-               <BreadcrumbSeparator />
+            <BreadcrumbSeparator />
             <BreadcrumbPage className="capitalize font-regular text-gray-500">
               {bidOverviewRes ? bidOverviewRes?.product?.title : productResponse?.title}
             </BreadcrumbPage>
@@ -193,159 +210,340 @@ console.log(bidOverviewRes)
         </BreadcrumbList>
       </Breadcrumb>
 
-      {/* Content */}
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Image */}
-        <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-68 ">
-          <img
-            src={bidOverviewRes ? bidOverviewRes?.product?.image : productResponse?.image}      
-            alt="Product"
-            
-            className="object-contain h-full w-full"
-          />
-        </div>
+      {/*  for single product */}
+      {
+        (productResponse?.subProducts?.length === 0 || bidOverviewRes)
+          ?
+          // Single Product
+          <div className="">
+            {/* Content */}
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Image */}
+              <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-68 ">
+                <img
+                  src={bidOverviewRes ? bidOverviewRes?.product?.image : productResponse?.mainProduct?.image}
+                  alt="Product"
 
-        {/* Product Info */}
-        <div className="lg:col-span-8 bg-white rounded-lg p-4 space-y-4">
-          <h2 className="text-sm font-medium mb-2">
-            Date : {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.createdAt : productResponse?.createdAt)}
-          </h2>
+                  className="object-contain h-full w-full"
+                />
+              </div>
 
-          <h2 className="text-xl font-bold capitalize">
-            {
-              bidOverviewRes ? bidOverviewRes?.product?.title : productResponse?.title}
-          </h2>
-          <p className="text-sm text-gray-600">
-            {productResponse?.description}
-          </p>
+              {/* Product Info */}
+              <div className="lg:col-span-8 bg-white rounded-lg p-4 space-y-4">
+                <h2 className="text-sm font-medium mb-2">
+                  Date : {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.createdAt : productResponse?.mainProduct?.createdAt)}
+                </h2>
 
-          {/* Meta Info */}
-          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-            <div className="flex items-center gap-1 pr-3 border-r-2 py-1 min-w-32 max-w-[25%]">
-              <UserCircle className="w-5 h-5 " />
-              <span className="capitalize">{mergeName(bidOverviewRes ? bidOverviewRes?.buyer : productResponse?.userId) || 'N/A'}</span>
-            </div>
-            <div className="flex items-center gap-1  pr-3 border-r-2 py-1 min-w-32   max-w-[50%]">
-              <MapPin className="w-4 h-4 " />
-              <span className=" line-clamp-2">{bidOverviewRes ? bidOverviewRes?.buyer?.address : productResponse?.userId?.address || 'N/A'}</span>
-            </div>
-            <div className="flex items-center gap-1 py-1 min-w-32 max-w-[25%]">
-              <List className="w-4 h-4 " />
-              <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.product?.quantity : productResponse?.quantity || 'N/A'} units</span>
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex items-center gap-4 mt-5 ">
-            <Button variant="outline" className="min-w-32 text-sm border-gray-400 border-[2px] flex items-center gap-2 hover:bg-transparent ">
-              <img src="/icons/Layer_1.png" className="w-4 h-4 " />
-              Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount :  productResponse?.totalBidCount || 0}</span>
-            </Button>
-           {
-            !bidOverviewRes &&  <Button className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer " variant="outline" >Add to Cart</Button>
-           }
-          </div>
-        </div>
-      </div>
-
-      {/* Requirement + Form */}
-      <div className="mt-5 grid grid-cols-1 lg:grid-cols-12 gap-6 ">
-        {/* Left: Requirement Spec */}
-        <div className="lg:col-span-7  rounded-lg p-6 space-y-3 ">
-          <h3 className="font-semibold text-orange-600 text-xl">Requirement Specifications</h3>
-          <div className="text-sm space-y-2 text-gray-600 ">
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Product Type:</span> {(bidOverviewRes ? bidOverviewRes?.product?.subCategory?.name : productResponse?.subCategoryId?.name )|| "N/A"}</p>
-            <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Brand:</span> {(bidOverviewRes ? bidOverviewRes?.product?.brand : productResponse?.brand) || "N/A"}</p>
-            {productResponse?.categoryId?.categoryName === "industrial" && (
-
-              <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
-            )}
-            {
-              (bidOverviewRes?.product?.minimumBudget || productResponse?.minimumBudget) && (
-
-  <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.minimumBudget
-              : productResponse?.minimumBudget)}</p>
-              )
-            }
-          
-            <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : productResponse?.additionalDeliveryAndPackage )|| "N/A"}</p>
-
-            <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Required Delivery Date:</span> {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.paymentAndDelivery?.ex_deliveryDate :productResponse?.paymentAndDelivery?.ex_deliveryDate) || 'N/A'}</p>
-
-
-            <p className="flex items-center justify-between py-2 border-b-2 capitalize"><span className="font-semibold">Payment Mode:</span> {bidOverviewRes? bidOverviewRes?.product?.paymentAndDelivery?.paymentMode : productResponse?.paymentAndDelivery?.paymentMode || 'N/A'}</p>
-            <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(productResponse?.documentName || bidOverviewRes?.product?.documentName) ? <span className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" /> {productResponse?.documentName || bidOverviewRes?.product?.documentName}</span> : 'N/A'}</p>
-            
-          </div>
-        </div>
-
-        {/* Right: Form */}
-        <form className="lg:col-span-5 bg-gray-50 rounded-lg p-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <h3 className="font-semibold text-orange-600">Fill the Details to Place Bid</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-            {
-              userProfile?.user?._id && (
-                <>
-                  <div>
-                    <Label htmlFor="firstName" className="mb-2 text-sm">First Name</Label>
-                    <Input disabled type="text"  placeholder="First Name" id="firstName" {...register("firstName")} className="bg-white  select-none" />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName" className="mb-2 text-sm">Last Name</Label>
-                    <Input disabled type="text"  placeholder="Last Name" id="lastName" {...register("lastName")} className="bg-white  select-none" />
-                  </div>
-                </>
-              )
-            }
-            <div>
-              <Label htmlFor="bq" className="mb-2 text-sm">Budget Quotation</Label>
-              <Input type="number" placeholder="₹ 00" id="bq" className="bg-white" {...register('budgetQuation')} />
-            </div>
-            <div>
-              <Label htmlFor="ab" className="mb-2 text-sm">Available Brand</Label>
-              <Input type="text" placeholder="Brand XYZ" id="ab" className="bg-white" {...register('availableBrand')} />
-            </div>
-            <div className="col-span-2">
-              <Label htmlFor="ab" className="mb-2 text-sm">Earliest Deliver By</Label>
-              <Controller
-                control={control}
-                name="earliestDeliveryDate"
-                render={({ field }) => (
-                  <DatePicker
-                    disabledBeforeDate={new Date(new Date().getTime() - 24 * 60 * 60 * 1000)}
-                    date={field.value}
-                    title="DD-MM-YYYY"
-                    className="w-full hover:bg-transparent"
-                    setDate={(val) => field.onChange(val)}
-                  />
-                )}
-              />
-            </div>
-
-          </div>
-          {
-            !bidOverviewRes ? (
-              <Button
-                variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
-                Place Bid
-              </Button>
-            ) :
-              (
-                <Button
-                disabled={updateUserBidDetsLoading}
-                  variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
+                <h2 className="text-xl font-bold capitalize">
                   {
-                    updateUserBidDetsLoading ?
-                    <Spinner className="w-5 h-5 animate-spin"/>
-                    :
-                    'Update Bid'
+                    bidOverviewRes ? bidOverviewRes?.product?.title : productResponse?.mainProduct?.title}
+                </h2>
+                <p className="text-sm text-gray-600">
+                  {productResponse?.mainProduct?.description}
+                </p>
+
+                {/* Meta Info */}
+                <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-1 pr-3 border-r-2 py-1 min-w-32 max-w-[25%]">
+                    <UserCircle className="w-5 h-5 " />
+                    <span className="capitalize">{mergeName(bidOverviewRes ? bidOverviewRes?.buyer : productResponse?.mainProduct?.userId) || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center gap-1  pr-3 border-r-2 py-1 min-w-32   max-w-[50%]">
+                    <MapPin className="w-4 h-4 " />
+                    <span className=" line-clamp-2">{bidOverviewRes ? bidOverviewRes?.buyer?.address : productResponse?.mainProduct?.userId?.address || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center gap-1 py-1 min-w-32 max-w-[25%]">
+                    <List className="w-4 h-4 " />
+                    <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.product?.quantity : productResponse?.mainProduct?.quantity || 'N/A'} units</span>
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex items-center gap-4 mt-5 ">
+                  <Button variant="outline" className="min-w-32 text-sm border-gray-400 border-[2px] flex items-center gap-2 hover:bg-transparent ">
+                    <img src="/icons/Layer_1.png" className="w-4 h-4 " />
+                    Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : productResponse?.mainProduct?.totalBidCount || 0}</span>
+                  </Button>
+                  {
+                    !bidOverviewRes && <Button className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer " variant="outline" >Add to Cart</Button>
                   }
-                </Button>
-              )
-          }
-        </form>
-      </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Requirement + Form */}
+            <div className="mt-5 grid grid-cols-1 lg:grid-cols-12 gap-6 ">
+              {/* Left: Requirement Spec */}
+              <div className="lg:col-span-7  rounded-lg p-6 space-y-3 ">
+                <h3 className="font-semibold text-orange-600 text-xl">Requirement Specifications</h3>
+                <div className="text-sm space-y-2 text-gray-600 ">
+                  <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Product Type:</span> {(bidOverviewRes ? bidOverviewRes?.product?.subCategory?.name : productResponse?.mainProduct?.subCategoryId?.name) || "N/A"}</p>
+                  <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Brand:</span> {(bidOverviewRes ? bidOverviewRes?.product?.brand : productResponse?.mainProduct?.brand) || "N/A"}</p>
+                  {productResponse?.mainProduct?.categoryId?.categoryName === "industrial" && (
+
+                    <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
+                  )}
+                  {
+                    (bidOverviewRes?.product?.minimumBudget || productResponse?.mainProduct?.minimumBudget) && (
+
+                      <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.minimumBudget
+                        : productResponse?.mainProduct?.minimumBudget)}</p>
+                    )
+                  }
+
+                  <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : productResponse?.mainProduct?.additionalDeliveryAndPackage) || "N/A"}</p>
+
+                  <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Required Delivery Date:</span> {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.paymentAndDelivery?.ex_deliveryDate : productResponse?.mainProduct?.paymentAndDelivery?.ex_deliveryDate) || 'N/A'}</p>
+
+
+                  <p className="flex items-center justify-between py-2 border-b-2 capitalize"><span className="font-semibold">Payment Mode:</span> {(bidOverviewRes ? bidOverviewRes?.product?.paymentAndDelivery?.paymentMode : productResponse?.mainProduct?.paymentAndDelivery?.paymentMode) || 'N/A'}</p>
+                  <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(productResponse?.mainProduct?.documentName || bidOverviewRes?.product?.documentName) ? <span className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" /> {productResponse?.mainProduct?.documentName || bidOverviewRes?.product?.documentName}</span> : 'N/A'}</p>
+
+                </div>
+              </div>
+
+              {/* Right: Form */}
+              <form className="lg:col-span-5 bg-gray-50 rounded-lg p-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+                <h3 className="font-semibold text-orange-600">Fill the Details to Place Bid</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                  {
+                    userProfile?.user?._id && (
+                      <>
+                        <div>
+                          <Label htmlFor="firstName" className="mb-2 text-sm">First Name</Label>
+                          <Input disabled type="text" placeholder="First Name" id="firstName" {...register("firstName")} className="bg-white  select-none" />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName" className="mb-2 text-sm">Last Name</Label>
+                          <Input disabled type="text" placeholder="Last Name" id="lastName" {...register("lastName")} className="bg-white  select-none" />
+                        </div>
+                      </>
+                    )
+                  }
+                  <div>
+                    <Label htmlFor="bq" className="mb-2 text-sm">Budget Quotation</Label>
+                    <Input type="number" placeholder="₹ 00" id="bq" className="bg-white" {...register('budgetQuation')} />
+                  </div>
+                  <div>
+                    <Label htmlFor="ab" className="mb-2 text-sm">Available Brand</Label>
+                    <Input type="text" placeholder="Brand XYZ" id="ab" className="bg-white" {...register('availableBrand')} />
+                  </div>
+                  <div className="col-span-2">
+                    <Label htmlFor="ab" className="mb-2 text-sm">Earliest Deliver By</Label>
+                    <Controller
+                      control={control}
+                      name="earliestDeliveryDate"
+                      render={({ field }) => (
+                        <DatePicker
+                          disabledBeforeDate={new Date(new Date().getTime() - 24 * 60 * 60 * 1000)}
+                          date={field.value}
+                          title="DD-MM-YYYY"
+                          className="w-full hover:bg-transparent"
+                          setDate={(val) => field.onChange(val)}
+                        />
+                      )}
+                    />
+                  </div>
+
+                </div>
+                {
+                  !bidOverviewRes ? (
+                    <Button
+                      variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
+                      Place Bid
+                    </Button>
+                  ) :
+                    (
+                      <Button
+                        disabled={updateUserBidDetsLoading}
+                        variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
+                        {
+                          updateUserBidDetsLoading ?
+                            <Spinner className="w-5 h-5 animate-spin" />
+                            :
+                            'Update Bid'
+                        }
+                      </Button>
+                    )
+                }
+              </form>
+            </div>
+          </div>
+          :
+          //  Multiple products
+          productResponse?.subProducts && productResponse?.subProducts.map((item: any, idx: any) => {
+              const isLast = idx === productResponse?.subProducts?.length - 1;
+            return (
+              <>
+                {/* Content */}
+                <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Image */}
+                  <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-68 ">
+                    <img
+                      src={bidOverviewRes ? bidOverviewRes?.product?.image : item?.image}
+                      alt="Product"
+
+                      className="object-contain h-full w-full"
+                    />
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="lg:col-span-8 bg-white rounded-lg p-4 space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-sm font-medium mb-2">
+                        Date : {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.createdAt : item?.createdAt)}
+                      </h2>
+                      <div className="flex gap-1 items-center">
+                        <Box className="w-5 h-5 text-orange-500" />
+                        <p className="text-gray-500 text-md font-semibold">Product ({idx + 1})</p>
+                      </div>
+                    </div>
+
+                    <h2 className="text-xl font-bold capitalize">
+                      {
+                        bidOverviewRes ? bidOverviewRes?.product?.title : item?.title}
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                      {item?.description}
+                    </p>
+
+                    {/* Meta Info */}
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-1 pr-3 border-r-2 py-1 min-w-32 max-w-[25%]">
+                        <UserCircle className="w-5 h-5 " />
+                        <span className="capitalize">{mergeName(bidOverviewRes ? bidOverviewRes?.buyer : item?.userId) || 'N/A'}</span>
+                      </div>
+                      <div className="flex items-center gap-1  pr-3 border-r-2 py-1 min-w-32   max-w-[50%]">
+                        <MapPin className="w-4 h-4 " />
+                        <span className=" line-clamp-2">{bidOverviewRes ? bidOverviewRes?.buyer?.address : item?.userId?.address || 'N/A'}</span>
+                      </div>
+                      <div className="flex items-center gap-1 py-1 min-w-32 max-w-[25%]">
+                        <List className="w-4 h-4 " />
+                        <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.product?.quantity : item?.quantity || 'N/A'} units</span>
+                      </div>
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex items-center gap-4 mt-5 ">
+                      <Button variant="outline" className="min-w-32 text-sm border-gray-400 border-[2px] flex items-center gap-2 hover:bg-transparent ">
+                        <img src="/icons/Layer_1.png" className="w-4 h-4 " />
+                        Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : item?.totalBidCount || 0}</span>
+                      </Button>
+                      {
+                        !bidOverviewRes && <Button className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer " variant="outline" >Add to Cart</Button>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                {/* Requirement + Form */}
+                <div className={`mt-5 grid grid-cols-1 lg:${isLast ? 'grid-cols-12' :'grid-cols-1'} gap-6`}>
+                  <div className={`grid lg:${isLast ? 'col-span-7' : 'col-span-1'}  rounded-lg  space-y-3 `}>
+                    <h3 className="font-semibold text-orange-600 text-xl">Requirement Specifications</h3>
+                    <div className="text-sm space-y-2 text-gray-600 ">
+                      <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Product Type:</span> {(bidOverviewRes ? bidOverviewRes?.product?.subCategory?.name : item?.subCategoryId?.name) || "N/A"}</p>
+                      <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Brand:</span> {(bidOverviewRes ? bidOverviewRes?.product?.brand : item?.brand) || "N/A"}</p>
+                      {item?.categoryId?.categoryName === "industrial" && (
+
+                        <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
+                      )}
+                      {
+                        (bidOverviewRes?.product?.minimumBudget || item?.minimumBudget) && (
+
+                          <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.minimumBudget
+                            : item?.minimumBudget)}</p>
+                        )
+                      }
+
+                      <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : item?.additionalDeliveryAndPackage) || "N/A"}</p>
+
+                      <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Required Delivery Date:</span> {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.paymentAndDelivery?.ex_deliveryDate : item?.paymentAndDelivery?.ex_deliveryDate) || 'N/A'}</p>
+
+
+                      <p className="flex items-center justify-between py-2 border-b-2 capitalize"><span className="font-semibold">Payment Mode:</span> {bidOverviewRes ? bidOverviewRes?.product?.paymentAndDelivery?.paymentMode : item?.paymentAndDelivery?.paymentMode || 'N/A'}</p>
+                      <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(item?.documentName || bidOverviewRes?.product?.documentName) ? <span className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" /> {item?.documentName || bidOverviewRes?.product?.documentName}</span> : 'N/A'}</p>
+
+                    </div>
+                  </div>
+                  {
+                    idx === productResponse?.products?.length - 1 && (
+                      <form className="lg:col-span-5  bg-gray-50 rounded-lg p-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+                        <h3 className="font-semibold text-orange-600">Fill the Details to Place Bid</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                          {
+                            userProfile?.user?._id && (
+                              <>
+                                <div>
+                                  <Label htmlFor="firstName" className="mb-2 text-sm">First Name</Label>
+                                  <Input disabled type="text" placeholder="First Name" id="firstName" {...register("firstName")} className="bg-white  select-none" />
+                                </div>
+                                <div>
+                                  <Label htmlFor="lastName" className="mb-2 text-sm">Last Name</Label>
+                                  <Input disabled type="text" placeholder="Last Name" id="lastName" {...register("lastName")} className="bg-white  select-none" />
+                                </div>
+                              </>
+                            )
+                          }
+                          <div>
+                            <Label htmlFor="bq" className="mb-2 text-sm">Budget Quotation</Label>
+                            <Input type="number" placeholder="₹ 00" id="bq" className="bg-white" {...register('budgetQuation')} />
+                          </div>
+                          <div>
+                            <Label htmlFor="ab" className="mb-2 text-sm">Available Brand</Label>
+                            <Input type="text" placeholder="Brand XYZ" id="ab" className="bg-white" {...register('availableBrand')} />
+                          </div>
+                          <div className="col-span-2">
+                            <Label htmlFor="ab" className="mb-2 text-sm">Earliest Deliver By</Label>
+                            <Controller
+                              control={control}
+                              name="earliestDeliveryDate"
+                              render={({ field }) => (
+                                <DatePicker
+                                  disabledBeforeDate={new Date(new Date().getTime() - 24 * 60 * 60 * 1000)}
+                                  date={field.value}
+                                  title="DD-MM-YYYY"
+                                  className="w-full hover:bg-transparent"
+                                  setDate={(val) => field.onChange(val)}
+                                />
+                              )}
+                            />
+                          </div>
+
+                        </div>
+                        {
+                          !bidOverviewRes ? (
+                            <Button
+                              variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
+                              Place Bid
+                            </Button>
+                          ) :
+                            (
+                              <Button
+                                disabled={updateUserBidDetsLoading}
+                                variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
+                                {
+                                  updateUserBidDetsLoading ?
+                                    <Spinner className="w-5 h-5 animate-spin" />
+                                    :
+                                    'Update Bid'
+                                }
+                              </Button>
+                            )
+                        }
+                      </form>
+                    )
+                  }
+                </div>
+              </>
+            )
+          })
+      }
+
+
+
+
     </div>
   );
 };
