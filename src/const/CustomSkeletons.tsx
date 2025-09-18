@@ -157,3 +157,43 @@ export  function SliderSkeleton() {
       </Card>
   );
 }
+
+
+export  function ProductListingCardSkeleton() {
+  return (
+    <Card className="shadow-none border border-gray-200 mb-2 p-4">
+      {/* Category Badge */}
+      <div className="w-24 h-6">
+        <Skeleton className="h-6 w-24 rounded-full" />
+      </div>
+
+      <div className="flex gap-4">
+        {/* Product Image */}
+        <Skeleton className="w-20 h-20 rounded-lg" />
+
+        {/* Right Content */}
+        <div className="flex flex-col gap-2 flex-1">
+          {/* Title */}
+          <Skeleton className="h-5 w-32" />
+
+          {/* User */}
+          <Skeleton className="h-4 w-40" />
+
+          {/* Location */}
+          <Skeleton className="h-4 w-28" />
+
+          {/* Quantity */}
+          <Skeleton className="h-4 w-24" />
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center mt-2">
+        {/* Date */}
+        <Skeleton className="h-4 w-28" />
+
+        {/* Button */}
+        <Skeleton className="h-9 w-24 rounded-md" />
+      </div>
+    </Card>
+  )
+}

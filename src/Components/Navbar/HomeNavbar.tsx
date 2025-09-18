@@ -24,7 +24,7 @@ import { Input } from "../ui/input";
 import { Card } from "../ui/card";
 import { useFetch } from "@/helper/use-fetch";
 import ProductService from "@/services/product.service";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import TooltipComp from "@/utils/TooltipComp";
 import { getLocation } from "@/helper/locationAPI";
@@ -77,13 +77,14 @@ type ProductsType = { title: string, image: string, _id: string, description: st
 
 const HomeNavbar = () => {
   const navigate = useNavigate()
-  
+
   const { fn, data } = useFetch(ProductService.getSeachProduct)
   const [text, setText] = useState('');
   const [products, setProducts] = useState<ProductsType[]>([]);
   const [value, { isPending, flush }] = useDebounce(text, 1000);
-  const [currenLocation,setCurrentLocation] = useState('')
+  const [currenLocation, setCurrentLocation] = useState('')
   const [showDropdown, setShowDropdown] = useState(false);
+  const productsRef = useRef<HTMLDivElement>(null);
   const handleRaiseAReuirement = () => {
     navigate("/requirement");
   };
@@ -92,32 +93,30 @@ const HomeNavbar = () => {
   };
   const handleInputValue = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    if (!value.trim()) return;
     setText(value)
-
   }
 
 
-   function getGeoLocation(){
+  function getGeoLocation() {
     if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-      async function(position) {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      setCurrentLocation(await getLocation(longitude,latitude))
-     
-    },
-    (err)=>console.log(err),
-      {
-      enableHighAccuracy: true,
-      timeout: 5000, 
-      maximumAge: 0
+      navigator.geolocation.getCurrentPosition(
+        async function (position) {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          setCurrentLocation(await getLocation(longitude, latitude))
+
+        },
+        (err) => console.log(err),
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
     }
-  );
-} else {
-  console.error("Geolocation is not supported by this browser.");
-}
-}
+  }
 
 
 
@@ -146,7 +145,26 @@ const HomeNavbar = () => {
   useEffect(() => {
     setProducts(data)
   }, [data])
-    useEffect(()=>getGeoLocation(),[])
+  useEffect(() => getGeoLocation(), [])
+
+
+useEffect(() => {
+  function handleOutsideClick(event: MouseEvent) {
+    if (showDropdown && productsRef.current) {
+      if (!productsRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+        setText('');
+        setProducts([]);
+      }
+    }
+  }
+
+  window.addEventListener('click', handleOutsideClick);
+
+  return () => {
+    window.removeEventListener('click', handleOutsideClick);
+  };
+}, [showDropdown, productsRef]);
   return (
     <section className="mb-2 relative z-9">
       <div className="mx-auto bg-gray-50 p-3 sticky top-0">
@@ -177,6 +195,7 @@ const HomeNavbar = () => {
             <Input
               type="search"
               onInput={handleInputValue}
+              value={text}
               onKeyPress={handleKeyPress}
               placeholder="Looking For..."
               className="pl-8 rounded-full focus-visible:ring-0 border border-gray-300 shadow-sm focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
@@ -185,7 +204,9 @@ const HomeNavbar = () => {
 
             {/* Search Dropdown */}
             {showDropdown && (
-              <div className="absolute top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
+              <div
+              ref={productsRef}
+              className="absolute top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
                 {isPending() ? (
                   Array.from({ length: 3 }).map((_, i) => (
                     <Skeleton key={i} className="h-20 rounded-md w-full" />
@@ -227,20 +248,20 @@ const HomeNavbar = () => {
 
           <div className="flex gap-4 items-center">
             <TooltipComp key={'messaging'} hoverChildren={<Button variant="secondary" size="icon" className="cursor-pointer">
-                  <MessageSquareText className="w-5 h-5" />
-                </Button>} contentChildren={<p >Messaging</p>}/>
+              <MessageSquareText className="w-5 h-5" />
+            </Button>} contentChildren={<p >Messaging</p>} />
 
- <TooltipComp key={'notification'} hoverChildren={ <Button variant="secondary" size="icon" className="cursor-pointer">
+            <TooltipComp key={'notification'} hoverChildren={<Button variant="secondary" size="icon" className="cursor-pointer">
               <Bell className="w-5 h-5" />
-            </Button>} contentChildren={<p >Notifications</p>}/>
+            </Button>} contentChildren={<p >Notifications</p>} />
 
-           
+
             <TooltipComp key={'cart'} hoverChildren={
               <Button variant="secondary" size="icon" className="cursor-pointer">
-              <ShoppingCart className="w-5 h-5" />
-            </Button>
-          } contentChildren={<p >Cart</p>}/>
-            
+                <ShoppingCart className="w-5 h-5" />
+              </Button>
+            } contentChildren={<p >Cart</p>} />
+
             <Button onClick={handleRaiseAReuirement} variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
               Raise a Requirement
             </Button>
