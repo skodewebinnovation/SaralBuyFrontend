@@ -29,5 +29,6 @@ class BidService{
         return instance.get('/requirement/my-requirements', { withCredentials: true })
             .then(res => res.data?.data || res.data);
     }
+
 }
 export default new BidService();

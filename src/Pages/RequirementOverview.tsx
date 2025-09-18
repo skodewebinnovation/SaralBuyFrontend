@@ -1,7 +1,6 @@
 import TableListing from '@/Components/TableLisiting'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from '@/Components/ui/breadcrumb'
 import { Button } from '@/Components/ui/button'
-import SkeletonTable from '@/const/tableSkeleton'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Banknote, CalendarDays, MoveLeft } from 'lucide-react'

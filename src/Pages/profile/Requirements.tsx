@@ -11,10 +11,12 @@ import { useFetch } from '@/helper/use-fetch';
 import productService from '@/services/product.service';
 import bidService from '@/services/bid.service';
 import { useNavigate } from 'react-router-dom';
+import TooltipComp from '@/utils/TooltipComp';
+import { SliderSkeleton } from '@/const/CustomSkeletons';
 
 const Requirement = () => {
   const [tab, setTab] = useState('requirements')
-  const {fn:getDrafts,data:getDraftsRes} = useFetch(productService.getDrafts)
+  const {fn:getDrafts,data:getDraftsRes,loading:getDraftLoading} = useFetch(productService.getDrafts)
 const [drafts,setDrafts] = useState<any>([])
 const navigate = useNavigate()
 const [requirements, setRequirements] = useState<any>([
@@ -96,7 +98,7 @@ const [requirements, setRequirements] = useState<any>([
           <TabsContent value="requirements" className='w-full overflow-hidden '>
 
             {requirements.map((item:any, idx:number) => (
-              <div key={idx} className='border border-gray-300 p-4 rounded-md w-full mb-2 relative'>
+              <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
                 <RequirementSlider product={item} tab={tab} target="requirement" />
               </div>
             ))}
@@ -106,18 +108,28 @@ const [requirements, setRequirements] = useState<any>([
           </TabsContent>
 
         <TabsContent value="drafts" className='w-full overflow-hidden'>
-  {drafts.length > 0 && drafts.map((item: any, idx: number) => (
-    <div key={idx} className='border border-gray-300 p-4 rounded-md w-full mb-2 relative'>
+                
+                {
+                  getDraftLoading ?
+                new Array(3).fill(0).map(_=><SliderSkeleton/>) :
+                  drafts.length > 0 && drafts.map((item: any, idx: number) => (
+    <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
       <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400 rounded-md p-1 cursor-pointer'
       onClick={()=>{
         navigate('/update-draft/'+item._id)
       }}
       >
-        <SquarePen className='h-5 w-5' />
+       <TooltipComp
+       hoverChildren={ <SquarePen className='h-5 w-5' />}
+       contentChildren={<p>Edit Draft</p>}
+       ></TooltipComp>
       </div>
+
       <RequirementSlider product={item} tab={tab} target="bid" />
     </div>
-  ))}
+  ))
+                }
+  
 </TabsContent>
 
         </Tabs>

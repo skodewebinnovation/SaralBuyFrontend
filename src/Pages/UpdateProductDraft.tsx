@@ -30,13 +30,11 @@ import { useFetch } from "@/helper/use-fetch";
 import productService from "@/services/product.service";
 import categoryService from "@/services/category.service";
 import { Spinner } from "@/Components/ui/shadcn-io/spinner";
-import { getUserProfile } from "@/zustand/userProfile";
 import { SearchableDropdown } from "@/utils/searchableDropdown";
 import { electronicCategories, constructionIndustrialCategories, fashionCategories, furnitureCategories, homeAppliancesCategories, beautyCategories, sportCategories, vehicleCategories, serviceCategories } from "@/const/categoriesData";
 import { getCategorySpecificFields } from "@/const/categoriesFormdataFields";
 import Authentication from "@/Components/auth/Authentication";
-import CategoryFormSkeleton from "@/const/CategoryFormSkeleton";
-import { Card } from "@/Components/ui/card";
+import {CategoryFormSkeleton} from "@/const/CustomSkeletons";
 
 const innerFormImages = {
   automobile: "automobileFormImage.png",
@@ -576,9 +574,11 @@ const UpdateProductDraftForm = ({
                   <p className="text-xs mt-2 text-green-600 text-center">{(image as any)?.name}</p>
                 )}
                 {!image && initialData?.image && (
+             <>
                <div className="absolute h-16 w-16 right-2 bottom-2 rounded-lg shadow p-2 select-none z-10">
                  <img src={image || initialData?.image!}  className=" w-full h-full object-contain "/>
                </div>
+             </>
                 )}
               </div>
               <div
@@ -708,7 +708,7 @@ const UpdateDraft = () => {
   const { fn: getCatByIdFn, data: catByIdData } = useFetch(categoryService.getCategoriesById);
   const [currentCategoryName, setCurrentCategoryName] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const {fn,data,loading}= useFetch(productService.updateDraft)
+  const {fn,data,loading}= useFetch(productService.updateDrafts)
   const [subCategoriesData, setSubCategoriesData] = useState([]);
   const [resetForms, setResetForms] = useState(false);
 
@@ -767,7 +767,7 @@ const UpdateDraft = () => {
       [formIndex]: data
     }));
   };
- const handleSubmitAllForms = () => {
+ const handleSubmitAllForms = async() => {
 
     const allowedFields = getCategorySpecificFields(currentCategoryName!);
     const formDataToSend = new FormData();
@@ -812,14 +812,15 @@ const UpdateDraft = () => {
     formDataToSend.append('products', JSON.stringify(productsData));
     formDataToSend.append('draft', 'false'); 
     console.log(productsData)
+    await fn(productsData);
 
-
-    
-    
-    // Call your API service here
-    // Example: fn(draftState.categoryId._id, formDataToSend);
-    console.log("Ready to submit to API");
   };
+
+  useEffect(()=>{
+    if(data){
+      console.log(data)
+    }
+  },[data])
 
   // Get initial data for each form
   const getInitialDataForForm = (formIndex: number) => {
@@ -881,7 +882,7 @@ const UpdateDraft = () => {
         {/* Render all forms */}
         <div className="space-y-8">
           {forms.map((formIndex:number) => (
-            <div key={formIndex} className="border-2 border-gray-200 rounded-lg p-4">
+            <div key={formIndex} >
               <UpdateProductDraftForm
                 formIndex={formIndex}
                 currentCategoryName={currentCategoryName}

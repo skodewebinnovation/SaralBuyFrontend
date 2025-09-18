@@ -79,8 +79,10 @@ const ProductOverview = () => {
       setSellerVerification(true)
     }
     try {
-      await createBidFn(buyerId, productId, obj);
-      await bidService.createRequirement({ productId, sellerId, buyerId, budgetAmount });
+      await  Promise.all([
+      createBidFn(buyerId, productId, obj),
+       bidService.createRequirement({ productId, sellerId, buyerId, budgetAmount })
+      ])
     } catch (err) {
       console.log(err);
       toast.error('Failed to place bid');
@@ -235,7 +237,7 @@ console.log(bidOverviewRes)
 
           {/* Buttons */}
           <div className="flex items-center gap-4 mt-5 ">
-            <Button variant="outline" className="min-w-32 text-sm border-gray-400 border-[2px] flex items-center gap-2 hover:bg-transparent cursor-pointer">
+            <Button variant="outline" className="min-w-32 text-sm border-gray-400 border-[2px] flex items-center gap-2 hover:bg-transparent ">
               <img src="/icons/Layer_1.png" className="w-4 h-4 " />
               Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount :  productResponse?.totalBidCount || 0}</span>
             </Button>
@@ -287,11 +289,11 @@ console.log(bidOverviewRes)
                 <>
                   <div>
                     <Label htmlFor="firstName" className="mb-2 text-sm">First Name</Label>
-                    <Input type="text" readOnly placeholder="First Name" id="firstName" {...register("firstName")} className="bg-white" />
+                    <Input disabled type="text"  placeholder="First Name" id="firstName" {...register("firstName")} className="bg-white  select-none" />
                   </div>
                   <div>
                     <Label htmlFor="lastName" className="mb-2 text-sm">Last Name</Label>
-                    <Input type="text" readOnly placeholder="Last Name" id="lastName" {...register("lastName")} className="bg-white" />
+                    <Input disabled type="text"  placeholder="Last Name" id="lastName" {...register("lastName")} className="bg-white  select-none" />
                   </div>
                 </>
               )

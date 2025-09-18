@@ -33,11 +33,12 @@ getDraftById(productId:string){
     withCredentials:true
   }).then(res => res.data?.data|| res.data)
 }
-updateDraft(payload:{draft:boolean,productId:string,mainProductId:string}){
+updateDrafts(payload:any[]){
   return instance.patch('/product/updatedraft',payload,{
     withCredentials:true
   }).then(res => res.data?.data|| res.data)
 }
+
 
 }
 export default new ProductService();

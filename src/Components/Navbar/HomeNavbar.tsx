@@ -26,7 +26,7 @@ import { useFetch } from "@/helper/use-fetch";
 import ProductService from "@/services/product.service";
 import { useEffect, useState } from "react";
 
-import TooltipComp from "@/utils/tooltip";
+import TooltipComp from "@/utils/TooltipComp";
 import { getLocation } from "@/helper/locationAPI";
 interface MenuItem {
   title: string;
@@ -155,7 +155,6 @@ const HomeNavbar = () => {
         <nav className="hidden justify-evenly lg:flex items-center gap-5 ">
           <div className="flex items-center gap-6">
             {/* Logo */}
-            {/* Logo */}
             <Link to={'/'} className="flex items-center gap-2">
 
               <img
@@ -237,9 +236,11 @@ const HomeNavbar = () => {
             </Button>} contentChildren={<p >Notifications</p>}/>
 
            
-            <TooltipComp key={'cart'} hoverChildren={<Button variant="secondary" size="icon" className="cursor-pointer">
+            <TooltipComp key={'cart'} hoverChildren={
+              <Button variant="secondary" size="icon" className="cursor-pointer">
               <ShoppingCart className="w-5 h-5" />
-            </Button>} contentChildren={<p >Cart</p>}/>
+            </Button>
+          } contentChildren={<p >Cart</p>}/>
             
             <Button onClick={handleRaiseAReuirement} variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
               Raise a Requirement

@@ -66,7 +66,7 @@ const Profile = () => {
           <BreadcrumbItem className="flex items-center gap-2 cursor-pointer">
             <BreadcrumbPage className="capitalize font-regular text-gray-500">Home</BreadcrumbPage>
             <BreadcrumbSeparator />
-            <BreadcrumbPage className="capitalize font-regular text-orange-600">Account</BreadcrumbPage>
+            <BreadcrumbPage className="capitalize font-regular text-orange-600 font-semibold">Account</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

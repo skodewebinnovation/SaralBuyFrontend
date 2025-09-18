@@ -10,7 +10,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Trash2Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SkeletonTable from '@/const/tableSkeleton';
+import {SkeletonTable} from '@/const/CustomSkeletons';
 import TableListing from '@/Components/TableLisiting';
 
 const BidListing = () => {
@@ -97,7 +97,7 @@ const BidListing = () => {
     return (
        <>
        {
-        bidLoading ? <SkeletonTable/> : <TableListing data={data} columns={columns} filters={true}  title='Your Bids'/>
+        bidLoading ? <SkeletonTable/> : <TableListing data={data} columns={columns} filters={true}  title='Your Bids' colorPalette={'gray'} />
        }
        </>
     )
