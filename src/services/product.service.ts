@@ -33,8 +33,8 @@ getDraftById(productId:string){
     withCredentials:true
   }).then(res => res.data?.data|| res.data)
 }
-updateDrafts(payload:any[]){
-  return instance.patch('/product/updatedraft',payload,{
+updateDrafts(payload:any[],isMultiple:boolean){
+  return instance.patch(`/product/updatedraft/${isMultiple}`,payload,{
     withCredentials:true
   }).then(res => res.data?.data|| res.data)
 }

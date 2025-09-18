@@ -802,17 +802,19 @@ const UpdateDraft = () => {
 
       // Handle file uploads with unique keys for each form
       if (formData.image && allowedFields.includes('image')) {
-        formDataToSend.append(`image_${formIndex}`, formData.image);
+        formDataToSend.append(`image`, formData.image);
       }
       if (formData.document && allowedFields.includes('document')) {
-        formDataToSend.append(`document_${formIndex}`, formData.document);
+        formDataToSend.append(`document`, formData.document);
       }
     });
 
     formDataToSend.append('products', JSON.stringify(productsData));
     formDataToSend.append('draft', 'false'); 
     console.log(productsData)
-    await fn(productsData);
+    // Determine if multiple products
+    const isMultiple = forms.length > 1;
+    await fn(formDataToSend, isMultiple);
 
   };
 
