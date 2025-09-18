@@ -211,7 +211,7 @@ const CategoryForm = ({
         {/* Left Panel */}
         <div className="md:col-span-1 lg:col-span-1 bg-white shadow-sm rounded-2xl p-6 border xs:grid xs:grid-cols-2 gap-6 space-y-4">
           <div className="col-span-1 align-center sm:block flex flex-col justify-center">
-            <h2 className="text-lg font-semibold mb-2">Tailor Your Experience</h2>
+            <h2 className="text-lg font-semibold mb-2">Product Form ({formIndex+1})</h2>
             <p className="text-sm text-muted-foreground">
               Please help us tailor the experience by filling out the form below.
               If this isn't the category you meant to choose, you can go back and
@@ -285,7 +285,7 @@ const CategoryForm = ({
 
               {currentCategoryName !== "service" && (
                 <Input 
-                  type="text" 
+                  type="number" 
                   placeholder="Quantity*" 
                   {...register('quantity')} 
                   className="bg-white col-span-1" 

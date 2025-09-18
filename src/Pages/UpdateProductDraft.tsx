@@ -74,6 +74,9 @@ function getSubCategories(categoryName: string) {
   }
 }
 
+
+
+
 const UpdateProductDraftForm = ({
   formIndex,
   currentCategoryName,
@@ -194,7 +197,7 @@ const UpdateProductDraftForm = ({
         {/* Left Panel */}
         <div className="md:col-span-1 lg:col-span-1 bg-white shadow-sm rounded-2xl p-6 border xs:grid xs:grid-cols-2 gap-6 space-y-4">
           <div className="col-span-1 align-center sm:block flex flex-col justify-center">
-            <h2 className="text-lg font-semibold mb-2">Update Your Product {formIndex + 1}</h2>
+           <h2 className="text-lg font-semibold mb-2">Product Form ({formIndex+1})</h2>
             <p className="text-sm text-muted-foreground">
               Update your product details below. Make sure all required fields are filled correctly.
             </p>
@@ -266,7 +269,7 @@ const UpdateProductDraftForm = ({
 
               {currentCategoryName !== "service" && (
                 <Input
-                  type="text"
+                  type="number"
                   placeholder="Quantity*"
                   {...register('quantity')}
                   className="bg-white col-span-1"
@@ -718,6 +721,7 @@ const UpdateDraft = () => {
     }
   }, [productId]);
 
+
   useEffect(() => {
     if (getDraftRes ) {
       console.log(getDraftRes)
@@ -739,6 +743,48 @@ const UpdateDraft = () => {
       }
     }
   }, [getDraftRes]);
+
+
+
+  const isValidForms = (formsDataObj: any) => {
+  const formsArray = Object.values(formsDataObj);
+  
+  for (let i = 0; i < formsArray.length; i++) {
+    const form = formsArray[i] as any;
+    
+    if (!form.title || form.title.trim() === '') {
+      toast.error(`Title is required${formsArray.length > 1 ? ` in product form (${i + 1}` : ''})`);
+      return false;
+    }
+    
+    if (!form.subCategoryId || form.subCategoryId.trim() === '') {
+      toast.error(`Category is required${formsArray.length > 1 ? ` in product form (${i + 1}` : ''})`);
+      return false;
+    }
+    
+    if (currentCategoryName?.toLowerCase() !== 'service' && (!form.brand || form.brand.trim() === '')) {
+      toast.error(`Brand is required${formsArray.length > 1 ? ` in product form (${i + 1}` : ''})`);
+      return false;
+    }
+    
+    if (currentCategoryName?.toLowerCase() !== 'service' && (!form.quantity || form.quantity.toString().trim() === '')) {
+      toast.error(`Quantity is required${formsArray.length > 1 ? ` in product form (${i + 1}` : ''})`);
+      return false;
+    }
+    
+    if (!form.image && (!form.initialData?.image || form.initialData?.image.trim() === '')) {
+      toast.error(`Image is required${formsArray.length > 1 ? ` in product form (${i + 1}` : ''})`);
+      return false;
+    }
+    
+    if (!form.description || form.description.trim() === '') {
+      toast.error(`Description is required${formsArray.length > 1 ? ` in product form (${i + 1}` : ''})`);
+      return false;
+    }
+  }
+  
+  return true;
+};
 
   
     useEffect(() => {
@@ -768,12 +814,15 @@ const UpdateDraft = () => {
     }));
   };
  const handleSubmitAllForms = async() => {
-
+if (!isValidForms(formsData)) {
+    return;
+  }
     const allowedFields = getCategorySpecificFields(currentCategoryName!);
     const formDataToSend = new FormData();
     const productsData = [] as any
     
     Object.entries(formsData).forEach(([formIndex, formData]: any) => {
+
       const productData: any = {
         _id: formData._id // Include ID for update
       };
@@ -820,11 +869,12 @@ const UpdateDraft = () => {
 
   useEffect(()=>{
     if(data){
-      console.log(data)
+      toast.success(`Draft updated successfully`)
+      navigate(-1)
     }
   },[data])
 
-  // Get initial data for each form
+
   const getInitialDataForForm = (formIndex: number) => {
     console.log("Getting initial data for form:", formIndex);
     console.log("Draft state:", draftState);
@@ -844,15 +894,6 @@ const UpdateDraft = () => {
     }
   };
 
-  // if (!draftState || !currentCategoryName) {
-  //   return (
-  //     <div className="w-full max-w-7xl mx-auto p-4">
-  //       <div className="flex justify-center items-center h-64">
-  //         <Spinner className="w-8 h-8 animate-spin" />
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <>

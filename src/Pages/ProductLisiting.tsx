@@ -106,6 +106,7 @@ useEffect(() => {
   try {
     const response = await productService.getProductByTitle(title, currentPage, limit);
     const newProducts  = response?.data?.data?.products || [];
+  
 
     setProducts(prev => reset ? newProducts : [...prev, ...newProducts]);
     setTotal(response?.data?.data.total);

@@ -115,13 +115,13 @@ const Requirement = () => {
                 new Array(3).fill(0).map(_ => <SliderSkeleton />) :
                 drafts.length > 0 ? drafts.map((item: any, idx: number) => (
                   <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
-                    <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400 rounded-md p-1 cursor-pointer'
+                    <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400 rounded-xl p-1 cursor-pointer'
                       onClick={() => {
                         navigate('/update-draft/' + item._id)
                       }}
                     >
                       <TooltipComp
-                        hoverChildren={<SquarePen className='h-5 w-5' />}
+                        hoverChildren={<SquarePen className='h-4 w-4' />}
                         contentChildren={<p>Edit Draft</p>}
                       ></TooltipComp>
                     </div>

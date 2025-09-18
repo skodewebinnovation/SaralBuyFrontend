@@ -98,7 +98,6 @@ const HomeNavbar = () => {
   }
 
 
-  console.log(currenLocation)
    function getGeoLocation(){
     if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(
