@@ -59,7 +59,7 @@ const Home = () => {
       category: bid.productId?.categoryId?.categoryName || "N/A",
       title: bid.productId?.title || "Untitled",
       deliveryDate: dateFormatter(bid.earliestDeliveryDate),
-      totalBids: bid.bidCount || 0,
+      totalBids: bid?.productId?.totalBidCount || 0,
       image: bid.productId?.image || "/observed.svg",
     }));
 

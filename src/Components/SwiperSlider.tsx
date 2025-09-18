@@ -11,6 +11,7 @@ type Props = {
 }
 
 const SwiperSlider = ({ title, color, target,data }: Props) => {
+  console.log(data,7)
   const [sliderRef] = useKeenSlider<HTMLDivElement>({
     mode: "free-snap",
     slides: {
