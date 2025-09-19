@@ -27,7 +27,6 @@ const Requirement = () => {
     getMyRequirements()
     } else {
       getDrafts()
-
     }
   }, [tab])
 
@@ -40,7 +39,6 @@ const Requirement = () => {
 
     useEffect(() => {
     if (getMyRequirementsRes && getMyRequirementsRes?.length > 0) {
-      console.log(getMyRequirementsRes)
       setRequirements(getMyRequirementsRes)
     }
   }, [getMyRequirementsRes]);

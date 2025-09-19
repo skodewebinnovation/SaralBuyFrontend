@@ -37,7 +37,7 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
- const modifiedProducts = [product, ...(product?.product?.subProducts || [])];
+ const modifiedProducts = target ==='bid' ? [product, ...(product?.subProducts || [])] : [product, ...(product?.product?.subProducts || [])];
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slides: {
@@ -57,7 +57,7 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
     navigate('/account/requirements/' + id);
   };
 
-
+// only for allow arrow if more than 2 products
   const products = product?.subProducts?.length > 0 ? product.subProducts : [product];
 
 function handleSubmitDraft(targetProduct: any) {
@@ -92,7 +92,7 @@ function handleSubmitDraft(targetProduct: any) {
           </div>
         ))}
 
-        {loaded && instanceRef.current && products.length > 2 && (
+        {loaded && instanceRef.current && products.length >2 && (
           <>
             <Arrow
 

@@ -146,6 +146,7 @@ export function AccountSettings() {
               <Label htmlFor="address">Address</Label>
               <Textarea
                 id="address"
+                rows={5}
                 placeholder="Enter address"
                 {...register("address")}
               />

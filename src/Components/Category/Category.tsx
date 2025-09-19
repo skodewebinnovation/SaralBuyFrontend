@@ -811,7 +811,12 @@ const handleSubmitAllForms = async (isDraft:boolean) => {
     return;
   }
 
+
   const formsArray = Object.values(formsData) as any
+  if(formsArray.length > 5){
+    toast.error("You can submit a maximum of 5 product forms at a time.");
+    return
+  }
 
     const hasValidForms = isValidForms(formsArray,isDraft);
   

@@ -7,4 +7,4 @@ export const getLocation =async (lon:number,lat:number)=>{
         console.log('getting error to fetch location',error?.message || error)
         
     }
-}
+} 
