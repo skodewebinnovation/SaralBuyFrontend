@@ -468,6 +468,19 @@ const HomeNavbar = () => {
                           <li
                             key={idx}
                             className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
+                            onClick={() => {
+                              // Remove notification from list
+                              setProductNotifications((prev) =>
+                                prev.filter((n, i) => i !== idx)
+                              );
+                              setShowProductNotifDropdown(false);
+                              // Defensive: check productId
+                              if (notif.productId) {
+                                navigate(`/product-overview?productId=${encodeURIComponent(notif.productId)}`);
+                              } else {
+                                toast.error("Product ID missing in notification.");
+                              }
+                            }}
                           >
                             <div className="font-medium text-gray-800">
                               {notif.title}
