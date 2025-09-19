@@ -25,9 +25,11 @@ import { Card } from "../ui/card";
 import { useFetch } from "@/helper/use-fetch";
 import ProductService from "@/services/product.service";
 import { useEffect, useRef, useState } from "react";
-
 import TooltipComp from "@/utils/TooltipComp";
 import { getLocation } from "@/helper/locationAPI";
+import { getUserProfile } from "@/zustand/userProfile";
+import userService from "@/services/user.service";
+import ChatService from "@/services/chat.service";
 interface MenuItem {
   title: string;
   url: string;
@@ -75,8 +77,7 @@ const menu: MenuItem[] = [
 type ProductsType = { title: string, image: string, _id: string, description: string }
 
 
-import ChatService from "@/services/chat.service";
-import { getUserProfile } from "@/zustand/userProfile";
+
 
 const HomeNavbar = () => {
   const navigate = useNavigate()
@@ -93,6 +94,7 @@ const HomeNavbar = () => {
   const [currenLocation, setCurrentLocation] = useState('')
   const [showDropdown, setShowDropdown] = useState(false);
   const productsRef = useRef<HTMLDivElement>(null);
+  const { fn: updateProfile } = useFetch(userService.updateProfile)
   const handleRaiseAReuirement = () => {
     navigate("/requirement");
   };
@@ -146,13 +148,16 @@ const HomeNavbar = () => {
     // Example: navigate(`/chat?roomId=${roomId}`);
   };
 
-  function getGeoLocation() {
+  async function getGeoLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async function (position) {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
-          setCurrentLocation(await getLocation(longitude, latitude))
+          const location = await getLocation(longitude, latitude)
+          setCurrentLocation(location)
+          await updateProfile({ currentLocation: location })
+
 
         },
         (err) => console.log(err),
@@ -194,26 +199,32 @@ const HomeNavbar = () => {
   useEffect(() => {
     setProducts(data)
   }, [data])
-  useEffect(() => getGeoLocation(), [])
+  useEffect(() => {
+    if ((!user?.currenLocation || user?.currenLocation === '') && user) {
+      getGeoLocation();
+    } else {
+      setCurrentLocation(user?.currenLocation)
+    }
+  }, [user])
 
 
-useEffect(() => {
-  function handleOutsideClick(event: MouseEvent) {
-    if (showDropdown && productsRef.current) {
-      if (!productsRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-        setText('');
-        setProducts([]);
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      if (showDropdown && productsRef.current) {
+        if (!productsRef.current.contains(event.target as Node)) {
+          setShowDropdown(false);
+          setText('');
+          setProducts([]);
+        }
       }
     }
-  }
 
-  window.addEventListener('click', handleOutsideClick);
+    window.addEventListener('click', handleOutsideClick);
 
-  return () => {
-    window.removeEventListener('click', handleOutsideClick);
-  };
-}, [showDropdown, productsRef]);
+    return () => {
+      window.removeEventListener('click', handleOutsideClick);
+    };
+  }, [showDropdown, productsRef]);
   return (
     <section className="mb-2 relative z-9">
       <div className="mx-auto bg-gray-50 p-3 sticky top-0">
@@ -254,8 +265,8 @@ useEffect(() => {
             {/* Search Dropdown */}
             {showDropdown && (
               <div
-              ref={productsRef}
-              className="absolute top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
+                ref={productsRef}
+                className="absolute top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
                 {isPending() ? (
                   Array.from({ length: 3 }).map((_, i) => (
                     <Skeleton key={i} className="h-20 rounded-md w-full" />
