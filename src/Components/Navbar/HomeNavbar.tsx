@@ -136,8 +136,7 @@ const HomeNavbar = () => {
   // Show/hide notification dropdown and clear notifications
   const handleBellClick = () => {
     setShowNotifDropdown((prev) => !prev);
-    // Optionally clear notifications when opening dropdown:
-    // setNotifications([]);
+    setNotifications([]); // Clear notifications when opening dropdown
   };
 
   // Remove notification on click and optionally navigate to chat
