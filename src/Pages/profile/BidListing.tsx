@@ -74,13 +74,13 @@ const BidListing = () => {
                         // Store chat IDs in localStorage for persistence across refresh
                         localStorage.setItem('chatIds', JSON.stringify({
                             productId: row.original?.productId,
-                            productBuyerId: row.original?.productBuyerId,
+                            buyerId: row.original?.productBuyerId,
                             sellerId: user._id
                         }));
                         navigate('/chat', {
                             state: {
                                 productId: row.original?.productId,
-                                productBuyerId: row.original?.productBuyerId,
+                                buyerId: row.original?.productBuyerId,
                                 sellerId: user._id
                             }
                         });
@@ -98,17 +98,22 @@ const BidListing = () => {
 
     useEffect(() => {
         if (fetchBidsResponse && fetchBidsResponse.length > 0) {
-            const formattedData = fetchBidsResponse.map((item: any) => ({
-                _id: item._id,
-                date: dateFormatter(item.createdAt),
-                // bid_to: mergeName(item.buyer),
-                product: item.product.title,
-                productId: item.product._id,
-                productBuyerId:item.product.userId,
-                min_budget: item?.product?.minimumBudget,
-                your_budget: item?.budgetQuation,
-                status: item?.status || "active",
-            }));
+            const formattedData = fetchBidsResponse.map((item: any) => {
+                // Use main product _id if available, else fallback
+                let mainProductId = item.product?.product?._id || item.product?._id;
+                let mainProductBuyerId = item.product?.product?.userId || item.product?.userId;
+                return {
+                    _id: item._id,
+                    date: dateFormatter(item.createdAt),
+                    // bid_to: mergeName(item.buyer),
+                    product: item.product.title,
+                    productId: mainProductId,
+                    productBuyerId: mainProductBuyerId,
+                    min_budget: item?.product?.minimumBudget,
+                    your_budget: item?.budgetQuation,
+                    status: item?.status || "active",
+                };
+            });
             setData(formattedData);
         }
     }, [fetchBidsResponse]);

@@ -55,13 +55,14 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
   const handleNavigate = (productData: any) => {
     if (target === 'bid') return;
     // Navigate with product data in state
-    navigate('/account/requirements/' + productData._id, { 
-      state: { product: productData,sellerId: product.seller?._id } 
+    navigate('/account/requirements/' + productData._id, {
+      state: { product: productData, sellerId: product.seller?._id, products }
     });
   };
 
 // only for allow arrow if more than 2 products
-  const products = product?.subProducts?.length > 0 ? product.subProducts : [product];
+  const products = product?.subProducts?.length > 0 ? [product, ...product.subProducts] : [product];
+  console.log(products,"ppppppppppp")
 function handleSubmitDraft(targetProduct: any) {
   const resArr = targetProduct?.subProducts?.length > 0 ? targetProduct.subProducts : [targetProduct];
 
@@ -142,3 +143,4 @@ function handleSubmitDraft(targetProduct: any) {
 
 
 export default RequirementSlider;
+

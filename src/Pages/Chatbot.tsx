@@ -320,7 +320,7 @@ const Chatbot = () => {
 
   // Try to get IDs from location.state, else fallback to localStorage
   let productId = location.state?.productId;
-  let buyerId = location.state?.userId || location.state?.productBuyerId;
+  let buyerId = location.state?.buyerId;
   let sellerId = location.state?.sellerId;
 
   if (!productId || !buyerId || !sellerId) {
@@ -329,8 +329,7 @@ const Chatbot = () => {
       if (stored) {
         const ids = JSON.parse(stored);
         productId = productId || ids.productId;
-        // Try both possible keys for buyerId
-        buyerId = buyerId || ids.userId || ids.productBuyerId;
+        buyerId = buyerId || ids.buyerId;
         sellerId = sellerId || ids.sellerId;
       }
     } catch (e) {
