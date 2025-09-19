@@ -34,7 +34,7 @@ const ProductOverview = () => {
   const { fn: getProductById, data: productResponse, error, setData: setProductResponse } = useFetch(productService.getProductById);
   const { fn: bidOverviewFn, data: bidOverviewRes } = useFetch(bidService.bidOverViewbyId)
   const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading } = useFetch(bidService.updateUserBidDets)
-  const { fn: createBidFn, data: createBidRes, loading: createBidLoading } = useFetch(bidService.createBid);
+  const { fn: createBidFn, data: createBidRes, loading: createBidLoading} = useFetch(bidService.createBid);
   const [open, setOpen] = useState(false)
   const [sellerVerification, setSellerVerification] = useState(false)
   const [businessType, setBusinessType] = useState('')
@@ -82,6 +82,7 @@ const ProductOverview = () => {
 
   async function handleCreteBid() {
     if (!productResponse) return;
+    if(productResponse?.mainProduct?.userId?._id === userProfile?.user?._id) return;
     const buyerId = productResponse?.mainProduct.userId?._id;
     const productId = productResponse?.mainProduct._id;
     const sellerId = userProfile?.user._id;
@@ -126,15 +127,29 @@ const ProductOverview = () => {
   useEffect(() => {
     if (updateUserBidDetsRes) {
       toast.success('Bid updated successfully')
+      setBusinessType('')
     }
   }, [updateUserBidDetsRes])
 
 
-
   useEffect(() => {
     if (createBidRes) {
+      if(productResponse.mainProduct){
+      setProductResponse(()=>{
+        return{
+          ...productResponse,
+          mainProduct:{
+            ...productResponse.mainProduct,
+            totalBidCount:productResponse.mainProduct.totalBidCount+1
+          }
+        }
+      })
+      }else{
+        console.log('main product to missing update bid count')
+      }
       toast.success('Bid created successfully')
       setSellerVerification(false)
+      setBusinessType('')
       reset({
         firstName: userProfile.user.firstName,
         lastName: userProfile.user.lastName,
@@ -204,7 +219,7 @@ const ProductOverview = () => {
             </BreadcrumbPage>
             <BreadcrumbSeparator />
             <BreadcrumbPage className="capitalize font-regular text-gray-500">
-              {bidOverviewRes ? bidOverviewRes?.product?.title : productResponse?.title}
+              {bidOverviewRes ? bidOverviewRes?.product?.title : productResponse?.mainProduct?.title}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -219,7 +234,7 @@ const ProductOverview = () => {
             {/* Content */}
             <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Image */}
-              <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-68 ">
+              <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-64 ">
                 <img
                   src={bidOverviewRes ? bidOverviewRes?.product?.image : productResponse?.mainProduct?.image}
                   alt="Product"
@@ -350,6 +365,8 @@ const ProductOverview = () => {
                 {
                   !bidOverviewRes ? (
                     <Button
+                    
+                    disabled={productResponse?.mainProduct?.userId?._id === userProfile?.user?._id ||createBidLoading}
                       variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
                       Place Bid
                     </Button>
@@ -367,6 +384,9 @@ const ProductOverview = () => {
                       </Button>
                     )
                 }
+                <div>
+                  
+                </div>
               </form>
             </div>
           </div>
@@ -379,7 +399,7 @@ const ProductOverview = () => {
                 {/* Content */}
                 <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
                   {/* Image */}
-                  <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-68 ">
+                  <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-64 ">
                     <img
                       src={bidOverviewRes ? bidOverviewRes?.product?.image : item?.image}
                       alt="Product"
@@ -515,6 +535,7 @@ const ProductOverview = () => {
                         {
                           !bidOverviewRes ? (
                             <Button
+                            disabled={productResponse?.mainProduct?.userId?._id === userProfile?.user?._id || createBidLoading}
                               variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
                               Place Bid
                             </Button>
