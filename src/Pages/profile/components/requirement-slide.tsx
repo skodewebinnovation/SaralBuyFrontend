@@ -52,14 +52,17 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
     },
   });
 
-  const handleNavigate = (id: string) => {
+  const handleNavigate = (productData: any) => {
     if (target === 'bid') return;
-    navigate('/account/requirements/' + id);
+    // Navigate with product data in state
+    navigate('/account/requirements/' + productData._id, { 
+      state: { product: productData,sellerId: product.seller?._id } 
+    });
   };
 
 // only for allow arrow if more than 2 products
   const products = product?.subProducts?.length > 0 ? product.subProducts : [product];
-
+console.log(products,"products")
 function handleSubmitDraft(targetProduct: any) {
   const resArr = targetProduct?.subProducts?.length > 0 ? targetProduct.subProducts : [targetProduct];
   console.log(resArr)
@@ -86,7 +89,7 @@ function handleSubmitDraft(targetProduct: any) {
           <div
             key={prt._id}
             className={`keen-slider__slide ${target === 'requirement' ? 'cursor-pointer' : ''}`}
-            onClick={() => handleNavigate(prt._id)}
+            onClick={() => handleNavigate(prt)}
           >
             <ProductCard product={prt} />
           </div>

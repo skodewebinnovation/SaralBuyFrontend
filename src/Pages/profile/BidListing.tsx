@@ -12,10 +12,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {SkeletonTable} from '@/const/CustomSkeletons';
 import TableListing from '@/Components/TableLisiting';
+import { getUserProfile } from '@/zustand/userProfile';
 
 const BidListing = () => {
     const [data, setData] = useState([])
     const navigate = useNavigate()
+    let { user } = getUserProfile();
     const { fn: fetchBidsFn, data: fetchBidsResponse,loading:bidLoading } = useFetch(bidService.getAllBids)
     const columns: ColumnDef<any>[] = [
         {
@@ -68,6 +70,13 @@ const BidListing = () => {
                     <Button className="text-sm cursor-pointer text-gray-600 underline" variant={"link"} onClick={() => {
                         navigate('/product-overview?bidId=' + row.original?._id);
                     }}>View</Button>
+                    <p onClick={()=>navigate('/chat', { 
+                        state: { 
+                            productId: row.original?.productId,
+                            productBuyerId:row.original?.productBuyerId,
+        sellerId: user._id
+      } 
+    })}>Chat now</p>
                     <div className="hover:bg-red-100 p-1 rounded-md ease-in-out transition-all duration-300">
                         <Trash2Icon className="h-4 w-4  text-red-500 cursor-pointer" />
                     </div>
@@ -86,6 +95,8 @@ const BidListing = () => {
                 date: dateFormatter(item.createdAt),
                 // bid_to: mergeName(item.buyer),
                 product: item.product.title,
+                productId: item.product._id,
+                productBuyerId:item.product.userId,
                 min_budget: item?.product?.minimumBudget,
                 your_budget: item?.budgetQuation,
                 status: item?.status || "active",

@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import ChatService from '../services/chat.service'
 import { Search, Send, Menu, X, Circle, List, LayoutGrid, Paperclip } from 'lucide-react'
 import { Input } from '../Components/ui/input'
 import { Button } from '../Components/ui/button'
@@ -6,45 +7,32 @@ import { Avatar, AvatarFallback, AvatarImage } from '../Components/ui/avatar'
 import { Sheet, SheetContent, SheetTrigger } from '../Components/ui/sheet'
 import { Badge } from '../Components/ui/badge'
 import { fallBackName } from '@/helper/fallBackName'
+import { getUserProfile } from "@/zustand/userProfile";
+import { useLocation } from 'react-router-dom'
 
-// Mock data for contacts
-const contacts = [
-  {
-    id: 1,
-    name: 'Shubham Sharma',
-    message: 'Thank you very much, I\'m glad...',
-    time: '22 m Ago',
-    avatar: 'https://github.com/shubhamsharma20007.png',
-    isOnline: true
-  },
-
-]
-
-const messages = [
-  { id: 1, text: 'Hey!', sender: 'other', time: 'Today 11:51' },
-  { id: 2, text: 'I had few offers for your product requirement', sender: 'other', time: 'Today 11:53' },
-  { id: 3, text: 'Yes Please I be glad to ans you query', sender: 'user', time: 'Today 11:56' },
-    { id: 1, text: 'Hey!', sender: 'other', time: 'Today 11:51' },
-  { id: 2, text: 'I had few offers for your product requirement', sender: 'other', time: 'Today 11:53' },
-  { id: 3, text: 'Yes Please I be glad to ans you query', sender: 'user', time: 'Today 11:56' },
-    { id: 1, text: 'Hey!', sender: 'other', time: 'Today 11:51' },
-  { id: 2, text: 'I had few offers for your product requirement', sender: 'other', time: 'Today 11:53' },
-  { id: 3, text: 'Yes Please I be glad to ans you query', sender: 'user', time: 'Today 11:56' }
-]
-
-const ContactsList = ({ onSelectContact }: { onSelectContact: (contact: any) => void }) => {
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+const ContactsList = ({
+  onSelectContact,
+  contact,
+  userType,
+  user,
+}: {
+  onSelectContact: (contact: any) => void;
+  contact: any;
+  userType: "seller" | "buyer";
+  user: any;
+}) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const filteredContacts = [contact].filter(
+    (c) =>
+      c &&
+      c.name &&
+      c.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="h-full flex flex-col bg-chat-sidebar border-r-0 border-chat-border">
-
-      {/* Fixed Search Input Header */}
-      <div className="p-4  border-b border-chat-border">
-        <h2 className="text-lg font-semibold mb-2 text-gray-600 ">Messaging</h2>
+      <div className="p-4 border-b border-chat-border">
+        <h2 className="text-lg font-semibold mb-2 text-gray-600">Messaging</h2>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -55,8 +43,6 @@ const ContactsList = ({ onSelectContact }: { onSelectContact: (contact: any) => 
           />
         </div>
       </div>
-
-      {/* Scrollable Contact List */}
       <div className="flex-1 overflow-y-auto">
         {filteredContacts.map((contact) => (
           <div
@@ -86,19 +72,96 @@ const ContactsList = ({ onSelectContact }: { onSelectContact: (contact: any) => 
         ))}
       </div>
     </div>
-  )
+  );
+};
+
+interface ChatAreaProps {
+  selectedContact: any;
+  userType: "seller" | "buyer";
+  userId: string;
+  productId: string;
+  buyerId: string;
+  sellerId: string;
+  messages: any[];
+  setMessages: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
+const ChatArea = ({
+  selectedContact,
+  userType,
+  userId,
+  productId,
+  buyerId,
+  sellerId,
+  messages,
+  setMessages,
+}: ChatAreaProps) => {
+  const [messageText, setMessageText] = useState('');
+  const [chatService] = useState(() => ChatService.getInstance());
 
-const ChatArea = ({ selectedContact }: { selectedContact: any }) => {
-  const [messageText, setMessageText] = useState('')
+  useEffect(() => {
+    if (!userId || !productId || !sellerId || !userType || !buyerId) {
+      console.error('Missing required parameters:', { userId, productId, sellerId, userType, buyerId });
+      return;
+    }
+    
+    console.log('Joining room with:', { userId, productId, sellerId, userType, buyerId });
+    chatService.joinRoom(userId, productId, sellerId, userType, buyerId);
+
+    // Emit get_chat_history after joining room
+    if (chatService.socket) {
+      chatService.socket.emit("get_chat_history", {
+        productId,
+        sellerId,
+        buyerId,
+      });
+
+      // Listen for chat_history event
+      const handleChatHistory = (data: any) => {
+        if (data && Array.isArray(data.messages)) {
+          // Map backend messages to frontend format
+          const mappedMessages = data.messages.map((msg: any, idx: number) => ({
+            id: msg._id || idx + "_" + (msg.timestamp || ""),
+            text: msg.message,
+            senderId: msg.senderId,
+            senderType: msg.senderType,
+            time: msg.timestamp
+              ? new Date(msg.timestamp).toLocaleTimeString()
+              : "",
+          }));
+          setMessages(mappedMessages);
+        }
+      };
+
+      chatService.socket.on("chat_history", handleChatHistory);
+
+      // Cleanup listener on unmount or dependency change
+      return () => {
+        if (chatService.socket) {
+          chatService.socket.off("chat_history", handleChatHistory);
+        }
+      };
+    }
+  }, [userId, productId, sellerId, userType, buyerId, chatService, setMessages]);
 
   const handleSendMessage = () => {
     if (messageText.trim()) {
-      // Handle message sending logic here
-      setMessageText('')
+      // FIXED: Pass buyerId to sendMessage
+      chatService.sendMessage(productId, sellerId, messageText, userId, userType, buyerId);
+      
+      // Add message to local state immediately for better UX
+      const newMessage = {
+        id: Date.now().toString(),
+        text: messageText,
+        senderId: userId,
+        senderType: userType,
+        time: new Date().toLocaleTimeString(),
+      };
+      
+      setMessages((prev) => [...prev, newMessage]);
+      setMessageText('');
     }
-  }
+  };
 
   if (!selectedContact) {
     return (
@@ -108,19 +171,16 @@ const ChatArea = ({ selectedContact }: { selectedContact: any }) => {
           <p className="text-sm">Choose a contact from the sidebar to start messaging</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="flex-1 flex flex-col  border-1 rounded-md overflow-hidden">
+    <div className="flex-1 flex flex-col border-1 rounded-md overflow-hidden">
       {/* Chat Header */}
-      <div className=" border-b border-chat-border bg-background">
-        <div className='bg-gray-100 flex justify-between items-center '>
+      <div className="border-b border-chat-border bg-background">
+        <div className='bg-gray-100 flex justify-between items-center'>
           <p></p>
-
         </div>
-
-
         <div className="flex justify-between items-center space-x-2 bg-gray-100 p-2">
           <p className="text-sm text-muted-foreground font-semibold">Looking for 5 Industrial Drill Machines</p>
           <div className="flex items-center justify-end mt-1">
@@ -128,7 +188,6 @@ const ChatArea = ({ selectedContact }: { selectedContact: any }) => {
             <Badge variant="secondary" className="text-sm">5 units</Badge>
           </div>
         </div>
-
         <div className="flex items-center space-x-3 p-3 bg-orange-50">
           <div className='flex justify-between items-center w-full'>
             <div className="relative flex items-center gap-3">
@@ -140,44 +199,54 @@ const ChatArea = ({ selectedContact }: { selectedContact: any }) => {
                 <div className='flex items-center space-x-4'>
                   <h3 className="font-semibold text-gray-700">{selectedContact.name}</h3>
                   <div className="flex items-center space-x-2">
-                    <Circle className="h-2 w-2  overflow-hidden bg-green-600 rounded-full border-0 text-transparent" />
+                    <Circle className="h-2 w-2 overflow-hidden bg-green-600 rounded-full border-0 text-transparent" />
                     <span className="text-sm text-muted-foreground">Online</span>
                   </div>
                 </div>
               </div>
             </div>
             <div className='flex items-center gap-3'>
-              <Button variant="outline" size="sm" className="text-orange-600 hover:text-orange-600 bg-transparent cursor-pointer hover:bg-transparent border-orange-600 w-32 text-sm font-medium ">
+              <Button variant="outline" size="sm" className="text-orange-600 hover:text-orange-600 bg-transparent cursor-pointer hover:bg-transparent border-orange-600 w-32 text-sm font-medium">
                 Close Deal
               </Button>
               <LayoutGrid className='w-5 h-5 text-gray-600' />
             </div>
           </div>
         </div>
-
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1  overflow-y-auto p-4 space-y-6">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex flex-col ${message.sender === 'user' ? 'items-end' : 'items-start'
-              }`}
-          >
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        {messages.map((message) => {
+          // Show all messages, align right if sent by current user, left otherwise
+          const isMine = message.senderId === userId && message.senderType === userType;
+          return (
             <div
-              className={`max-w-[70%] px-4 py-2 ${message.sender === 'user'
-                  ? 'bg-gray-500 text-white rounded-tl-lg rounded-bl-lg rounded-br-lg'
-                  : 'bg-gray-600 text-white rounded-tr-lg rounded-bl-lg rounded-br-lg'
-                }`}
+              key={message.id}
+              className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
             >
-              <p className="text-sm">{message.text}</p>
+              <div
+                className={`max-w-[70%] px-4 py-2 ${
+                  isMine
+                    ? 'bg-gray-500 text-white rounded-tl-lg rounded-bl-lg rounded-br-lg'
+                    : 'bg-gray-600 text-white rounded-tr-lg rounded-bl-lg rounded-br-lg'
+                }`}
+              >
+                <p className="text-sm">{message.text}</p>
+              </div>
+              <span className="text-xs text-muted-foreground mt-1">
+                {message.time
+                  ? message.time
+                  : message.timestamp
+                  ? new Date(message.timestamp).toLocaleTimeString()
+                  : ""}
+                {" "}
+                • {isMine ? 'You' : message.senderType}
+              </span>
             </div>
-            <span className="text-xs text-muted-foreground mt-1">{message.time}</span>
-          </div>
-        ))}
+          );
+        })}
       </div>
-
 
       {/* Message Input */}
       <div className="p-4 border-t border-chat-border bg-background">
@@ -188,10 +257,10 @@ const ChatArea = ({ selectedContact }: { selectedContact: any }) => {
               value={messageText}
               onChange={(e) => setMessageText(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="p-5 bg-gray-100 rounded-full text-sm placeholder:text-sm placeholder:font-medium tracking-wide focus-visible:ring-0 border-0 "
+              className="p-5 bg-gray-100 rounded-full text-sm placeholder:text-sm placeholder:font-medium tracking-wide focus-visible:ring-0 border-0"
             />
           </div>
-          <div className='p-1 rounded-full border-2 border-gray-500 cursor-pointer hover:bg-gray-100' >
+          <div className='p-1 rounded-full border-2 border-gray-500 cursor-pointer hover:bg-gray-100'>
             <Paperclip className='w-4 h-4 text-gray-700'/>
           </div>
           <Button
@@ -204,26 +273,130 @@ const ChatArea = ({ selectedContact }: { selectedContact: any }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const Chatbot = () => {
-  const [selectedContact, setSelectedContact] = useState(contacts[0])
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const location = useLocation();
+  const { user } = getUserProfile();
+
+  // FIXED: Better ID extraction and validation
+  const productId = location.state?.productId;
+  const buyerId = location.state?.userId || location.state?.productBuyerId;
+  const sellerId = location.state?.sellerId;
+
+  // FIXED: Better userType determination with validation
+  let userType: 'buyer' | 'seller' = 'buyer';
+  let currentUserId = user?._id;
+
+  if (!currentUserId) {
+    console.error('No user ID found');
+    return <div>Error: Please log in to access chat</div>;
+  }
+
+  if (!productId || !buyerId || !sellerId) {
+    console.error('Missing required IDs:', { productId, buyerId, sellerId });
+    return <div>Error: Missing chat parameters</div>;
+  }
+
+  // Determine if current user is buyer or seller
+  if (currentUserId === sellerId) {
+    userType = 'seller';
+  } else if (currentUserId === buyerId) {
+    userType = 'buyer';
+  } else {
+    console.error('Current user is neither buyer nor seller');
+    return <div>Error: Access denied</div>;
+  }
+
+  console.log('Chat initialized:', { 
+    currentUserId, 
+    userType, 
+    productId, 
+    buyerId, 
+    sellerId 
+  });
+
+  // The other party (contact)
+  const contact = userType === 'buyer'
+    ? {
+        id: sellerId,
+        name: 'Seller',
+        message: '',
+        time: '',
+        avatar: '',
+        isOnline: true,
+      }
+    : {
+        id: buyerId,
+        name: 'Buyer', 
+        message: '',
+        time: '',
+        avatar: '',
+        isOnline: true,
+      };
+
+  const [selectedContact, setSelectedContact] = useState(contact);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [messages, setMessages] = useState<any[]>([]);
+
+  useEffect(() => {
+    setSelectedContact(contact);
+  }, [contact.id]);
+
+  useEffect(() => {
+    const chatService = ChatService.getInstance();
+    chatService.connect();
+
+    // Listen for incoming messages globally
+    const handleReceiveMessage = (data: any) => {
+      console.log('Received message:', data);
+      
+      // Only add if it's not from current user (to avoid duplicates)
+      if (data.senderId !== currentUserId) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: data.id || Date.now().toString() + Math.random(),
+            text: data.message,
+            senderId: data.senderId,
+            senderType: data.senderType,
+            time: data.time || new Date().toLocaleTimeString(),
+          },
+        ]);
+      }
+    };
+
+    if (chatService.socket) {
+      chatService.socket.on("receive_message", handleReceiveMessage);
+    }
+
+    return () => {
+      if (chatService.socket) {
+        chatService.socket.off("receive_message", handleReceiveMessage);
+      }
+      // Don't disconnect here as it might be used elsewhere
+    };
+  }, [currentUserId]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
-      <div className="h-screen   border-chat-border rounded-lg overflow-hidden  my-5">
+      <div className="h-screen border-chat-border rounded-lg overflow-hidden my-5">
         <div className="flex h-full gap-2">
           {/* Desktop Sidebar */}
           <div className="hidden md:block w-80 bg-gray-100 border-1 rounded-md">
-            <ContactsList onSelectContact={setSelectedContact} />
+            <ContactsList
+              onSelectContact={setSelectedContact}
+              contact={contact}
+              userType={userType}
+              user={user}
+            />
           </div>
 
           {/* Mobile Menu Button and Chat Area */}
           <div className="flex-1 flex flex-col">
             {/* Mobile Header */}
-            <div className="md:hidden sm:p-4 py-2  border-chat-border bg-chat-sidebar">
+            <div className="md:hidden sm:p-4 py-2 border-chat-border bg-chat-sidebar">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-foreground">Messages</h2>
                 <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -233,22 +406,36 @@ const Chatbot = () => {
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="left" className="p-0 w-80">
-                    <ContactsList onSelectContact={(contact) => {
-                      setSelectedContact(contact)
-                      setIsMobileMenuOpen(false)
-                    }} />
+                    <ContactsList
+                      onSelectContact={(contact) => {
+                        setSelectedContact(contact);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      contact={contact}
+                      userType={userType}
+                      user={user}
+                    />
                   </SheetContent>
                 </Sheet>
               </div>
             </div>
 
             {/* Chat Area */}
-            <ChatArea selectedContact={selectedContact} />
+            <ChatArea
+              selectedContact={selectedContact}
+              userType={userType}
+              userId={currentUserId}
+              productId={productId}
+              buyerId={buyerId}
+              sellerId={sellerId}
+              messages={messages}
+              setMessages={setMessages}
+            />
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Chatbot
+export default Chatbot;

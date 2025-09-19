@@ -4,7 +4,7 @@ import { Button } from '@/Components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Banknote, CalendarDays, MoveLeft } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const dummyData = [
   {
@@ -37,7 +37,23 @@ const dummyData = [
 ]
 
 const RequirementOverview = () => {
+  // const navigate = useNavigate()
+  const location = useLocation()
   const navigate = useNavigate()
+
+  const product = location.state?.product || {}
+  const sellerId = location.state?.sellerId
+  const productData = product.product || product 
+  
+  const handleChatNavigate = () => {
+    navigate('/chat', { 
+      state: { 
+        productId: productData._id, 
+        userId: productData.userId || product.userId,
+        sellerId
+      } 
+    })
+  }
 
   const columns: ColumnDef<any>[] = [
     {
@@ -89,7 +105,8 @@ const RequirementOverview = () => {
       cell: () => (
         <Button
           className="text-sm cursor-pointer text-orange-600 underline"
-          variant="link"
+          variant="link" 
+          onClick={handleChatNavigate}
         >
           Chat Now
         </Button>
