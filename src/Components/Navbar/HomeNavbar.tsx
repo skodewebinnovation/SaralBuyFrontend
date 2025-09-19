@@ -17,6 +17,7 @@ import {
 } from "../../Components/ui/sheet";
 import { useDebounce } from 'use-debounce';
 import { Skeleton } from "../../Components/ui/skeleton"
+import { toast } from "sonner";
 //Logo and Icons
 import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -83,9 +84,13 @@ const HomeNavbar = () => {
   const navigate = useNavigate()
 
   const { user } = getUserProfile();
-  // Remove notificationCount, use notifications.length for badge
+  // Chat notifications
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+
+  // Product notifications
+  const [productNotifications, setProductNotifications] = useState<any[]>([]);
+  const [showProductNotifDropdown, setShowProductNotifDropdown] = useState(false);
 
   const { fn, data } = useFetch(ProductService.getSeachProduct)
   const [text, setText] = useState('');
@@ -138,12 +143,41 @@ const HomeNavbar = () => {
         ];
       });
     });
+
+    // Listen for product notifications
+    chatService.onProductNotification((data) => {
+      setProductNotifications((prev) => {
+        // Uniqueness by productId + title + description
+        const isDuplicate = prev.some(
+          (n) =>
+            n.productId === data.productId &&
+            n.title === data.title &&
+            n.description === data.description
+        );
+        if (isDuplicate) return prev;
+        return [
+          {
+            productId: data.productId,
+            title: data.title,
+            description: data.description,
+            receivedAt: Date.now(),
+          },
+          ...prev,
+        ];
+      });
+    });
   }, [user?._id]);
 
-  // Show/hide notification dropdown (do NOT clear notifications here)
+  // Show/hide chat notification dropdown (do NOT clear notifications here)
   const handleBellClick = () => {
     setShowNotifDropdown((prev) => !prev);
     // Do not clear notifications here; let user see them in dropdown
+  };
+
+  // Show/hide product notification dropdown
+  const handleProductBellClick = () => {
+    setShowProductNotifDropdown((prev) => !prev);
+    // Do not clear product notifications here; let user see them in dropdown
   };
 
   // Remove notification on click and optionally navigate to chat
@@ -201,7 +235,7 @@ const HomeNavbar = () => {
           const longitude = position.coords.longitude;
           const location = await getLocation(longitude, latitude)
           setCurrentLocation(location)
-          await updateProfile({ currentLocation: location })
+          // await updateProfile({ currentLocation: location })
 
 
         },
@@ -406,11 +440,53 @@ const HomeNavbar = () => {
               </div>
             } contentChildren={<p >Messaging</p>} />
 
-            {/* Bell icon (no chat notifications, just icon) */}
+            {/* Bell icon for product notifications */}
             <TooltipComp key={'notification'} hoverChildren={
-              <Button variant="secondary" size="icon" className="cursor-pointer">
-                <Bell className="w-5 h-5" />
-              </Button>
+              <div className="relative">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="cursor-pointer relative"
+                  onClick={handleProductBellClick}
+                >
+                  <Bell className="w-5 h-5" />
+                  {productNotifications.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs font-bold">
+                      {productNotifications.length}
+                    </span>
+                  )}
+                </Button>
+                {/* Product Notification Dropdown */}
+                {showProductNotifDropdown && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <div className="p-3 border-b font-semibold text-gray-700">Product Notifications</div>
+                    {productNotifications.length === 0 ? (
+                      <div className="p-4 text-gray-500 text-sm">No new product notifications</div>
+                    ) : (
+                      <ul>
+                        {productNotifications.map((notif, idx) => (
+                          <li
+                            key={idx}
+                            className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
+                          >
+                            <div className="font-medium text-gray-800">
+                              {notif.title}
+                            </div>
+                            <div className="text-gray-600 text-sm">
+                              {notif.description}
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {notif.receivedAt
+                                ? new Date(notif.receivedAt).toLocaleTimeString()
+                                : ""}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
             } contentChildren={<p >Notifications</p>} />
 
 

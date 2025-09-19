@@ -75,6 +75,15 @@ class ChatService {
           this._notificationListeners.forEach((cb) => cb(data));
         }
       });
+
+      // Product notification event handler registry
+      this._productNotificationListeners = [];
+      this.socket.on("product_notification", (data) => {
+        console.log("🛎️ Product notification received:", data);
+        if (this._productNotificationListeners) {
+          this._productNotificationListeners.forEach((cb) => cb(data));
+        }
+      });
     }
     return this.socket;
   }
@@ -180,6 +189,13 @@ class ChatService {
     this._notificationListeners.push(cb);
   }
 
+  // Register a callback for product notifications (for bell icon, etc)
+  private _productNotificationListeners?: Array<(data: any) => void>;
+  public onProductNotification(cb: (data: any) => void) {
+    if (!this._productNotificationListeners) this._productNotificationListeners = [];
+    this._productNotificationListeners.push(cb);
+  }
 }
+
 
 export default ChatService;
