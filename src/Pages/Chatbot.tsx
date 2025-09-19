@@ -198,6 +198,10 @@ const ChatArea = ({
       
       setMessages((prev) => [...prev, newMessage]);
       setMessageText('');
+      const chatContainer = document.querySelector('.chat-messages-container');
+      if (chatContainer) setTimeout(() => {
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 100);
     }
   };
 
@@ -254,7 +258,7 @@ const ChatArea = ({
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 chat-messages-container">
         {messages.map((message) => {
           // Show all messages, align right if sent by current user, left otherwise
           const isMine = message.senderId === userId && message.senderType === userType;
