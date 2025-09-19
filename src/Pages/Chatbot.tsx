@@ -318,42 +318,51 @@ const Chatbot = () => {
   const location = useLocation();
   const { user } = getUserProfile();
 
-  // FIXED: Better ID extraction and validation
-  const productId = location.state?.productId;
-  const buyerId = location.state?.userId || location.state?.productBuyerId;
-  const sellerId = location.state?.sellerId;
+  // Try to get IDs from location.state, else fallback to localStorage
+  let productId = location.state?.productId;
+  let buyerId = location.state?.userId || location.state?.productBuyerId;
+  let sellerId = location.state?.sellerId;
+
+  if (!productId || !buyerId || !sellerId) {
+    try {
+      const stored = localStorage.getItem('chatIds');
+      if (stored) {
+        const ids = JSON.parse(stored);
+        productId = productId || ids.productId;
+        // Try both possible keys for buyerId
+        buyerId = buyerId || ids.userId || ids.productBuyerId;
+        sellerId = sellerId || ids.sellerId;
+      }
+    } catch (e) {
+      // Ignore parse errors
+    }
+  }
 
   // FIXED: Better userType determination with validation
   let userType: 'buyer' | 'seller' = 'buyer';
   let currentUserId = user?._id;
 
+  // Error state for rendering after hooks
+  let errorMsg: string | null = null;
   if (!currentUserId) {
     console.error('No user ID found');
-    return <div>Error: Please log in to access chat</div>;
-  }
-
-  if (!productId || !buyerId || !sellerId) {
+    errorMsg = "Error: Please log in to access chat";
+  } else if (!productId || !buyerId || !sellerId) {
     console.error('Missing required IDs:', { productId, buyerId, sellerId });
-    return <div>Error: Missing chat parameters</div>;
+    errorMsg = "Error: Missing chat parameters";
+  } else if (!(currentUserId === sellerId || currentUserId === buyerId)) {
+    console.error('Current user is neither buyer nor seller');
+    errorMsg = "Error: Access denied";
   }
 
   // Determine if current user is buyer or seller
-  if (currentUserId === sellerId) {
-    userType = 'seller';
-  } else if (currentUserId === buyerId) {
-    userType = 'buyer';
-  } else {
-    console.error('Current user is neither buyer nor seller');
-    return <div>Error: Access denied</div>;
+  if (!errorMsg) {
+    if (currentUserId === sellerId) {
+      userType = 'seller';
+    } else if (currentUserId === buyerId) {
+      userType = 'buyer';
+    }
   }
-
-  console.log('Chat initialized:', { 
-    currentUserId, 
-    userType, 
-    productId, 
-    buyerId, 
-    sellerId 
-  });
 
   // The other party (contact)
   const contact = userType === 'buyer'
@@ -367,7 +376,7 @@ const Chatbot = () => {
       }
     : {
         id: buyerId,
-        name: 'Buyer', 
+        name: 'Buyer',
         message: '',
         time: '',
         avatar: '',
@@ -386,6 +395,7 @@ const Chatbot = () => {
   }, [contact.id]);
 
   useEffect(() => {
+    if (errorMsg) return; // Don't set up chat if error
     const chatService = ChatService.getInstance();
     chatService.connect();
 
@@ -428,19 +438,36 @@ const Chatbot = () => {
       }
     };
 
-    if (chatService.socket) {
+    if (!errorMsg && chatService.socket) {
       chatService.socket.on("receive_message", handleReceiveMessage);
       chatService.socket.on("chat_last_message_update", handleLastMessageUpdate);
     }
 
     return () => {
-      if (chatService.socket) {
+      if (!errorMsg && chatService.socket) {
         chatService.socket.off("receive_message", handleReceiveMessage);
         chatService.socket.off("chat_last_message_update", handleLastMessageUpdate);
       }
       // Don't disconnect here as it might be used elsewhere
     };
-  }, [currentUserId]);
+  }, [currentUserId, errorMsg]);
+
+  // Clear chatIds from localStorage when leaving the chat page
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('chatIds');
+    };
+  }, []);
+
+  if (errorMsg) {
+    return (
+      <div className="w-full max-w-7xl mx-auto px-4">
+        <div className="h-screen flex items-center justify-center">
+          <div className="text-center text-red-500 text-lg font-semibold">{errorMsg}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4">

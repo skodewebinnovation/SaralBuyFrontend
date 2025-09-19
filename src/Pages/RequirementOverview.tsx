@@ -46,12 +46,18 @@ const RequirementOverview = () => {
   const productData = product.product || product 
   
   const handleChatNavigate = () => {
-    navigate('/chat', { 
-      state: { 
-        productId: productData._id, 
+    // Store chat IDs in localStorage for persistence across refresh
+    localStorage.setItem('chatIds', JSON.stringify({
+      productId: productData._id,
+      userId: productData.userId || product.userId,
+      sellerId
+    }));
+    navigate('/chat', {
+      state: {
+        productId: productData._id,
         userId: productData.userId || product.userId,
         sellerId
-      } 
+      }
     })
   }
 
