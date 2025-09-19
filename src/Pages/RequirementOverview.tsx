@@ -1,9 +1,11 @@
 import TableListing from '@/Components/TableLisiting'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from '@/Components/ui/breadcrumb'
 import { Button } from '@/Components/ui/button'
+import { dateFormatter } from '@/helper/dateFormatter'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Banknote, CalendarDays, MoveLeft } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const dummyData = [
@@ -40,10 +42,20 @@ const RequirementOverview = () => {
   // const navigate = useNavigate()
   const location = useLocation()
   const navigate = useNavigate()
-
+  const [iterateData,setIterateData] = useState<any>([])
   const product = location.state?.product || {}
   const sellerId = location.state?.sellerId
   const productData = product.product || product 
+
+
+  useEffect(()=>{
+   if(productData ){
+    const requirementData =  [productData, ...(productData?.subProducts || [])]
+   setIterateData(requirementData)
+   }
+  },[productData])
+
+  
   
   const handleChatNavigate = () => {
     // Store chat IDs in localStorage for persistence across refresh
@@ -134,11 +146,12 @@ const RequirementOverview = () => {
       </Breadcrumb>
 
       {/* image and details */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {
+        iterateData.length > 0 && iterateData.map((item: any, idx: number) => (     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Image */}
         <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 max-h-44 ">
           <img
-            src={'https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg'}
+            src={item.image}
             alt="Product"
             className="object-contain h-full w-full"
           />
@@ -147,14 +160,14 @@ const RequirementOverview = () => {
         {/* Product Info */}
         <div className="lg:col-span-8 bg-white rounded-lg p-4 space-y-4">
           <h2 className="text-sm font-medium mb-2">
-            Date : 12-2-2023
+            Date : {dateFormatter(item.createdAt) || 'N/A'}
           </h2>
 
           <h2 className="text-xl font-bold capitalize">
-            Looking for developer
+            {item.title || 'N/A'}
           </h2>
           <p className="text-sm text-gray-600 line-clamp-5">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus eum voluptatum a qui quisquam, non eaque deleniti doloremque beatae impedit.
+            {item.description || 'N/A'}
           </p>
 
           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
@@ -175,7 +188,8 @@ const RequirementOverview = () => {
           </div>
         </div>
       </div>
-
+))
+      }
       {/* Table Listing */}
       <TableListing
         data={dummyData}

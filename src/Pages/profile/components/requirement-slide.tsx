@@ -62,10 +62,8 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
 
 // only for allow arrow if more than 2 products
   const products = product?.subProducts?.length > 0 ? product.subProducts : [product];
-console.log(products,"products")
 function handleSubmitDraft(targetProduct: any) {
   const resArr = targetProduct?.subProducts?.length > 0 ? targetProduct.subProducts : [targetProduct];
-  console.log(resArr)
 
   // Check if any item is invalid
   const hasInvalid = resArr.some((item: any) =>
