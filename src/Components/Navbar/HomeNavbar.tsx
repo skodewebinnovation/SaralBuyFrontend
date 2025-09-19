@@ -75,8 +75,16 @@ const menu: MenuItem[] = [
 type ProductsType = { title: string, image: string, _id: string, description: string }
 
 
+import ChatService from "@/services/chat.service";
+import { getUserProfile } from "@/zustand/userProfile";
+
 const HomeNavbar = () => {
   const navigate = useNavigate()
+
+  const { user } = getUserProfile();
+  // Remove notificationCount, use notifications.length for badge
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
 
   const { fn, data } = useFetch(ProductService.getSeachProduct)
   const [text, setText] = useState('');
@@ -96,6 +104,48 @@ const HomeNavbar = () => {
     setText(value)
   }
 
+  // --- Chat notification logic ---
+  useEffect(() => {
+    const chatService = ChatService.getInstance();
+    chatService.connect();
+    if (user?._id) {
+      chatService.identify(user._id);
+    }
+    // Listen for new message notifications
+    chatService.onNewMessageNotification((data) => {
+      setNotifications((prev) => {
+        // Uniqueness by roomId + lastMessage.timestamp (or message)
+        const isDuplicate = prev.some(
+          (n) =>
+            n.roomId === data.roomId &&
+            n.lastMessage?.timestamp === data.lastMessage?.timestamp &&
+            n.lastMessage?.message === data.lastMessage?.message
+        );
+        if (isDuplicate) return prev;
+        return [
+          {
+            roomId: data.roomId,
+            lastMessage: data.lastMessage,
+          },
+          ...prev,
+        ];
+      });
+    });
+  }, [user?._id]);
+
+  // Show/hide notification dropdown and clear notifications
+  const handleBellClick = () => {
+    setShowNotifDropdown((prev) => !prev);
+    // Optionally clear notifications when opening dropdown:
+    // setNotifications([]);
+  };
+
+  // Remove notification on click and optionally navigate to chat
+  const handleNotificationClick = (roomId: string) => {
+    setNotifications((prev) => prev.filter((n) => n.roomId !== roomId));
+    setShowNotifDropdown(false);
+    // Example: navigate(`/chat?roomId=${roomId}`);
+  };
 
   function getGeoLocation() {
     if (navigator.geolocation) {
@@ -251,9 +301,58 @@ useEffect(() => {
               <MessageSquareText className="w-5 h-5" />
             </Button>} contentChildren={<p >Messaging</p>} />
 
-            <TooltipComp key={'notification'} hoverChildren={<Button variant="secondary" size="icon" className="cursor-pointer">
-              <Bell className="w-5 h-5" />
-            </Button>} contentChildren={<p >Notifications</p>} />
+            <TooltipComp key={'notification'} hoverChildren={
+              <div className="relative">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="cursor-pointer relative"
+                  onClick={handleBellClick}
+                >
+                  <Bell className="w-5 h-5" />
+                  {notifications.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs font-bold">
+                      {notifications.length}
+                    </span>
+                  )}
+                </Button>
+                {/* Notification Dropdown */}
+                {showNotifDropdown && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <div className="p-3 border-b font-semibold text-gray-700">New Chats</div>
+                    {notifications.length === 0 ? (
+                      <div className="p-4 text-gray-500 text-sm">No new chat messages</div>
+                    ) : (
+                      <ul>
+                        {notifications.map((notif, idx) => (
+                          <li
+                            key={idx}
+                            className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
+                            onClick={() => handleNotificationClick(notif.roomId)}
+                          >
+                            <div className="font-medium text-gray-800">
+                              {notif.lastMessage?.senderType === "buyer"
+                                ? "Buyer"
+                                : notif.lastMessage?.senderType === "seller"
+                                ? "Seller"
+                                : "User"}
+                            </div>
+                            <div className="text-gray-600 text-sm">
+                              {notif.lastMessage?.message}
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {notif.lastMessage?.timestamp
+                                ? new Date(notif.lastMessage.timestamp).toLocaleTimeString()
+                                : ""}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+            } contentChildren={<p >Notifications</p>} />
 
 
             <TooltipComp key={'cart'} hoverChildren={

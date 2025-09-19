@@ -28,6 +28,10 @@ class ChatService {
 
       this.socket.on("connect", () => {
         console.log("✅ Socket connected:", this.socket?.id, "at", socketUrl);
+        // Re-identify user on reconnect if userId is set
+        if (this._identifiedUserId) {
+          this.identify(this._identifiedUserId);
+        }
       });
 
       this.socket.on("disconnect", (reason: string) => {
@@ -61,6 +65,15 @@ class ChatService {
 
       this.socket.on("error", (data) => {
         console.error("⚠️ Socket error:", data);
+      });
+
+      // Notification event handler registry
+      this._notificationListeners = [];
+      this.socket.on("new_message_notification", (data) => {
+        console.log("🔔 New message notification:", data);
+        if (this._notificationListeners) {
+          this._notificationListeners.forEach((cb) => cb(data));
+        }
       });
     }
     return this.socket;
@@ -150,6 +163,23 @@ class ChatService {
       this.socket = null;
     }
   }
+  // Identify the user to the backend for notification mapping
+  private _identifiedUserId?: string;
+  public identify(userId: string) {
+    if (this.socket && userId) {
+      this._identifiedUserId = userId;
+      this.socket.emit("identify", { userId });
+      console.log("[ChatService] Identified as user:", userId);
+    }
+  }
+
+  // Register a callback for new message notifications (for navbar bell, etc)
+  private _notificationListeners?: Array<(data: any) => void>;
+  public onNewMessageNotification(cb: (data: any) => void) {
+    if (!this._notificationListeners) this._notificationListeners = [];
+    this._notificationListeners.push(cb);
+  }
+
 }
 
 export default ChatService;
