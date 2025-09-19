@@ -44,32 +44,58 @@ const ContactsList = ({
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {filteredContacts.map((contact) => (
-          <div
-            key={contact.id}
-            onClick={() => onSelectContact(contact)}
-            className="px-2 py-1 border-chat-border hover:bg-chat-message-bg cursor-pointer transition-colors"
-          >
-            <div className="flex items-start space-x-3 bg-white p-3 rounded-md">
-              <div className="relative">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={contact.avatar} alt={contact.name} />
-                  <AvatarFallback>{fallBackName(contact.name)}</AvatarFallback>
-                </Avatar>
-                {contact.isOnline && (
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-chat-online border-2 border-white rounded-full"></div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-gray-600 truncate">{contact.name}</h3>
-                  <span className="text-xs text-muted-foreground ml-2">{contact.time}</span>
+        {filteredContacts.map((contact) => {
+          console.log(contact,"con")
+          // Determine unread count based on userType
+          const unreadCount =
+            userType === "buyer"
+              ? contact.buyerUnreadCount
+              : contact.sellerUnreadCount;
+          return (
+            <div
+              key={contact.id}
+              onClick={() => onSelectContact(contact)}
+              className="px-2 py-1 border-chat-border hover:bg-chat-message-bg cursor-pointer transition-colors"
+            >
+              <div className="flex items-start space-x-3 bg-white p-3 rounded-md">
+                <div className="relative">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={contact.avatar} alt={contact.name} />
+                    <AvatarFallback>{fallBackName(contact.name)}</AvatarFallback>
+                  </Avatar>
+                  {contact.isOnline && (
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-chat-online border-2 border-white rounded-full"></div>
+                  )}
                 </div>
-                <p className="text-[13px] text-muted-foreground font-medium truncate mt-1">{contact.message}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-semibold text-gray-600 truncate">{contact.name}</h3>
+                    <span className="text-xs text-muted-foreground ml-2">
+                      {/* Last message time */}
+                      {contact.lastMessage && contact.lastMessage.timestamp
+                        ? new Date(contact.lastMessage.timestamp).toLocaleTimeString()
+                        : ""}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    {/* Last message text */}
+                    <p className="text-[13px] text-muted-foreground font-medium truncate mt-1">
+                      {contact.lastMessage && contact.lastMessage.message
+                        ? contact.lastMessage.message
+                        : ""}
+                    </p>
+                    {/* Unread count badge */}
+                    {unreadCount > 0 && (
+                      <span className="ml-2 bg-orange-500 text-white rounded-full px-2 py-0.5 text-xs font-semibold">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -84,6 +110,7 @@ interface ChatAreaProps {
   sellerId: string;
   messages: any[];
   setMessages: React.Dispatch<React.SetStateAction<any[]>>;
+  onSidebarContactUpdate: (updater: (prev: any) => any) => void;
 }
 
 const ChatArea = ({
@@ -95,6 +122,7 @@ const ChatArea = ({
   sellerId,
   messages,
   setMessages,
+  onSidebarContactUpdate,
 }: ChatAreaProps) => {
   const [messageText, setMessageText] = useState('');
   const [chatService] = useState(() => ChatService.getInstance());
@@ -130,6 +158,16 @@ const ChatArea = ({
               : "",
           }));
           setMessages(mappedMessages);
+
+          // Update sidebar contact info with lastMessage and unread counts
+          if (typeof onSidebarContactUpdate === "function") {
+            onSidebarContactUpdate((prev: any) => ({
+              ...prev,
+              lastMessage: data.lastMessage,
+              buyerUnreadCount: data.buyerUnreadCount,
+              sellerUnreadCount: data.sellerUnreadCount,
+            }));
+          }
         }
       };
 
@@ -142,7 +180,7 @@ const ChatArea = ({
         }
       };
     }
-  }, [userId, productId, sellerId, userType, buyerId, chatService, setMessages]);
+  }, [userId, productId, sellerId, userType, buyerId, chatService, setMessages, onSidebarContactUpdate]);
 
   const handleSendMessage = () => {
     if (messageText.trim()) {
@@ -339,9 +377,12 @@ const Chatbot = () => {
   const [selectedContact, setSelectedContact] = useState(contact);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
+  // Store sidebar contact info (lastMessage, unreadCount)
+  const [sidebarContact, setSidebarContact] = useState(contact);
 
   useEffect(() => {
     setSelectedContact(contact);
+    setSidebarContact(contact);
   }, [contact.id]);
 
   useEffect(() => {
@@ -351,7 +392,7 @@ const Chatbot = () => {
     // Listen for incoming messages globally
     const handleReceiveMessage = (data: any) => {
       console.log('Received message:', data);
-      
+
       // Only add if it's not from current user (to avoid duplicates)
       if (data.senderId !== currentUserId) {
         setMessages((prev) => [
@@ -361,19 +402,41 @@ const Chatbot = () => {
             text: data.message,
             senderId: data.senderId,
             senderType: data.senderType,
-            time: data.time || new Date().toLocaleTimeString(),
+            time: data.timestamp
+              ? new Date(data.timestamp).toLocaleTimeString()
+              : data.time || new Date().toLocaleTimeString(),
           },
         ]);
+      }
+
+      // Update sidebar contact info with lastMessage and unread counts
+      setSidebarContact((prev: any) => ({
+        ...prev,
+        lastMessage: data.lastMessage,
+        buyerUnreadCount: data.buyerUnreadCount,
+        sellerUnreadCount: data.sellerUnreadCount,
+      }));
+    };
+
+    // Listen for sidebar last message update
+    const handleLastMessageUpdate = (data: any) => {
+      if (data && data.lastMessage) {
+        setSidebarContact((prev: any) => ({
+          ...prev,
+          lastMessage: data.lastMessage,
+        }));
       }
     };
 
     if (chatService.socket) {
       chatService.socket.on("receive_message", handleReceiveMessage);
+      chatService.socket.on("chat_last_message_update", handleLastMessageUpdate);
     }
 
     return () => {
       if (chatService.socket) {
         chatService.socket.off("receive_message", handleReceiveMessage);
+        chatService.socket.off("chat_last_message_update", handleLastMessageUpdate);
       }
       // Don't disconnect here as it might be used elsewhere
     };
@@ -387,7 +450,7 @@ const Chatbot = () => {
           <div className="hidden md:block w-80 bg-gray-100 border-1 rounded-md">
             <ContactsList
               onSelectContact={setSelectedContact}
-              contact={contact}
+              contact={sidebarContact}
               userType={userType}
               user={user}
             />
@@ -411,7 +474,7 @@ const Chatbot = () => {
                         setSelectedContact(contact);
                         setIsMobileMenuOpen(false);
                       }}
-                      contact={contact}
+                      contact={sidebarContact}
                       userType={userType}
                       user={user}
                     />
@@ -430,6 +493,7 @@ const Chatbot = () => {
               sellerId={sellerId}
               messages={messages}
               setMessages={setMessages}
+              onSidebarContactUpdate={setSidebarContact}
             />
           </div>
         </div>
