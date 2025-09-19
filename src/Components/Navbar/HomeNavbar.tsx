@@ -128,6 +128,11 @@ const HomeNavbar = () => {
           {
             roomId: data.roomId,
             lastMessage: data.lastMessage,
+            productId: data.productId,
+            sellerId: data.sellerId,
+            buyerId: data.buyerId,
+            senderType: data.lastMessage?.senderType,
+            // Add any other relevant fields from data if needed
           },
           ...prev,
         ];
@@ -142,10 +147,50 @@ const HomeNavbar = () => {
   };
 
   // Remove notification on click and optionally navigate to chat
-  const handleNotificationClick = (roomId: string) => {
-    setNotifications((prev) => prev.filter((n) => n.roomId !== roomId));
+  // Notification click: navigate to chat with all IDs, then clear notification
+  const handleNotificationClick = (notif: any) => {
+    setNotifications((prev) => prev.filter((n) => n.roomId !== notif.roomId));
     setShowNotifDropdown(false);
-    // Example: navigate(`/chat?roomId=${roomId}`);
+
+    // Defensive: Try to get all required IDs
+    let { productId, buyerId, sellerId, roomId } = notif;
+
+    // Try to infer missing IDs from lastMessage or user context
+    if (!buyerId) {
+      // Try from lastMessage or current user
+      buyerId = notif.lastMessage?.buyerId || (user?.role === "buyer" ? user._id : undefined);
+    }
+    if (!sellerId) {
+      sellerId = notif.lastMessage?.sellerId || (user?.role === "seller" ? user._id : undefined);
+    }
+    if (!productId) {
+      productId = notif.lastMessage?.productId;
+    }
+
+    // If any required ID is missing, show alert and do not navigate
+    if (!productId || !buyerId || !sellerId) {
+      alert("Error: Missing chat parameters. Please try again later or contact support.");
+      console.warn("Missing chat parameters", { productId, buyerId, sellerId, notif });
+      return;
+    }
+
+    // Store IDs in localStorage for Chatbot fallback
+    localStorage.setItem('chatIds', JSON.stringify({
+      productId,
+      buyerId,
+      sellerId,
+      roomId,
+    }));
+
+    // Navigate to chat with state (for immediate use)
+    navigate('/chat', {
+      state: {
+        productId,
+        buyerId,
+        sellerId,
+        roomId,
+      }
+    });
   };
 
   async function getGeoLocation() {
@@ -307,11 +352,8 @@ const HomeNavbar = () => {
 
 
           <div className="flex gap-4 items-center">
-            <TooltipComp key={'messaging'} hoverChildren={<Button variant="secondary" size="icon" className="cursor-pointer">
-              <MessageSquareText className="w-5 h-5" />
-            </Button>} contentChildren={<p >Messaging</p>} />
-
-            <TooltipComp key={'notification'} hoverChildren={
+            {/* Messaging icon with chat notification badge and dropdown */}
+            <TooltipComp key={'messaging'} hoverChildren={
               <div className="relative">
                 <Button
                   variant="secondary"
@@ -319,14 +361,14 @@ const HomeNavbar = () => {
                   className="cursor-pointer relative"
                   onClick={handleBellClick}
                 >
-                  <Bell className="w-5 h-5" />
+                  <MessageSquareText className="w-5 h-5" />
                   {notifications.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs font-bold">
                       {notifications.length}
                     </span>
                   )}
                 </Button>
-                {/* Notification Dropdown */}
+                {/* Chat Notification Dropdown */}
                 {showNotifDropdown && (
                   <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                     <div className="p-3 border-b font-semibold text-gray-700">New Chats</div>
@@ -338,7 +380,7 @@ const HomeNavbar = () => {
                           <li
                             key={idx}
                             className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
-                            onClick={() => handleNotificationClick(notif.roomId)}
+                            onClick={() => handleNotificationClick(notif)}
                           >
                             <div className="font-medium text-gray-800">
                               {notif.lastMessage?.senderType === "buyer"
@@ -362,6 +404,13 @@ const HomeNavbar = () => {
                   </div>
                 )}
               </div>
+            } contentChildren={<p >Messaging</p>} />
+
+            {/* Bell icon (no chat notifications, just icon) */}
+            <TooltipComp key={'notification'} hoverChildren={
+              <Button variant="secondary" size="icon" className="cursor-pointer">
+                <Bell className="w-5 h-5" />
+              </Button>
             } contentChildren={<p >Notifications</p>} />
 
 
