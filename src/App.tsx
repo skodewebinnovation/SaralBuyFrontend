@@ -10,8 +10,8 @@ function App() {
  const categories = useCategoriesStore()
  const userProfile = getUserProfile();
 useEffect(() => {
-  categories.execute();
-  userProfile.execute();
+  Promise.all([categories.execute(),
+  userProfile.execute()]).catch(err => console.log(err))
 }, [])
 
 
