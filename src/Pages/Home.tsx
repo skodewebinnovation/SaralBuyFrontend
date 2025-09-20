@@ -28,19 +28,10 @@ const ItemSkeleton = () => (
 const Home = () => {
 
 
-  const { fn: getLatestThreeBidsFn, data: getLatestBidsThreeRes, loading: bidResponseLoading } = useFetch(bidService.getThreeLatestBids);
+  const { fn: getLatestThreeBidsFn, data: getLatestBidandDrafts, loading: bidResponseLoading } = useFetch(bidService.getThreeLatestBids);
   const [bids, setBids] = useState<any>([])
   const [drafts, setDrafts] = useState([
-    {
-      id: 1,
-      date: "10-10-2025",
-      category: "Stationary",
-      title: "Children Books",
-      deliveryDate: "10-10-2025",
-      totalBids: 10,
-      image:
-        "https://media.istockphoto.com/id/1355687160/photo/various-sport-equipment-gear.jpg?s=612x612&w=0&k=20&c=NMA7dXMtGLJAin0z6N2uqrnwLXCRCXSw306SYfS49nI=",
-    },
+
   ])
 
 
@@ -51,21 +42,35 @@ const Home = () => {
   useEffect(() => {
     getLatestThreeBidsFn()
   }, [])
- useEffect(() => {
-  if (getLatestBidsThreeRes) {
-    const formattedBids = getLatestBidsThreeRes.map((bid: any) => ({
-      _id: bid._id,
-      date: dateFormatter(bid.createdAt),
-      category: bid.productId?.categoryId?.categoryName || "N/A",
-      title: bid.productId?.title || "Untitled",
-      deliveryDate: dateFormatter(bid.earliestDeliveryDate),
-      totalBids: bid?.productId?.totalBidCount || 0,
-      image: bid.productId?.image || "/observed.svg",
-    }));
+  useEffect(() => {
+    if (getLatestBidandDrafts) {
+      console.log(getLatestBidandDrafts)
+      // bids
+      const formattedBids = getLatestBidandDrafts?.bids.map((bid: any) => ({
+        _id: bid._id,
+        date: dateFormatter(bid.createdAt),
+        category: bid.productId?.categoryId?.categoryName || "N/A",
+        title: bid.productId?.title || "Untitled",
+        deliveryDate: dateFormatter(bid.earliestDeliveryDate),
+        totalBids: bid?.productId?.totalBidCount || 0,
+        image: bid.productId?.image || "/no-image.webp",
+      }));
+      setBids(formattedBids);
 
-    setBids(formattedBids);
-  }
-}, [getLatestBidsThreeRes]);
+      //  drafts
+      const formattedDrafts = getLatestBidandDrafts?.drafts.map((draft: any) => ({
+        _id: draft._id,
+        date: dateFormatter(draft.createdAt),
+        category: draft?.categoryId?.categoryName || "N/A",
+        title: draft.title,
+        deliveryDate: dateFormatter(draft.earliestDeliveryDate),
+        totalBids: draft?.totalBidCount || 0,
+        image: draft?.image || "/no-image.webp",
+      }));
+      setDrafts(formattedDrafts);
+
+    }
+  }, [getLatestBidandDrafts]);
 
   return (
     <main className="relative min-h-screen ">
@@ -78,11 +83,17 @@ const Home = () => {
             bidResponseLoading ?
               <ItemSkeleton />
               :
-              bids.length > 0  ? <SwiperSlider key={'bid'} title="Your Bids" target="bids" color="gray" data={bids} /> : <SwiperSlider title="Your Bids" target="bids" color="gray" data={[]} />
+              bids.length > 0 ? <SwiperSlider key={'bid'} title="Your Bids" target="bids" color="gray" data={bids} /> : <SwiperSlider title="Your Bids" target="bids" color="gray" data={[]} />
           }
           {
-            drafts.length > 0 && <SwiperSlider key={'draft'} title="Your Drafts" target="drafts" color="orange" data={drafts} />
+            bidResponseLoading ?
+              <ItemSkeleton />
+              :
+              drafts.length > 0 ? <SwiperSlider key={'draft'} title="Your Drafts" target="drafts" color="orange" data={drafts} /> : <SwiperSlider title="Your Drafts" target="draft" color="gray" data={[]} />
           }
+          {/* {
+            drafts.length > 0 && <SwiperSlider key={'draft'} title="Your Drafts" target="drafts" color="orange" data={drafts} />
+          } */}
         </div>
       </div>
       {/* requirement  */}

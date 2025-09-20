@@ -85,7 +85,7 @@ useEffect(() => {
         />
       </InputOTPGroup>
     </InputOTP>
-     <Button type="submit" disabled={loading|| value.length !== 4} className="w-full py-5  text-white font-bold rounded-sm" >
+     <Button type="submit" disabled={loading|| value.length !== 4} className="w-full py-5 cursor-pointer  text-white font-bold rounded-sm" >
                {
                 loading ? <Spinner className="w-5 h-5 animate-spin" /> : 'Continue'
                 }

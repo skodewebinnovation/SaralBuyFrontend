@@ -1,5 +1,5 @@
-import  { useEffect, useRef, useState } from "react";
-import {useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -32,25 +32,25 @@ import categoryService from "@/services/category.service";
 import { Spinner } from "../ui/shadcn-io/spinner";
 import { getUserProfile } from "@/zustand/userProfile";
 import { SearchableDropdown } from "@/utils/searchableDropdown";
-import { electronicCategories,constructionIndustrialCategories,fashionCategories,furnitureCategories,homeAppliancesCategories,beautyCategories,sportCategories,vehicleCategories,serviceCategories} from "@/const/categoriesData";
+import { electronicCategories, constructionIndustrialCategories, fashionCategories, furnitureCategories, homeAppliancesCategories, beautyCategories, sportCategories, vehicleCategories, serviceCategories } from "@/const/categoriesData";
 import { getCategorySpecificFields } from "@/const/categoriesFormdataFields";
 import Authentication from "../auth/Authentication";
 
-const innerFormImages= {
-  automobile:"automobileFormImage.png",
-  fashion:"fashionFormImage.png",
-  electronics:"electronicsFormImage.png",
-  home:"homeapplianceFormImage.png",
-  sports:"sportsFormImage.png",
-  furniture:"furnitureFormImage.png",
-  health:"healthFormImage.png",
-  beauty:"beautyFormImage.png",
-  service:"servicesFormImage.png",
-  industrial:"constructionFormImage.png"
-}  as any
+const innerFormImages = {
+  automobile: "automobileFormImage.png",
+  fashion: "fashionFormImage.png",
+  electronics: "electronicsFormImage.png",
+  home: "homeapplianceFormImage.png",
+  sports: "sportsFormImage.png",
+  furniture: "furnitureFormImage.png",
+  health: "healthFormImage.png",
+  beauty: "beautyFormImage.png",
+  service: "servicesFormImage.png",
+  industrial: "constructionFormImage.png"
+} as any
 
-function getSubCategories(categoryName:string) {
-  switch(categoryName){
+function getSubCategories(categoryName: string) {
+  switch (categoryName) {
     case "automobile":
       return vehicleCategories;
     case "fashion":
@@ -75,16 +75,16 @@ function getSubCategories(categoryName:string) {
 }
 
 
-const CategoryForm = ({ 
-  formIndex, 
-  currentCategoryName, 
-  catByIdData, 
-  subCategroies, 
-  subCategoriesData, 
+const CategoryForm = ({
+  formIndex,
+  currentCategoryName,
+  catByIdData,
+  subCategroies,
+  subCategoriesData,
   onFormDataChange,
   onRemoveForm,
   showRemoveButton = false,
-  resetForm = false 
+  resetForm = false
 }: any) => {
   const [date, setDate] = useState(undefined);
   const [values, setValues] = useState([0, 2]);
@@ -95,7 +95,7 @@ const CategoryForm = ({
   const imageRef = useRef(null);
   const fileDocRef = useRef<HTMLInputElement>(null);
 
-  const { watch, setValue, formState: {  }, register, getValues, reset:resetFormHook } = useForm({
+  const { watch, setValue, formState: { }, register, getValues, reset: resetFormHook } = useForm({
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
       title: '',
@@ -168,13 +168,13 @@ const CategoryForm = ({
     setValue("oldProductValue.min", values[0].toString());
     setValue("oldProductValue.max", values[1].toString());
   }, [values, setValue]);
-  
+
   useEffect(() => {
     setValue('brand', brand);
   }, [brand, setValue]);
 
 
-   useEffect(() => {
+  useEffect(() => {
     if (resetForm) {
       resetFormHook();
       setDate(undefined);
@@ -183,14 +183,14 @@ const CategoryForm = ({
       setFileDoc(null);
       setbrand('');
       setBrandRenderItems([]);
-      
+
       // Clear file inputs
       if (imageRef.current) (imageRef as any).current.value = '';
       if (fileDocRef.current) fileDocRef.current.value = '';
     }
   }, [resetForm, resetFormHook]);
 
-  
+
 
 
   return (
@@ -206,12 +206,12 @@ const CategoryForm = ({
           <Trash2 className="h-4 w-4" />
         </Button>
       )}
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Panel */}
         <div className="md:col-span-1 lg:col-span-1 bg-white shadow-sm rounded-2xl p-6 border xs:grid xs:grid-cols-2 gap-6 space-y-4">
           <div className="col-span-1 align-center sm:block flex flex-col justify-center">
-            <h2 className="text-lg font-semibold mb-2">Product Form ({formIndex+1})</h2>
+            <h2 className="text-lg font-semibold mb-2">Product Form ({formIndex + 1})</h2>
             <p className="text-sm text-muted-foreground">
               Please help us tailor the experience by filling out the form below.
               If this isn't the category you meant to choose, you can go back and
@@ -219,11 +219,11 @@ const CategoryForm = ({
             </p>
           </div>
           <div className="col-span-1 w-full">
-            <img 
-              src={'/categoryFormImages/' + innerFormImages[currentCategoryName]} 
-              alt="" 
-              loading="lazy" 
-              className="m-auto w-full" 
+            <img
+              src={'/categoryFormImages/' + innerFormImages[currentCategoryName]}
+              alt=""
+              loading="lazy"
+              className="m-auto w-full"
             />
           </div>
         </div>
@@ -232,21 +232,21 @@ const CategoryForm = ({
           <div className="shadow-sm rounded-2xl p-6 border bg-gray-50">
             <h3 className="text-lg font-semibold mb-4">Product Details</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-              <Input 
-                type="text" 
-                placeholder="Title*" 
-                className="bg-white col-span-1 md:col-span-3" 
-                {...register('title')} 
+              <Input
+                type="text"
+                placeholder="Title*"
+                className="bg-white col-span-1 md:col-span-3"
+                {...register('title')}
               />
-              
+
               <Select
                 value={selectedSubategoryId}
                 onValueChange={(value) => {
-                  const selectProductName = catByIdData?.subCategories.find((item:any) => item._id === value)?.name || 'N/A';
-                  const brandsArray = subCategoriesData.find((item:any) =>
-                    item.category.replace(/\s+/g,'').toLowerCase() === selectProductName.replace(/\s+/g,'').toLowerCase()
+                  const selectProductName = catByIdData?.subCategories.find((item: any) => item._id === value)?.name || 'N/A';
+                  const brandsArray = subCategoriesData.find((item: any) =>
+                    item.category.replace(/\s+/g, '').toLowerCase() === selectProductName.replace(/\s+/g, '').toLowerCase()
                   )?.brands;
-                  
+
                   if (brandsArray?.length > 0) {
                     setBrandRenderItems(brandsArray);
                   }
@@ -257,38 +257,38 @@ const CategoryForm = ({
                   <SelectValue placeholder="Category*" />
                 </SelectTrigger>
                 <SelectContent>
-                  {catByIdData && subCategroies.map((c:any) => 
+                  {catByIdData && subCategroies.map((c: any) =>
                     <SelectItem key={c._id} value={c._id}>{c.name}</SelectItem>
                   )}
                 </SelectContent>
               </Select>
 
               {currentCategoryName !== "service" && (
-                <SearchableDropdown 
-                  disbaled={!selectedSubategoryId} 
-                  setValue={setbrand} 
-                  value={brand} 
-                  className="w-full" 
+                <SearchableDropdown
+                  disbaled={!selectedSubategoryId}
+                  setValue={setbrand}
+                  value={brand}
+                  className="w-full"
                   dropdownTitle="Brands*"
                   renderItems={brandRenderItems}
                 />
               )}
 
               {currentCategoryName === "electronics" && (
-                <Input 
-                  type="text" 
-                  placeholder="₹ Enter a Minimum Budget" 
+                <Input
+                  type="text"
+                  placeholder="₹ Enter a Minimum Budget"
                   {...register('minimumBudget')}
-                  className="bg-white" 
+                  className="bg-white"
                 />
               )}
 
               {currentCategoryName !== "service" && (
-                <Input 
-                  type="number" 
-                  placeholder="Quantity*" 
-                  {...register('quantity')} 
-                  className="bg-white col-span-1" 
+                <Input
+                  type="number"
+                  placeholder="Quantity*"
+                  {...register('quantity')}
+                  className="bg-white col-span-1"
                 />
               )}
 
@@ -308,23 +308,23 @@ const CategoryForm = ({
                 </Select>
               )}
 
-              {(currentCategoryName === "automobile" || currentCategoryName === "furniture" || 
-                currentCategoryName === "sports" || currentCategoryName === "fashion" || 
-                currentCategoryName === "home" || currentCategoryName === "beauty" || 
+              {(currentCategoryName === "automobile" || currentCategoryName === "furniture" ||
+                currentCategoryName === "sports" || currentCategoryName === "fashion" ||
+                currentCategoryName === "home" || currentCategoryName === "beauty" ||
                 currentCategoryName === "industrial") && (
-                <Select
-                  value={additionalDeliveryValue}
-                  onValueChange={(value) => setValue("additionalDeliveryAndPackage", value)}
-                >
-                  <SelectTrigger className="w-full bg-white">
-                    <SelectValue placeholder="Additional Delivery & Packaging" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="yes">Yes</SelectItem>
-                    <SelectItem value="no">No</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
+                  <Select
+                    value={additionalDeliveryValue}
+                    onValueChange={(value) => setValue("additionalDeliveryAndPackage", value)}
+                  >
+                    <SelectTrigger className="w-full bg-white">
+                      <SelectValue placeholder="Additional Delivery & Packaging" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yes">Yes</SelectItem>
+                      <SelectItem value="no">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
 
               {currentCategoryName === "fashion" && (
                 <Select
@@ -433,92 +433,92 @@ const CategoryForm = ({
                 </>
               )}
 
-              {(currentCategoryName === "furniture" || currentCategoryName === "sports" || 
-                currentCategoryName === "automobile" || currentCategoryName === "home" || 
+              {(currentCategoryName === "furniture" || currentCategoryName === "sports" ||
+                currentCategoryName === "automobile" || currentCategoryName === "home" ||
                 currentCategoryName === "electronics") && (
-                <>
-                  {(productField === 'new_product' || productField === '') && (
-                    <Select
-                      value={productField}
-                      onValueChange={(value) => setValue("productType", value)}
-                    >
-                      <SelectTrigger className="w-full bg-white">
-                        <SelectValue placeholder="Product Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="new_product">New Product</SelectItem>
-                        <SelectItem value="old_product">Old Product</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-
-                  {productField === 'old_product' && (
-                    <>
-                      <div className="w-full max-w-md border-[1.5px] border-gray-200 rounded-lg bg-white p-3">
-                        <div className="flex justify-between items-center mb-3">
-                          <Label className="font-medium text-gray-500">Old Product</Label>
-                          <XIcon 
-                            className="w-4 h-4 text-gray-400 cursor-pointer" 
-                            onClick={() => setValue('productType', 'new_product')} 
-                          />
-                        </div>
-                        <Range
-                          values={values}
-                          step={0.1}
-                          min={0}
-                          max={20}
-                          onChange={(vals) => setValues(vals)}
-                          renderTrack={({ props, children }) => (
-                            <div
-                              {...props}
-                              className="h-1 w-full bg-gray-300 rounded relative"
-                            >
-                              <div
-                                className="absolute h-1 bg-orange-600 rounded"
-                                style={{
-                                  left: `${(values[0] / 20) * 100}%`,
-                                  width: `${((values[1] - values[0]) / 20) * 100}%`,
-                                }}
-                              />
-                              {children}
-                            </div>
-                          )}
-                          renderThumb={({ props }) => (
-                            <div
-                              {...props}
-                              className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center shadow"
-                            />
-                          )}
-                        />
-                        <div className="flex justify-between items-center mt-3 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Label className="text-gray-600 text-sm">Min.</Label>
-                            <div className="flex items-center gap-1 border rounded px-2 py-1">
-                              {values[0].toString().padStart(2, "0")} yr
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1 border rounded px-2 py-1">
-                              {values[1]} yr
-                            </div>
-                            <Label className="text-gray-600 text-sm">Max.</Label>
-                          </div>
-                        </div>
-                      </div>
-                      <Select onValueChange={(val) => setValue('productCondition', val)}>
+                  <>
+                    {(productField === 'new_product' || productField === '') && (
+                      <Select
+                        value={productField}
+                        onValueChange={(value) => setValue("productType", value)}
+                      >
                         <SelectTrigger className="w-full bg-white">
-                          <SelectValue placeholder="Product Condition" />
+                          <SelectValue placeholder="Product Type" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="like_new">Like New</SelectItem>
-                          <SelectItem value="good">Good</SelectItem>
-                          <SelectItem value="fair">Fair</SelectItem>
+                          <SelectItem value="new_product">New Product</SelectItem>
+                          <SelectItem value="old_product">Old Product</SelectItem>
                         </SelectContent>
                       </Select>
-                    </>
-                  )}
-                </>
-              )}
+                    )}
+
+                    {productField === 'old_product' && (
+                      <>
+                        <div className="w-full max-w-md border-[1.5px] border-gray-200 rounded-lg bg-white p-3">
+                          <div className="flex justify-between items-center mb-3">
+                            <Label className="font-medium text-gray-500">Old Product</Label>
+                            <XIcon
+                              className="w-4 h-4 text-gray-400 cursor-pointer"
+                              onClick={() => setValue('productType', 'new_product')}
+                            />
+                          </div>
+                          <Range
+                            values={values}
+                            step={0.1}
+                            min={0}
+                            max={20}
+                            onChange={(vals) => setValues(vals)}
+                            renderTrack={({ props, children }) => (
+                              <div
+                                {...props}
+                                className="h-1 w-full bg-gray-300 rounded relative"
+                              >
+                                <div
+                                  className="absolute h-1 bg-orange-600 rounded"
+                                  style={{
+                                    left: `${(values[0] / 20) * 100}%`,
+                                    width: `${((values[1] - values[0]) / 20) * 100}%`,
+                                  }}
+                                />
+                                {children}
+                              </div>
+                            )}
+                            renderThumb={({ props }) => (
+                              <div
+                                {...props}
+                                className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center shadow"
+                              />
+                            )}
+                          />
+                          <div className="flex justify-between items-center mt-3 text-sm">
+                            <div className="flex items-center gap-2">
+                              <Label className="text-gray-600 text-sm">Min.</Label>
+                              <div className="flex items-center gap-1 border rounded px-2 py-1">
+                                {values[0].toString().padStart(2, "0")} yr
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1 border rounded px-2 py-1">
+                                {values[1]} yr
+                              </div>
+                              <Label className="text-gray-600 text-sm">Max.</Label>
+                            </div>
+                          </div>
+                        </div>
+                        <Select onValueChange={(val) => setValue('productCondition', val)}>
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Product Condition" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="like_new">Like New</SelectItem>
+                            <SelectItem value="good">Good</SelectItem>
+                            <SelectItem value="fair">Fair</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </>
+                    )}
+                  </>
+                )}
 
               {productField === 'new_product' && currentCategoryName === "furniture" && (
                 <Select
@@ -606,48 +606,48 @@ const CategoryForm = ({
                   hidden
                   ref={fileDocRef}
 
-                onChange={(e: any) => {
-                  if (e.target.files?.[0]) {
-                    const newDocument = e.target.files[0];
-                    setFileDoc(newDocument);
+                  onChange={(e: any) => {
+                    if (e.target.files?.[0]) {
+                      const newDocument = e.target.files[0];
+                      setFileDoc(newDocument);
 
-                    const currentFormData = {
-                      ...getValues(),
-                      image: image,
-                      document: newDocument,
-                      formIndex: formIndex
-                    };
-                    onFormDataChange(formIndex, currentFormData);
-                  }
-                }}
+                      const currentFormData = {
+                        ...getValues(),
+                        image: image,
+                        document: newDocument,
+                        formIndex: formIndex
+                      };
+                      onFormDataChange(formIndex, currentFormData);
+                    }
+                  }}
                 />
                 {fileDoc && (
                   <p className="text-xs mt-2 text-green-600">{(fileDoc as any).name}</p>
                 )}
               </div>
             </div>
-            <Textarea 
-              placeholder="Description*" 
-              {...register("description")} 
-              className="bg-white min-h-24" 
+            <Textarea
+              placeholder="Description*"
+              {...register("description")}
+              className="bg-white min-h-24"
             />
           </div>
 
           <div className="shadow-sm rounded-2xl p-6 border bg-gray-50">
             <h3 className="text-lg font-semibold mb-4">Payment & Delivery Details</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-              <DatePicker 
+              <DatePicker
                 date={date}
                 title="Delivery Date"
                 disabledBeforeDate={new Date(new Date().getTime() - 24 * 60 * 60 * 1000)}
-                setDate={(val:any) => {
+                setDate={(val: any) => {
                   if (val) {
                     setDate(val);
                     setValue("paymentAndDelivery.ex_deliveryDate", val);
                   }
-                }} 
+                }}
               />
-              
+
               <Select
                 value={paymentMode}
                 onValueChange={(value) => setValue('paymentAndDelivery.paymentMode', value)}
@@ -661,7 +661,7 @@ const CategoryForm = ({
                   <SelectItem value="upi">UPI</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Select
                 value={gstField}
                 onValueChange={(value) => setValue('gst_requirement', value)}
@@ -677,23 +677,23 @@ const CategoryForm = ({
 
               {gstField === "yes" && (
                 <>
-                  <Input 
-                    type="text" 
-                    placeholder="GST Number" 
-                    {...register("paymentAndDelivery.gstNumber")} 
-                    className="bg-white" 
+                  <Input
+                    type="text"
+                    placeholder="GST Number"
+                    {...register("paymentAndDelivery.gstNumber")}
+                    className="bg-white"
                   />
-                  <Input 
-                    type="text" 
-                    placeholder="Organization Name" 
-                    {...register("paymentAndDelivery.organizationName")} 
-                    className="bg-white" 
+                  <Input
+                    type="text"
+                    placeholder="Organization Name"
+                    {...register("paymentAndDelivery.organizationName")}
+                    className="bg-white"
                   />
-                  <Input 
-                    type="text" 
-                    placeholder="Organization Address" 
-                    {...register("paymentAndDelivery.organizationAddress")} 
-                    className="bg-white" 
+                  <Input
+                    type="text"
+                    placeholder="Organization Address"
+                    {...register("paymentAndDelivery.organizationAddress")}
+                    className="bg-white"
                   />
                 </>
               )}
@@ -721,12 +721,12 @@ const Category = () => {
   const [formsData, setFormsData] = useState({}); // Store all forms data
   const { fn, data: productCreateData, loading } = useFetch(productService.addProduct);
   const { fn: getCatByIdFn, data: catByIdData } = useFetch(categoryService.getCategoriesById);
-  const [currentCategoryName, setCurrentCategoryName] = useState<string|null>(null);
+  const [currentCategoryName, setCurrentCategoryName] = useState<string | null>(null);
   let { user } = getUserProfile();
   const [open, setOpen] = useState(false);
   const [subCategoriesData, setSubCategoriesData] = useState([]);
   const [resetForms, setResetForms] = useState(false);
-  const [buttonTye,setButtonType] = useState<boolean|null>(null)
+  const [buttonTye, setButtonType] = useState<boolean | null>(null)
   useEffect(() => {
     (async () => {
       await getCatByIdFn(categoryId);
@@ -748,45 +748,50 @@ const Category = () => {
   }, [catByIdData]);
 
 
-  const isValidForms = (forms:any[],isDraft:boolean)=>{
-  for(let i =0;i < forms.length;i++){
-    if(!forms[i].title){
-      toast.error(`Title is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
-      return false
-    }
-    // this is name of category
-    else if(!forms[i].subCategoryId  && !isDraft){
-      toast.error(`Category is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
+  const isValidForms = (forms: any[], isDraft: boolean) => {
+    for (let i = 0; i < forms.length; i++) {
+      if (!forms[i].title) {
+        toast.error(`Title is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
         return false
-    } 
-    else if(!forms[i].brand && currentCategoryName?.toLowerCase() !== 'service' && !isDraft){
-      toast.error(`Brand is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
+      }
+      // this is name of category
+      else if (!forms[i].subCategoryId && !isDraft) {
+        toast.error(`Category is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
         return false
-    }
-    else if(!forms[i].quantity && currentCategoryName?.toLowerCase() !== 'service' && !isDraft){
-      toast.error(`Quantity is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
+      }
+      else if (!forms[i].brand && currentCategoryName?.toLowerCase() !== 'service' && !isDraft) {
+        toast.error(`Brand is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
         return false
-    }
-    else if (!forms[i].image && !isDraft) {
-      toast.error(`Image is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`);
-      return false;
-    }
-    else if(!forms[i].description && !isDraft){
-      toast.error(`Description is required ${forms.length > 1 ?`in product form(s) ${i+1}`:'' }`)
+      }
+      else if (!forms[i].quantity && currentCategoryName?.toLowerCase() !== 'service' && !isDraft) {
+        toast.error(`Quantity is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
         return false
-    }
+      }
+      else if (!forms[i].image && !isDraft) {
+        toast.error(`Image is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`);
+        return false;
+      }
+      else if (!forms[i].description && !isDraft) {
+        toast.error(`Description is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
+        return false
+      }
 
-   
+
+    }
+    return true
   }
-  return true
-}
 
   const handleAddForm = () => {
+    const formsArray = Object.values(formsData) as any
+    if (formsArray.length > 4) {
+      toast.error("You can submit a maximum of 5 product forms at a time.");
+      return
+    }
     const newFormIndex = forms.length > 0 ? Math.max(...forms) + 1 : 0;
     setForms(prev => [...prev, newFormIndex]);
   };
 
-  const handleRemoveForm = (formIndex:number) => {
+  const handleRemoveForm = (formIndex: number) => {
     if (forms.length > 1) {
       setForms(prev => prev.filter(index => index !== formIndex));
       setFormsData(prev => {
@@ -797,151 +802,146 @@ const Category = () => {
     }
   };
 
-  const handleFormDataChange = (formIndex:number, data:any) => {
+  const handleFormDataChange = (formIndex: number, data: any) => {
     setFormsData(prev => ({
       ...prev,
       [formIndex]: data
     }));
   };
 
-const handleSubmitAllForms = async (isDraft:boolean) => {
-  setButtonType(isDraft ? true:false)
-  if (!user) {
-    setOpen(true);
-    return;
-  }
-
-
-  const formsArray = Object.values(formsData) as any
-  if(formsArray.length > 5){
-    toast.error("You can submit a maximum of 5 product forms at a time.");
-    return
-  }
-
-    const hasValidForms = isValidForms(formsArray,isDraft);
-  
-  if (!hasValidForms) return
-
-  const invalidForms: any[] = [];
-   const formsMissingImage: any[] = [];
-  formsArray.forEach((formData: any, index:number) => {
-    if (!formData.title || !formData.description || !formData.subCategoryId) {
-      invalidForms.push(index + 1);
+  const handleSubmitAllForms = async (isDraft: boolean) => {
+    setButtonType(isDraft ? true : false)
+    if (!user) {
+      setOpen(true);
+      return;
     }
-  });
 
- if (invalidForms.length > 0 && !isDraft) {
-    // Create detailed error message
-    let errorMessage = "Please fill required fields:\n";
-    
-    invalidForms.forEach(({ formNumber, missingFields }) => {
-      errorMessage += `Form ${formNumber}: ${missingFields.join(', ')}\n`;
+
+    const formsArray = Object.values(formsData) as any;
+    const hasValidForms = isValidForms(formsArray, isDraft);
+
+    if (!hasValidForms) return
+
+    const invalidForms: any[] = [];
+    const formsMissingImage: any[] = [];
+    formsArray.forEach((formData: any, index: number) => {
+      if (!formData.title || !formData.description || !formData.subCategoryId) {
+        invalidForms.push(index + 1);
+      }
     });
-    
-    if (formsMissingImage.length > 0) {
-      errorMessage += `\nImage is required for form(s): ${formsMissingImage.join(', ')}`;
+
+    if (invalidForms.length > 0 && !isDraft) {
+      // Create detailed error message
+      let errorMessage = "Please fill required fields:\n";
+
+      invalidForms.forEach(({ formNumber, missingFields }) => {
+        errorMessage += `Form ${formNumber}: ${missingFields.join(', ')}\n`;
+      });
+
+      if (formsMissingImage.length > 0) {
+        errorMessage += `\nImage is required for form(s): ${formsMissingImage.join(', ')}`;
+      }
+
+      toast.error(errorMessage);
+      return;
     }
-    
-    toast.error(errorMessage);
-    return;
-  }
 
-  const allowedFields = getCategorySpecificFields(currentCategoryName!);
-  console.log('Allowed fields:', allowedFields);
-  const isMultiple = formsArray.length > 1;
+    const allowedFields = getCategorySpecificFields(currentCategoryName!);
+    console.log('Allowed fields:', allowedFields);
+    const isMultiple = formsArray.length > 1;
 
-  try {
-    if (isMultiple) {
-      // Create a single FormData for multiple products
-      const formDataToSend = new FormData();
-      const productsData = [];
-      for (const [_, formData] of formsArray.entries() as any) {
-        const productData: any = {};
-        
+    try {
+      if (isMultiple) {
+        // Create a single FormData for multiple products
+        const formDataToSend = new FormData();
+        const productsData = [];
+        for (const [_, formData] of formsArray.entries() as any) {
+          const productData: any = {};
+
+          allowedFields.forEach(field => {
+            if (field === 'image' || field === 'document') {
+              return;
+            }
+            if ((field === 'oldProductValue' || field === 'productCondition') && formData.productType !== 'old_product') {
+              return;
+            }
+
+            const value = formData[field];
+            if (value !== undefined && value !== null) {
+              if (typeof value === "object") {
+                productData[field] = JSON.stringify(value);
+              } else {
+                productData[field] = value;
+              }
+            } else {
+              productData[field] = '';
+            }
+          });
+
+          productsData.push(productData);
+
+          if (formData.image && allowedFields.includes('image')) {
+            formDataToSend.append(`image`, formData.image);
+          }
+          if (formData.document && allowedFields.includes('document')) {
+            formDataToSend.append(`document`, formData.document);
+          }
+        }
+
+
+        formDataToSend.append('products', JSON.stringify(productsData));
+        formDataToSend.append('draft', isDraft ? 'true' : 'false');
+
+        console.log('Multiple products data:', productsData);
+
+        // Send all products at once
+        await fn(categoryId, formsArray[0].subCategoryId || subCategoryId, formDataToSend, true);
+      } else {
+
+        const formData = formsArray[0];
+        const formDataToSend = new FormData();
+
         allowedFields.forEach(field => {
           if (field === 'image' || field === 'document') {
+            // Handle files separately
             return;
           }
+
           if ((field === 'oldProductValue' || field === 'productCondition') && formData.productType !== 'old_product') {
-          return;
-        }
-          
+            return;
+          }
+
           const value = formData[field];
           if (value !== undefined && value !== null) {
             if (typeof value === "object") {
-              productData[field] = JSON.stringify(value);
+              formDataToSend.append(field, JSON.stringify(value));
             } else {
-              productData[field] = value;
+              formDataToSend.append(field, value as any);
             }
           } else {
-            productData[field] = '';
+            formDataToSend.append(field, '');
           }
         });
-        
-        productsData.push(productData);
 
         if (formData.image && allowedFields.includes('image')) {
-          formDataToSend.append(`image`, formData.image);
+          formDataToSend.append("image", formData.image);
         }
         if (formData.document && allowedFields.includes('document')) {
-          formDataToSend.append(`document`, formData.document);
+          formDataToSend.append("document", formData.document);
         }
-      }
-      
 
-      formDataToSend.append('products', JSON.stringify(productsData));
-      formDataToSend.append('draft', isDraft ? 'true' : 'false');
-      
-      console.log('Multiple products data:', productsData);
-      
-      // Send all products at once
-      await fn(categoryId, formsArray[0].subCategoryId || subCategoryId, formDataToSend, true);
-    } else {
+        formDataToSend.append('draft', isDraft ? 'true' : 'false');
 
-      const formData = formsArray[0];
-      const formDataToSend = new FormData();
-
-      allowedFields.forEach(field => {
-        if (field === 'image' || field === 'document') {
-          // Handle files separately
-          return;
+        console.log('Single product FormData entries:');
+        for (let [key, value] of formDataToSend.entries()) {
+          console.log(key, value);
         }
-        
-        if ((field === 'oldProductValue' || field === 'productCondition') && formData.productType !== 'old_product') {
-          return;
-        }
-        
-        const value = formData[field];
-        if (value !== undefined && value !== null) {
-          if (typeof value === "object") {
-            formDataToSend.append(field, JSON.stringify(value));
-          } else {
-            formDataToSend.append(field, value as any);
-          }
-        } else {
-          formDataToSend.append(field, '');
-        }
-      });
 
-      if (formData.image && allowedFields.includes('image')) {
-        formDataToSend.append("image", formData.image);
+        await fn(categoryId, formData.subCategoryId || subCategoryId, formDataToSend, false);
       }
-      if (formData.document && allowedFields.includes('document')) {
-        formDataToSend.append("document", formData.document);
-      }
-      
-      formDataToSend.append('draft', isDraft ? 'true' : 'false');
-      
-      console.log('Single product FormData entries:');
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(key, value);
-      }
-      
-      await fn(categoryId, formData.subCategoryId || subCategoryId, formDataToSend, false);
-    }
 
-    toast.success(`${formsArray.length} product form(s) ${isDraft ? 'saved as draft' : 'submitted'} successfully!`)
-  
+      toast.success(`${formsArray.length} product form(s) ${isDraft ? 'saved as draft' : 'submitted'} successfully!`)
+
       setResetForms(true);
       setTimeout(() => {
         setForms([0]);
@@ -949,12 +949,12 @@ const handleSubmitAllForms = async (isDraft:boolean) => {
         setResetForms(false);
       }, 100);
       window.scrollTo(0, 0);
-  
-  } catch (error) {
-    console.error("Error submitting forms:", error);
-    toast.error(`Failed to ${isDraft ? 'save draft' : 'submit forms'}. Please try again.`);
-  }
-};
+
+    } catch (error) {
+      console.error("Error submitting forms:", error);
+      toast.error(`Failed to ${isDraft ? 'save draft' : 'submit forms'}. Please try again.`);
+    }
+  };
 
   useEffect(() => {
     if (productCreateData) {
@@ -970,7 +970,7 @@ const handleSubmitAllForms = async (isDraft:boolean) => {
 
   return (
     <>
-    <Authentication setOpen={setOpen} open={open} />
+      <Authentication setOpen={setOpen} open={open} />
       <div className="w-full max-w-7xl mx-auto p-4">
         {/* Breadcrumb + Action */}
         <div className="flex flex-row sm:justify-between justify-end items-center gap-3 mb-6">
@@ -989,8 +989,8 @@ const handleSubmitAllForms = async (isDraft:boolean) => {
             </BreadcrumbList>
           </Breadcrumb>
 
-          <Button 
-            variant={'link'} 
+          <Button
+            variant={'link'}
             className="bg-orange-600 cursor-pointer w-32 text-sm hover:bg-orange-500 text-white rounded-md flex items-center "
             onClick={handleAddForm}
           >
@@ -1018,25 +1018,25 @@ const handleSubmitAllForms = async (isDraft:boolean) => {
               onFormDataChange={handleFormDataChange}
               onRemoveForm={handleRemoveForm}
               showRemoveButton={arrayIndex > 0}
-                resetForm={resetForms}
+              resetForm={resetForms}
             />
           ))}
         </div>
 
         {/* Global Actions - Single Submit and Draft buttons for all forms */}
         <div className="flex justify-end gap-3 my-5">
-          <Button 
-            type="button" 
-            variant="outline" 
-             disabled={loading}
+          <Button
+            type="button"
+            variant="outline"
+            disabled={loading}
             className="w-32 cursor-pointer"
-             onClick={() => handleSubmitAllForms(true)}
+            onClick={() => handleSubmitAllForms(true)}
           >
-             {loading && buttonTye ? <Spinner className="w-5 h-5 animate-spin" /> : ' Save as Draft'}
-           
+            {loading && buttonTye ? <Spinner className="w-5 h-5 animate-spin" /> : ' Save as Draft'}
+
           </Button>
-          <Button 
-            type="button" 
+          <Button
+            type="button"
             disabled={loading}
             className="text-white w-32 cursor-pointer bg-orange-600 hover:bg-orange-500"
             onClick={() => handleSubmitAllForms(false)}

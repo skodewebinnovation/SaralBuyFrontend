@@ -161,12 +161,13 @@ const UpdateProductDraftForm = ({
         image: image,
         document: fileDoc,
         formIndex: formIndex,
-        _id: initialData?._id // Include the ID for identification
+        _id: initialData?._id, // Include the ID for identification
+        initialData: initialData 
       };
       onFormDataChange(formIndex, formData);
     });
     return () => subscription.unsubscribe();
-  }, [watch, image, fileDoc, formIndex, onFormDataChange, getValues, initialData?._id]);
+  }, [watch, image, fileDoc, formIndex, onFormDataChange, getValues,initialData]);
 
   useEffect(() => {
     setValue("oldProductValue.min", values[0].toString());
@@ -748,6 +749,7 @@ const UpdateDraft = () => {
 
   const isValidForms = (formsDataObj: any) => {
   const formsArray = Object.values(formsDataObj);
+  console.log(formsArray)
   
   for (let i = 0; i < formsArray.length; i++) {
     const form = formsArray[i] as any;

@@ -26,6 +26,8 @@ import { useSearchParams } from 'react-router-dom';
 import SellerVerificationPopup from "@/Components/Popup/SellerVerificationPopup";
 import { Spinner } from "@/Components/ui/shadcn-io/spinner";
 import Authentication from "@/Components/auth/Authentication";
+import fileDownload from "js-file-download";
+import instance from "@/lib/instance";
 const ProductOverview = () => {
   const [searchParams] = useSearchParams();
   const productId = searchParams.get('productId');
@@ -38,6 +40,8 @@ const ProductOverview = () => {
   const [open, setOpen] = useState(false)
   const [sellerVerification, setSellerVerification] = useState(false)
   const [businessType, setBusinessType] = useState('')
+  const [downloading, setDownloading] = useState(false);
+  
   const { handleSubmit, formState: { errors }, register, reset, control, getValues } = useForm({
     resolver: zodResolver(productOverviewBidSchema) as any,
     defaultValues: {
@@ -203,6 +207,20 @@ const ProductOverview = () => {
     }
   }, [errors])
 
+const handleDocumentDownload = (url: string) => {
+  const fileName = url.split('/').pop() || 'downloaded-file';
+  instance
+    .get(url, {
+      responseType: 'blob',
+    })
+    .then((res) => {
+      fileDownload(res.data, fileName);
+    })
+    .catch((error) => {
+      console.error("Download failed:", error);
+    });
+};
+
   return (
     <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
       {
@@ -292,7 +310,7 @@ const ProductOverview = () => {
               <div className="lg:col-span-7  rounded-lg p-6 space-y-3 ">
                 <h3 className="font-semibold text-orange-600 text-xl">Requirement Specifications</h3>
                 <div className="text-sm space-y-2 text-gray-600 ">
-                  <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Product Type:</span> {(bidOverviewRes ? bidOverviewRes?.product?.subCategory?.name : productResponse?.mainProduct?.subCategoryId?.name) || "N/A"}</p>
+                  <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Product Type:</span> {(bidOverviewRes ? bidOverviewRes?.product?.subCategory?.name : productResponse?.mainProduct?.categoryId?.categoryName) || "N/A"}</p>
                   <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Brand:</span> {(bidOverviewRes ? bidOverviewRes?.product?.brand : productResponse?.mainProduct?.brand) || "N/A"}</p>
                   {productResponse?.mainProduct?.categoryId?.categoryName === "industrial" && (
 
@@ -312,7 +330,12 @@ const ProductOverview = () => {
 
 
                   <p className="flex items-center justify-between py-2 border-b-2 capitalize"><span className="font-semibold">Payment Mode:</span> {(bidOverviewRes ? bidOverviewRes?.product?.paymentAndDelivery?.paymentMode : productResponse?.mainProduct?.paymentAndDelivery?.paymentMode) || 'N/A'}</p>
-                  <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(productResponse?.mainProduct?.documentName || bidOverviewRes?.product?.documentName) ? <span className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" /> {productResponse?.mainProduct?.documentName || bidOverviewRes?.product?.documentName}</span> : 'N/A'}</p>
+                  {/* <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(productResponse?.mainProduct?.document || bidOverviewRes?.product?.document) ? <a download target="_blank" href={productResponse?.mainProduct?.document || bidOverviewRes?.product?.document} className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" />Download Document</a> : 'N/A'}</p> */}
+                      <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(productResponse?.mainProduct?.document || bidOverviewRes?.product?.document) ? <p  
+                      onClick={() => handleDocumentDownload(
+    productResponse?.mainProduct?.document || bidOverviewRes?.product?.document,
+  )}
+                      className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" />Download Document</p> : 'N/A'}</p>
 
                 </div>
               </div>
@@ -393,6 +416,7 @@ const ProductOverview = () => {
           :
           //  Multiple products
           productResponse?.subProducts && productResponse?.subProducts.map((item: any, idx: any) => {
+            console.log(item)
               const isLast = idx === productResponse?.subProducts?.length - 1;
             return (
               <>
@@ -462,7 +486,7 @@ const ProductOverview = () => {
                   <div className={`grid lg:${isLast ? 'col-span-7' : 'col-span-1'}  rounded-lg  space-y-3 `}>
                     <h3 className="font-semibold text-orange-600 text-xl">Requirement Specifications</h3>
                     <div className="text-sm space-y-2 text-gray-600 ">
-                      <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Product Type:</span> {(bidOverviewRes ? bidOverviewRes?.product?.subCategory?.name : item?.subCategoryId?.name) || "N/A"}</p>
+                      <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Product Type:</span> {(bidOverviewRes ? bidOverviewRes?.product?.subCategory?.name : item?.categoryId?.categoryName) || "N/A"}</p>
                       <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold">Brand:</span> {(bidOverviewRes ? bidOverviewRes?.product?.brand : item?.brand) || "N/A"}</p>
                       {item?.categoryId?.categoryName === "industrial" && (
 
@@ -482,7 +506,8 @@ const ProductOverview = () => {
 
 
                       <p className="flex items-center justify-between py-2 border-b-2 capitalize"><span className="font-semibold">Payment Mode:</span> {bidOverviewRes ? bidOverviewRes?.product?.paymentAndDelivery?.paymentMode : item?.paymentAndDelivery?.paymentMode || 'N/A'}</p>
-                      <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(item?.documentName || bidOverviewRes?.product?.documentName) ? <span className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" /> {item?.documentName || bidOverviewRes?.product?.documentName}</span> : 'N/A'}</p>
+
+                      <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(item?.document || bidOverviewRes?.product?.document) ? <span className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" /> {item?.document || bidOverviewRes?.product?.document}</span> : 'N/A'}</p>
 
                     </div>
                   </div>
