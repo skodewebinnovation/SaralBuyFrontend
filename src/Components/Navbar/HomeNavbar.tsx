@@ -1,4 +1,4 @@
-import { Bell, Book, MapPin, Menu, MessageSquareText, SearchIcon, ShoppingCart, User, UserRound, Zap } from "lucide-react";
+import { Bell, Book, MapPin, Menu, MessageCircle, MessageSquareText, SearchIcon, ShoppingCart, User, UserRound, Zap } from "lucide-react";
 
 import {
   Accordion,
@@ -31,6 +31,14 @@ import { getLocation } from "@/helper/locationAPI";
 import { getUserProfile } from "@/zustand/userProfile";
 import userService from "@/services/user.service";
 import ChatService from "@/services/chat.service";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/Components/ui/popover"
+
+import { Badge } from "../ui/badge";
+import { format } from "date-fns";
 interface MenuItem {
   title: string;
   url: string;
@@ -385,10 +393,19 @@ const HomeNavbar = () => {
           </div>
 
 
+
+
+
+
+
+
+
+
+
+
           <div className="flex gap-4 items-center">
             {/* Messaging icon with chat notification badge and dropdown */}
-            <TooltipComp key={'messaging'} hoverChildren={
-              <div className="relative">
+            {/* <div className="relative">
                 <Button
                   variant="secondary"
                   size="icon"
@@ -397,12 +414,15 @@ const HomeNavbar = () => {
                 >
                   <MessageSquareText className="w-5 h-5" />
                   {notifications.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs font-bold">
+                    <Badge
+                      className="h-5 min-w-5 text-xs rounded-full p-1  tabular-nums absolute -top-2 -right-2"
+                      variant="destructive"
+                    >
                       {notifications.length}
-                    </span>
+                    </Badge>
                   )}
                 </Button>
-                {/* Chat Notification Dropdown */}
+           
                 {showNotifDropdown && (
                   <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                     <div className="p-3 border-b font-semibold text-gray-700">New Chats</div>
@@ -420,8 +440,8 @@ const HomeNavbar = () => {
                               {notif.lastMessage?.senderType === "buyer"
                                 ? "Buyer"
                                 : notif.lastMessage?.senderType === "seller"
-                                ? "Seller"
-                                : "User"}
+                                  ? "Seller"
+                                  : "User"}
                             </div>
                             <div className="text-gray-600 text-sm">
                               {notif.lastMessage?.message}
@@ -437,8 +457,97 @@ const HomeNavbar = () => {
                     )}
                   </div>
                 )}
+              </div> */}
+
+            <Popover onOpenChange={() => setShowNotifDropdown(true)}>
+              <PopoverTrigger>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="cursor-pointer relative"
+                  onClick={handleBellClick}
+                >
+                  <MessageSquareText className="w-5 h-5" />
+                  {notifications.length > 0 && (
+                    <Badge
+                      className="h-5 min-w-5 text-xs rounded-full px-1.5 py-0.5 flex items-center justify-center absolute -top-2 -right-2 shadow-md"
+                      variant="destructive"
+                    >
+                      {notifications.length}
+                    </Badge>
+                  )}
+                </Button>
+              </PopoverTrigger>
+
+             <PopoverContent className="mt-2 w-80 p-2 rounded-xl shadow-lg border border-gray-200 bg-white">
+  {showNotifDropdown && (
+    <>
+      {notifications.length === 0 ? (
+        <p className="text-sm text-center text-gray-500 py-4">
+          No new chat messages
+        </p>
+      ) : (
+        <div className="max-h-80 overflow-y-auto overflow-x-hidden custom-scrollbar w-full">
+          {notifications.map((notif, idx) => (
+            <div
+              key={idx}
+              onClick={() => handleNotificationClick(notif)}
+              className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition cursor-pointer border-b last:border-b-0 mb-2"
+            >
+              <div className="bg-orange-500 p-2 rounded-full text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                <MessageCircle className="w-4 h-4" />
               </div>
-            } contentChildren={<p >Messaging</p>} />
+
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-800 text-md mb-1">
+                  {notif.lastMessage?.senderType === "buyer"
+                    ? "Buyer"
+                    : notif.lastMessage?.senderType === "seller"
+                      ? "Seller"
+                      : "User"}
+                </p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-gray-600 text-sm flex-1 min-w-0 truncate">
+                    {notif.lastMessage?.message}
+                  </p>
+                  <span className="text-xs text-gray-400 flex-shrink-0 ml-2">
+                    {notif.lastMessage?.timestamp
+                      ? format(new Date(notif.lastMessage.timestamp), "hh:mm a").toLowerCase()
+                      : ""}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )}
+</PopoverContent>
+            </Popover>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             {/* Bell icon for product notifications */}
             <TooltipComp key={'notification'} hoverChildren={
