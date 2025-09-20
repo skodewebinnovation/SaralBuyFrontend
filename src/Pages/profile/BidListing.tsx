@@ -1,4 +1,4 @@
-import BidingComponent from '@/Components/TableLisiting'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
@@ -12,12 +12,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {SkeletonTable} from '@/const/CustomSkeletons';
 import TableListing from '@/Components/TableLisiting';
-import { getUserProfile } from '@/zustand/userProfile';
 
 const BidListing = () => {
     const [data, setData] = useState([])
     const navigate = useNavigate()
-    let { user } = getUserProfile();
     const { fn: fetchBidsFn, data: fetchBidsResponse,loading:bidLoading } = useFetch(bidService.getAllBids)
     const columns: ColumnDef<any>[] = [
         {
@@ -70,7 +68,7 @@ const BidListing = () => {
                     <Button className="text-sm cursor-pointer text-gray-600 underline" variant={"link"} onClick={() => {
                         navigate('/product-overview?bidId=' + row.original?._id);
                     }}>View</Button>
-                    <p onClick={() => {
+                    {/* <p onClick={() => {
                         // Store chat IDs in localStorage for persistence across refresh
                         localStorage.setItem('chatIds', JSON.stringify({
                             productId: row.original?.productId,
@@ -84,7 +82,7 @@ const BidListing = () => {
                                 sellerId: user._id
                             }
                         });
-                    }}>Chat now</p>
+                    }}>Chat now</p> */}
                     <div className="hover:bg-red-100 p-1 rounded-md ease-in-out transition-all duration-300">
                         <Trash2Icon className="h-4 w-4  text-red-500 cursor-pointer" />
                     </div>
@@ -120,6 +118,7 @@ const BidListing = () => {
 
     return (
        <>
+       
        {
         bidLoading ? <SkeletonTable/> : <TableListing data={data} columns={columns} filters={true}  title='Your Bids' colorPalette={'gray'} />
        }

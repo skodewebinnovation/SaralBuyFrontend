@@ -55,7 +55,7 @@ export default function TableListing<TData, TValue>({
   });
 
   return (
-    <div className={`space-y-4  rounded-md ${colorPalette ? `bg-${colorPalette}-50 p-4 rounded-lg` : ''}`}>
+    <div className="space-y-5">
       {/* 🔍 Search + Sort Buttons */}
      
      
@@ -116,7 +116,7 @@ export default function TableListing<TData, TValue>({
       </div>
    
 
-      <div className="overflow-hidden rounded-md ">
+      <div className={`overflow-hidden rounded-md ${colorPalette ? `bg-${colorPalette}-50  rounded-lg` : ''}`} >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

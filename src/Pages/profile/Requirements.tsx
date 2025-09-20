@@ -44,7 +44,7 @@ const Requirement = () => {
   }, [getMyRequirementsRes]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto  space-y-6 px-4">
+    <div className="w-full max-w-7xl mx-auto  space-y-6 ">
       <div className='grid space-y-5 w-full'>
         <div className='flex justify-between items-center font-semibold w-full'>
           <p className="font-bold text-3xl whitespace-nowrap sm:text-2xl border-l-4  border-gray-600 pl-3 tracking-tight text-gray-600">
@@ -78,7 +78,7 @@ const Requirement = () => {
                 requirements.length > 0 ? requirements.map((item: any, idx: number) => (
                   <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
 
-                <RequirementSlider product={item} tab={tab} target="requirement" />
+                <RequirementSlider product={item} tab={tab} target="requirements" />
                   </div>
                 )) : <div className='w-full h-[300px]  flex flex-col items-center justify-center'>
                     <img src="/observed.svg" width="10%" />
@@ -108,7 +108,7 @@ const Requirement = () => {
                       ></TooltipComp>
                     </div>
 
-                    <RequirementSlider product={item} tab={tab} target="bid" />
+                    <RequirementSlider product={item} tab={tab} target="drafts" />
                   </div>
                 )) : <div className='w-full h-[300px]  flex flex-col items-center justify-center'>
                     <img src="/observed.svg" width="10%" />

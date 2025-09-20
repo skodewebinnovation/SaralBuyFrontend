@@ -37,7 +37,7 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
- const modifiedProducts = target ==='bid' ? [product, ...(product?.subProducts || [])] : [product, ...(product?.product?.subProducts || [])];
+ const modifiedProducts = target ==='drafts' ? [product, ...(product?.subProducts || [])] : [product, ...(product?.product?.subProducts || [])];
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slides: {
@@ -53,7 +53,7 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
   });
 
   const handleNavigate = (productData: any) => {
-    if (target === 'bid') return;
+    if (target === 'drafts') return;
     // Navigate with product data in state
     navigate('/account/requirements/' + productData._id, {
       state: { product: productData, sellerId: product.seller?._id, products }
@@ -118,23 +118,29 @@ function handleSubmitDraft(targetProduct: any) {
       </div>
 
       {/* Right Side Info */}
-      <div className='flex-1 flex justify-between items-end flex-col space-y-6'>
+      <div className='flex-1 flex justify-between items-end flex-col space-y-10'>
         <p className="text-sm text-gray-600 font-medium whitespace-nowrap">
-          Dated: {dateFormatter(product?.product?.createdAt) || 'N/A'}
+          Dated: {dateFormatter(product?.createdAt) || 'N/A'}
         </p>
         <div>
-          {tab === "requirements" ? (
+          {target === "requirements" ? (
             <Button size={'default'} className='cursor-pointer text-xs'>
               Total Bids: <span className='font-bold'>{product?.product?.totalBidCount || 0}</span>
               <MoveRight className='w-5 h-5' />
             </Button>
-          ) : (
+          ) : target === "drafts" ? (
             <Button size={'default'} className='cursor-pointer text-xs' onClick={()=>{
               handleSubmitDraft(product)
             }}>
               Submit Draft
             </Button>
-          )}
+          ) :
+            target === "carts" ? (
+            <Button size={'default'} className='cursor-pointer text-xs' >
+              Place Bid
+            </Button>
+          ) :
+          null}
         </div>
       </div>
     </div>
