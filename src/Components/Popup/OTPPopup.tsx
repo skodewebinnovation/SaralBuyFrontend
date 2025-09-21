@@ -36,6 +36,7 @@ useEffect(() => {
   if (data) {
     getProfile.execute();
     setOpen(false);
+    window.location.reload()
   }
 }, [data]);
 useEffect(() => {

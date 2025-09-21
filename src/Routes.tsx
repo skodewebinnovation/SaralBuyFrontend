@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 //Pages
 import Home from "./Pages/Home";
@@ -24,6 +24,9 @@ import Cart from "./Pages/profile/Cart";
 import { useLocation } from "react-router-dom";
 import RequirementOverview from "./Pages/RequirementOverview";
 import UpdateDraft from "./Pages/UpdateProductDraft";
+import Authentication from "./Components/auth/Authentication";
+import { useFetch } from "./helper/use-fetch";
+import userService from "./services/user.service";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -35,10 +38,21 @@ const ScrollToTop = () => {
   return null;
 };
 export default function AppRouters() {
+    const [open,setOpen] = useState(false)
+
+    useEffect(()=>{
+    const handler =()=> setOpen(true);
+    window.addEventListener('session-expired',handler);
+    return ()=>window.removeEventListener('session-expired',handler);
+   },[])
+
+ 
   return (
     <Router>
-        <HomeNavbar/>
         <ScrollToTop/>
+        <HomeNavbar/>
+        <Authentication open={open} setOpen={setOpen}/>
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/requirement" element={<Requirement/>} />

@@ -5,7 +5,6 @@ export const useFetch = (cb:any)=>{
     const [loading,setLoading] = useState<boolean>(false);
     const [error,setError] = useState<any>(null);
     // const [showToast,setShowToast] = useState<boolean>(true);
-
     const fn = async(...args:any)=>{
         setLoading(true);
         setError(null);
@@ -18,6 +17,10 @@ export const useFetch = (cb:any)=>{
         } catch (error:any) {
             console.log(error?.response ||  error)
             error = error?.response?.data?.message || error?.response?.data?.error?.message || error.message as string || error;
+            if(error === "Token not found"){
+                error = 'Session expired, please login again'
+                window.dispatchEvent(new CustomEvent('session-expired'))
+            }
             toast.error(error)
             setError(error);
             setLoading(false);
