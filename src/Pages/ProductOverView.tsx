@@ -316,13 +316,19 @@ const handleDocumentDownload = (url: string) => {
 
                     <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
                   )}
-                  {
+                  {/* {
                     (bidOverviewRes?.product?.minimumBudget || productResponse?.mainProduct?.minimumBudget) && (
 
                       <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.minimumBudget
                         : productResponse?.mainProduct?.minimumBudget)}</p>
                     )
-                  }
+                  } */}
+                   
+                     
+
+                      <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.budget
+                        : productResponse?.mainProduct?.budget) || 'N/A'}</p>
+                   
 
                   <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : productResponse?.mainProduct?.additionalDeliveryAndPackage) || "N/A"}</p>
 
@@ -492,13 +498,17 @@ const handleDocumentDownload = (url: string) => {
 
                         <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
                       )}
-                      {
+                      {/* {
                         (bidOverviewRes?.product?.minimumBudget || item?.minimumBudget) && (
 
                           <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.minimumBudget
                             : item?.minimumBudget)}</p>
                         )
-                      }
+                      } */}
+                
+                          <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.budget
+                            : item?.budget) || 'N/A'}</p>
+                      
 
                       <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : item?.additionalDeliveryAndPackage) || "N/A"}</p>
 

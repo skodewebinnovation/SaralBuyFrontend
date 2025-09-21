@@ -131,7 +131,8 @@ const CategoryForm = ({
       transmission: '',
       conditionOfProduct: '',
       toolType: '',
-      rateAService: ''
+      rateAService: '',
+      budget:''
     }
   });
 
@@ -273,7 +274,12 @@ const CategoryForm = ({
                   renderItems={brandRenderItems}
                 />
               )}
-
+              <Input
+                  type="number"
+                  placeholder="Product Budget*"
+                  {...register('budget')}
+                  className="bg-white"
+                />
               {currentCategoryName === "electronics" && (
                 <Input
                   type="text"
@@ -761,6 +767,10 @@ const Category = () => {
       }
       else if (!forms[i].brand && currentCategoryName?.toLowerCase() !== 'service' && !isDraft) {
         toast.error(`Brand is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
+        return false
+      }
+      else if (!forms[i].budget  && !isDraft) {
+        toast.error(`Budget is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
         return false
       }
       else if (!forms[i].quantity && currentCategoryName?.toLowerCase() !== 'service' && !isDraft) {

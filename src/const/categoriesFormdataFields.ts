@@ -111,7 +111,7 @@ export const categoroiesFormDataFields = {
   // Helper function to get category-specific fields based on what's rendered in UI
 export const getCategorySpecificFields = (categoryName: string) => {
   categoryName = categoryName.toLowerCase();
-  const baseFields = ['title', 'subCategoryId', 'description', 'paymentAndDelivery', 'gst_requirement', 'image', 'document'];
+  const baseFields = ['title', 'subCategoryId', 'description', 'paymentAndDelivery', 'gst_requirement', 'image', 'document' ,'budget'];
   
   switch(categoryName) {
     case 'automobile':
