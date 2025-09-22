@@ -1,4 +1,4 @@
-import { Bell, Book, MapPin, Menu, MessageCircle, MessageSquareText, SearchIcon, ShoppingCart, User, UserRound, Zap } from "lucide-react";
+import { Bell, Book, Box, MapPin, Menu, MessageCircle, MessageSquareText, SearchIcon, ShoppingCart, User, UserRound, Zap } from "lucide-react";
 
 import {
   Accordion,
@@ -393,16 +393,6 @@ const HomeNavbar = () => {
           </div>
 
 
-
-
-
-
-
-
-
-
-
-
           <div className="flex gap-4 items-center">
             {/* Messaging icon with chat notification badge and dropdown */}
             {/* <div className="relative">
@@ -458,7 +448,7 @@ const HomeNavbar = () => {
                   </div>
                 )}
               </div> */}
-
+{/*  messaging */}
             <Popover onOpenChange={() => setShowNotifDropdown(true)}>
               <PopoverTrigger>
                 <Button
@@ -492,7 +482,7 @@ const HomeNavbar = () => {
             <div
               key={idx}
               onClick={() => handleNotificationClick(notif)}
-              className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition cursor-pointer border-b last:border-b-0 mb-2"
+              className="flex w-full items-center gap-3 p-2 rounded-lg hover:bg-orange-50 transition cursor-pointer border-b last:border-b-0 mb-2"
             >
               <div className="bg-orange-500 p-2 rounded-full text-white flex items-center justify-center shadow-sm flex-shrink-0">
                 <MessageCircle className="w-4 h-4" />
@@ -528,29 +518,87 @@ const HomeNavbar = () => {
 
 
 
+{/*  product create notificaiton */}
 
+<Popover open={showProductNotifDropdown} onOpenChange={setShowProductNotifDropdown}>
+  <PopoverTrigger>
+    <Button
+      variant="secondary"
+      size="icon"
+      className="cursor-pointer relative"
+    >
+      <Bell className="w-5 h-5" />
+      {productNotifications.length > 0 && (
+        <Badge
+          className="h-5 min-w-5 text-xs rounded-full px-1.5 py-0.5 flex items-center justify-center absolute -top-2 -right-2 shadow-md"
+          variant="destructive"
+        >
+          {productNotifications.length}
+        </Badge>
+      )}
+    </Button>
+  </PopoverTrigger>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <PopoverContent className="mt-2 w-80 p-2 rounded-xl shadow-lg border border-gray-200 bg-white">
+    {productNotifications.length === 0 ? (
+      <p className="text-sm text-center text-gray-500 py-4">
+        No new product notifications
+      </p>
+    ) : (
+      <div className="max-h-80 overflow-y-auto">
+        {productNotifications.map((notif, idx) => (
+          <div
+            key={idx}
+            onClick={() => {
+              // Remove from list
+              setProductNotifications((prev) =>
+                prev.filter((_, i) => i !== idx)
+              );
+              // Navigate
+              if (notif.productId) {
+                navigate(
+                  `/product-overview?productId=${encodeURIComponent(
+                    notif.productId
+                  )}`
+                );
+              } else {
+                toast.error("Product ID missing in notification.");
+              }
+              // Close Popover
+              setShowProductNotifDropdown(false);
+            }}
+            className="flex items-center gap-3 p-2 rounded-lg hover:bg-orange-50 cursor-pointer border-b last:border-b-0"
+          >
+            <div className="bg-orange-500 p-2 rounded-full text-white flex-shrink-0">
+              <Box className="w-4 h-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold">{notif.title}</p>
+              <p className="text-sm text-gray-600 truncate">
+                {notif.description}
+              </p>
+              <span className="text-xs text-gray-400">
+                {notif.receivedAt
+                  ? format(new Date(notif.receivedAt), "hh:mm a").toLowerCase()
+                  : ""}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </PopoverContent>
+</Popover>
 
 
 
 
             {/* Bell icon for product notifications */}
-            <TooltipComp key={'notification'} hoverChildren={
+           
+
+
+{/* 
+ <TooltipComp key={'notification'} hoverChildren={
               <div className="relative">
                 <Button
                   variant="secondary"
@@ -565,7 +613,7 @@ const HomeNavbar = () => {
                     </span>
                   )}
                 </Button>
-                {/* Product Notification Dropdown */}
+            
                 {showProductNotifDropdown && (
                   <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                     <div className="p-3 border-b font-semibold text-gray-700">Product Notifications</div>
@@ -609,7 +657,10 @@ const HomeNavbar = () => {
                   </div>
                 )}
               </div>
-            } contentChildren={<p >Notifications</p>} />
+            } contentChildren={<p >Notifications</p>} /> */}
+
+
+
 
 
             <TooltipComp key={'cart'} hoverChildren={
