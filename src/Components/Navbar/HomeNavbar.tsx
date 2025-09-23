@@ -449,7 +449,7 @@ const HomeNavbar = () => {
                 )}
               </div> */}
 {/*  messaging */}
-            <Popover onOpenChange={() => setShowNotifDropdown(true)}>
+            <Popover onOpenChange={() => setShowNotifDropdown(true)} >
               <PopoverTrigger>
                 <Button
                   variant="secondary"
@@ -663,11 +663,9 @@ const HomeNavbar = () => {
 
 
 
-            <TooltipComp key={'cart'} hoverChildren={
-              <Button variant="secondary" size="icon" className="cursor-pointer">
+           <Button variant="secondary" size="icon" className="cursor-pointer">
                 <ShoppingCart className="w-5 h-5" />
               </Button>
-            } contentChildren={<p >Cart</p>} />
 
             <Button onClick={handleRaiseAReuirement} variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
               Raise a Requirement

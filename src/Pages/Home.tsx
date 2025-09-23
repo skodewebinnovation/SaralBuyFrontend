@@ -3,7 +3,7 @@ import Brands from "@/Components/Brands";
 import "../Styling/Home/homePage.css";
 import Banner from "@/Components/Banner/Banner";
 
-import Requirement from "@/Components/Requirement";
+import RequirementHome from "@/Components/RequirementHome";
 import SwiperSlider from "@/Components/SwiperSlider";
 import TrendingCategory from "@/Components/TrendingCategory";
 import { dateFormatter } from "@/helper/dateFormatter";
@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useFetch } from "@/helper/use-fetch";
 import bidService from "@/services/bid.service";
 import { Skeleton } from "@/Components/ui/skeleton";
+
 
 
 const ItemSkeleton = () => (
@@ -29,6 +30,7 @@ const Home = () => {
 
 
   const { fn: getLatestThreeBidsFn, data: getLatestBidandDrafts, loading: bidResponseLoading } = useFetch(bidService.getThreeLatestBids);
+  
   const [bids, setBids] = useState<any>([])
   const [drafts, setDrafts] = useState([
 
@@ -40,8 +42,9 @@ const Home = () => {
 
 
   useEffect(() => {
-    getLatestThreeBidsFn()
+ getLatestThreeBidsFn()
   }, [])
+
   useEffect(() => {
     if (getLatestBidandDrafts) {
       console.log(getLatestBidandDrafts)
@@ -89,7 +92,7 @@ const Home = () => {
             bidResponseLoading ?
               <ItemSkeleton />
               :
-              drafts.length > 0 ? <SwiperSlider key={'draft'} title="Your Drafts" target="drafts" color="orange" data={drafts} /> : <SwiperSlider title="Your Drafts" target="draft" color="gray" data={[]} />
+              drafts.length > 0 ? <SwiperSlider key={'draft'} title="Your Drafts" target="drafts" color="orange" data={drafts} /> : <SwiperSlider title="Your Drafts" target="draft" color="orange" data={[]} />
           }
           {/* {
             drafts.length > 0 && <SwiperSlider key={'draft'} title="Your Drafts" target="drafts" color="orange" data={drafts} />
@@ -98,7 +101,7 @@ const Home = () => {
       </div>
       {/* requirement  */}
       <div className="mt-10">
-        <Requirement title="Your Requirements" color="orange" bg />
+        <RequirementHome />
       </div>
       {/* trending Section */}
       <div className="mt-10 relative mx-auto px-4 w-full">
@@ -115,7 +118,7 @@ const Home = () => {
 
       {/* requirement  */}
       <div >
-        <Requirement title="Electronics" color="orange" />
+        {/* <Requirement title="Electronics" color="orange" /> */}
       </div>
       {/* brands */}
       <Brands></Brands>

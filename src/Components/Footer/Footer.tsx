@@ -3,7 +3,7 @@ import "../../Styling/Footer/Footer.css";
 
 import { FaFacebookF, FaTwitter, FaInstagram, FaPinterestP, FaYoutube, FaMapMarkerAlt, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import saralBuyLogo from "../../image/Logo/saralBuyLogo.png";
+import saralBuyLogo from "/footer-logo.png"
 const Footer = () => {
   return (
     <footer className=" footer-container">
