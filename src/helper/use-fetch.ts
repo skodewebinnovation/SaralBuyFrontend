@@ -18,10 +18,12 @@ export const useFetch = (cb:any)=>{
             console.log(error?.response ||  error)
             error = error?.response?.data?.message || error?.response?.data?.error?.message || error.message as string || error;
             if(error === "Token not found"){
-                error = 'Session expired, please login again'
+                // error = 'Session expired, please login again'
                 window.dispatchEvent(new CustomEvent('session-expired'))
             }
-            toast.error(error)
+            if(error !== 'Token not found'){
+                toast.error(error)
+            }
             setError(error);
             setLoading(false);
             

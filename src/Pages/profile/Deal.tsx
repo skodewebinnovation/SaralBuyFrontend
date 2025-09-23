@@ -13,6 +13,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/Components/ui/button";
 import bidService from "@/services/bid.service";
 import requirementService from "@/services/requirement.service";
+import { useFetch } from "@/helper/use-fetch";
 
 
 const dummyCompletedRequiremnts = [
@@ -217,25 +218,21 @@ const columnsApproveBids: ColumnDef<any>[] = [
 
 const Deal = () => {
   const [tab, setTab] = useState('approved_bids')
+  const {fn:pendingApprovedFn,data:pendingApprovedData} = useFetch(requirementService.getApprovedPendingRequirements)
+  const {fn:completedApproveFn,data:completedApproveData} = useFetch(requirementService.getCompletedApprovedRequirements)
 
-  useEffect(() => {
-    requirementService.getApprovedPendingRequirements()
-      .then((data: any) => {
-        console.log("Approved Pending Requirements:", data);
-      })
-      .catch((err: any) => {
-        console.error("Error fetching approved pending requirements:", err);
-      });
-  }, []);
-  useEffect(() => {
-    requirementService.getCompletedApprovedRequirements()
-      .then((data: any) => {
-        console.log("Completed Requirements:", data);
-      })
-      .catch((err: any) => {
-        console.error("Error fetching approved Completed requirements:", err);
-      });
-  }, []);
+
+  useEffect(()=>{
+    if(tab === 'approved_bids'){
+      pendingApprovedFn()
+    }else{
+      completedApproveFn()
+    }
+  },[tab])
+  console.log({
+    pendingApprovedData,
+    completedApproveData
+  })
 
   return (
     <div className="w-full max-w-7xl mx-auto  space-y-6 ">

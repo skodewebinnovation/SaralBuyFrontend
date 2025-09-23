@@ -6,6 +6,11 @@ class UserService{
             withCredentials:true
         }).then(res => res.data?.data|| res.data)
     }
+    logout(){
+        return instance.get('/user/logout',{
+            withCredentials:true
+        }).then(res => res.data?.data|| res.data)
+    }
 }
 
 export default new UserService();

@@ -14,9 +14,9 @@ const Requirement = () => {
 
   return (
     <div className={` px-8 sm:px-16 relative bg-no-repeat z-0 bg-cover  py-10  min-h-82 bg-[url('./grid.png')]`}>
-     <div className="absolute inset-0 bg-gray-200/70 -z-[1]"></div>
+     <div className="absolute inset-0 bg-gray-200/80 -z-[1]"></div>
   <div className="flex justify-between items-center max-w-7xl mx-auto px-4">
-       <p className={`font-bold text-3xl sm:text-4xl text-gray-600 border-l-5 border-gray-600 pl-3 tracking-tight`}>
+       <p className={`font-bold text-3xl  text-orange-700 border-l-5 border-orange-700 pl-3 tracking-tight`}>
       Recent Requirements
       </p>
      {/* {

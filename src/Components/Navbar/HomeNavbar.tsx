@@ -313,8 +313,9 @@ const HomeNavbar = () => {
     };
   }, [showDropdown, productsRef]);
   return (
-    <section className="mb-2 relative z-9">
-      <div className="mx-auto bg-gray-50 p-3 sticky top-0">
+   <section className="bg-gray-100">
+     <div className="mb-2 relative z-9 max-w-7xl mx-auto">
+      <div className="p-3 sticky top-0">
         {/* Desktop Menu */}
         <nav className="hidden justify-evenly lg:flex items-center gap-5 ">
           <div className="flex items-center gap-6">
@@ -345,9 +346,9 @@ const HomeNavbar = () => {
               value={text}
               onKeyPress={handleKeyPress}
               placeholder="Looking For..."
-              className="pl-8 rounded-full focus-visible:ring-0 border border-gray-300 shadow-sm focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
+              className="pl-2 shadow-none rounded-sm max-w-96 float-end focus-visible:ring-0 border border-gray-300  focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
             />
-            <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 pointer-events-none opacity-50" />
+            <SearchIcon className="absolute right-2.5 top-2.5 h-4 w-4 pointer-events-none opacity-50" />
 
             {/* Search Dropdown */}
             {showDropdown && (
@@ -393,71 +394,16 @@ const HomeNavbar = () => {
           </div>
 
 
-          <div className="flex gap-4 items-center">
-            {/* Messaging icon with chat notification badge and dropdown */}
-            {/* <div className="relative">
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="cursor-pointer relative"
-                  onClick={handleBellClick}
-                >
-                  <MessageSquareText className="w-5 h-5" />
-                  {notifications.length > 0 && (
-                    <Badge
-                      className="h-5 min-w-5 text-xs rounded-full p-1  tabular-nums absolute -top-2 -right-2"
-                      variant="destructive"
-                    >
-                      {notifications.length}
-                    </Badge>
-                  )}
-                </Button>
+          <div className="flex gap-5 items-center space-x-1">
            
-                {showNotifDropdown && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                    <div className="p-3 border-b font-semibold text-gray-700">New Chats</div>
-                    {notifications.length === 0 ? (
-                      <div className="p-4 text-gray-500 text-sm">No new chat messages</div>
-                    ) : (
-                      <ul>
-                        {notifications.map((notif, idx) => (
-                          <li
-                            key={idx}
-                            className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
-                            onClick={() => handleNotificationClick(notif)}
-                          >
-                            <div className="font-medium text-gray-800">
-                              {notif.lastMessage?.senderType === "buyer"
-                                ? "Buyer"
-                                : notif.lastMessage?.senderType === "seller"
-                                  ? "Seller"
-                                  : "User"}
-                            </div>
-                            <div className="text-gray-600 text-sm">
-                              {notif.lastMessage?.message}
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                              {notif.lastMessage?.timestamp
-                                ? new Date(notif.lastMessage.timestamp).toLocaleTimeString()
-                                : ""}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                )}
-              </div> */}
 {/*  messaging */}
             <Popover onOpenChange={() => setShowNotifDropdown(true)} >
               <PopoverTrigger>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="cursor-pointer relative"
+                <div
+                  className="cursor-pointer relative  bg-transparent border-0 shadow-none"
                   onClick={handleBellClick}
                 >
-                  <MessageSquareText className="w-5 h-5" />
+                  <MessageSquareText className="w-5 h-5 text-gray-600" />
                   {notifications.length > 0 && (
                     <Badge
                       className="h-5 min-w-5 text-xs rounded-full px-1.5 py-0.5 flex items-center justify-center absolute -top-2 -right-2 shadow-md"
@@ -466,7 +412,7 @@ const HomeNavbar = () => {
                       {notifications.length}
                     </Badge>
                   )}
-                </Button>
+                </div>
               </PopoverTrigger>
 
              <PopoverContent className="mt-2 w-80 p-2 rounded-xl shadow-lg border border-gray-200 bg-white">
@@ -485,7 +431,7 @@ const HomeNavbar = () => {
               className="flex w-full items-center gap-3 p-2 rounded-lg hover:bg-orange-50 transition cursor-pointer border-b last:border-b-0 mb-2"
             >
               <div className="bg-orange-500 p-2 rounded-full text-white flex items-center justify-center shadow-sm flex-shrink-0">
-                <MessageCircle className="w-4 h-4" />
+                <MessageCircle className="w-4 h-4 " />
               </div>
 
               <div className="flex-1 min-w-0">
@@ -522,12 +468,11 @@ const HomeNavbar = () => {
 
 <Popover open={showProductNotifDropdown} onOpenChange={setShowProductNotifDropdown}>
   <PopoverTrigger>
-    <Button
-      variant="secondary"
-      size="icon"
-      className="cursor-pointer relative"
+    <div
+     
+      className="cursor-pointer relative  bg-transparent border-0 shadow-none"
     >
-      <Bell className="w-5 h-5" />
+      <Bell className="w-5 h-5 text-gray-600 " />
       {productNotifications.length > 0 && (
         <Badge
           className="h-5 min-w-5 text-xs rounded-full px-1.5 py-0.5 flex items-center justify-center absolute -top-2 -right-2 shadow-md"
@@ -536,7 +481,7 @@ const HomeNavbar = () => {
           {productNotifications.length}
         </Badge>
       )}
-    </Button>
+    </div>
   </PopoverTrigger>
 
   <PopoverContent className="mt-2 w-80 p-2 rounded-xl shadow-lg border border-gray-200 bg-white">
@@ -594,86 +539,19 @@ const HomeNavbar = () => {
 
 
             {/* Bell icon for product notifications */}
-           
+        
 
-
-{/* 
- <TooltipComp key={'notification'} hoverChildren={
-              <div className="relative">
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="cursor-pointer relative"
-                  onClick={handleProductBellClick}
-                >
-                  <Bell className="w-5 h-5" />
-                  {productNotifications.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs font-bold">
-                      {productNotifications.length}
-                    </span>
-                  )}
-                </Button>
-            
-                {showProductNotifDropdown && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                    <div className="p-3 border-b font-semibold text-gray-700">Product Notifications</div>
-                    {productNotifications.length === 0 ? (
-                      <div className="p-4 text-gray-500 text-sm">No new product notifications</div>
-                    ) : (
-                      <ul>
-                        {productNotifications.map((notif, idx) => (
-                          <li
-                            key={idx}
-                            className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
-                            onClick={() => {
-                              // Remove notification from list
-                              setProductNotifications((prev) =>
-                                prev.filter((n, i) => i !== idx)
-                              );
-                              setShowProductNotifDropdown(false);
-                              // Defensive: check productId
-                              if (notif.productId) {
-                                navigate(`/product-overview?productId=${encodeURIComponent(notif.productId)}`);
-                              } else {
-                                toast.error("Product ID missing in notification.");
-                              }
-                            }}
-                          >
-                            <div className="font-medium text-gray-800">
-                              {notif.title}
-                            </div>
-                            <div className="text-gray-600 text-sm">
-                              {notif.description}
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                              {notif.receivedAt
-                                ? new Date(notif.receivedAt).toLocaleTimeString()
-                                : ""}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                )}
+           <div  className="cursor-pointer  bg-transparent border-0 shadow-none">
+                <ShoppingCart className="w-5 h-5 text-gray-600 " />
               </div>
-            } contentChildren={<p >Notifications</p>} /> */}
-
-
-
-
-
-           <Button variant="secondary" size="icon" className="cursor-pointer">
-                <ShoppingCart className="w-5 h-5" />
-              </Button>
-
-            <Button onClick={handleRaiseAReuirement} variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
+ </div>
+            <Button onClick={handleRaiseAReuirement} variant="link" size="lg" className="border  shadow-orange-500 border-orange-600 text-orange-600 rounded-[5px] underline hover:bg-orange-500 hover:text-white cursor-pointer">
               Raise a Requirement
             </Button>
-            <Button onClick={handleProfileClick} size="icon" className="cursor-pointer">
+            <Button onClick={handleProfileClick} size="icon" className="cursor-pointer bc">
               <UserRound className="w-5 h-5" />
             </Button>
-          </div>
+         
         </nav>
 
         {/* Mobile Menu */}
@@ -721,7 +599,7 @@ const HomeNavbar = () => {
                 <SheetFooter>
                   <Button
                     onClick={handleRaiseAReuirement}
-                    variant="ghost"
+                    variant="link"
                     size="lg"
                     className="border shadow-orange-500 border-orange-500 text-orange-500 transition-all ease-in-out duration-300 hover:bg-orange-500 hover:text-white cursor-pointer"
                   >
@@ -734,7 +612,8 @@ const HomeNavbar = () => {
           </div>
         </div>
       </div>
-    </section>
+    </div>
+   </section>
   );
 };
 

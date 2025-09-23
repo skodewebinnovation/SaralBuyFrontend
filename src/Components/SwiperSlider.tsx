@@ -2,6 +2,7 @@
 import { Card } from "./ui/card";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
+import { MoveRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 type Props = {
   title: string,
@@ -24,15 +25,15 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
 
 
   return (
-    <Card className={`shadow-none p-5 bg-${color}-50`}>
+    <Card className={`shadow-none  p-5 ${target === "bids" ?`bg-${color}-100` :`bg-${color}-50`}`}>
       {/* Header */}
       <div className="flex justify-between items-center ">
-        <p className={`font-bold text-2xl border-l-4 border-${color}-600 pl-3 tracking-tight text-${color}-600`}>
+        <p className={`font-bold text-2xl border-l-4 border-${color}-700 pl-3 tracking-tight text-${color}-700`}>
           {title}
         </p>
         <button 
         disabled={!data.length }
-        className={`text-md text-${color}-600 hover:underline  font-semibold  ${!data.length ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+        className={`text-md text-${color}-700 hover:underline  font-semibold  ${!data.length ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         onClick={()=>{  
           target === 'bids' ? navigate('/account/bid') : navigate('/account/requirements')
         }}>
@@ -45,7 +46,7 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
         {data.length > 0?
          data.map((item) => (
           <div key={item._id}  className="keen-slider__slide ">
-            <Card className="flex flex-row items-center justify-around gap-4 p-4 rounded-xl   shadow border border-gray-200">
+            <Card className="flex flex-row items-center justify-around gap-4 p-4   border border-gray-200">
               {/* Image */}
               <div className="h-24 w-24 flex-shrink-0">
                 <img
@@ -61,7 +62,7 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
                   <p className="text-sm text-gray-500 mb-1">
                     Dated: {item.date}
                   </p>
-                  <p className="text-orange-600 font-semibold capitalize">
+                  <p className="cc">
                     {item.category}
                   </p>
                   <p className="font-medium">{item.title}</p>
@@ -75,18 +76,25 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
               </div>
               {/* Footer */}
               <div className="flex flex-col h-full justify-between " style={{ height: '-webkit-fill-available' }}>
-                <p className="text-sm border rounded px-2 py-1 bg-gray-50">
+                {
+                  target !== 'drafts' ? <p className="text-sm border rounded px-2 py-1 bg-gray-50">
                   Total Bids:{" "}
                   <span className="font-semibold text-orange-600">
                     {item.totalBids}
                   </span>
-                </p>
-                <a
+                </p>: <div>
+
+                </div>
+                }
+                <div className="flex gap-1 items-center justify-end">
+                  <a
                   href="#"
-                  className={`text-sm text-${color}-600 font-medium hover:underline  text-right`}
+                  className={`text-sm text-gray-600 font-semibold hover:underline  text-right underline`}
                 >
-                  View →
+                  View {target === 'drafts' && 'Bids'}
                 </a>
+                <MoveRight className="h-4 w-4"/>
+                </div>
               </div>
             </Card>
           </div>

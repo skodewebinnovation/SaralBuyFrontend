@@ -6,7 +6,7 @@ import {
   BreadcrumbSeparator,
 } from "../../Components/ui/breadcrumb";
 import { Outlet } from "react-router-dom";
-import { SquarePen } from 'lucide-react';
+import { Camera, SquarePen } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "../../Components/ui/avatar";
 import { NavLink } from 'react-router-dom';
 import { useFetch } from "@/helper/use-fetch";
@@ -94,15 +94,15 @@ const Profile = () => {
       </Breadcrumb>
 
       <div className="grid gap-8">
-        <div className="grid gap-8 md:grid-cols-[250px_1fr]">
+        <div className="grid gap-8 md:grid-cols-[220px_1fr]">
           {/* Sidebar */}
-          <div className="hidden md:block space-y-2 bg-gray-50 p-4 rounded-md  sticky top-4  self-start">
+          <div className="hidden md:block space-y-2 bg-gray-100 p-4 rounded-md  sticky top-4  self-start">
             <div className='flex justify-center items-center mt-2 mb-5 relative'>
               <div className='relative'>
-                <Avatar className='w-28 h-28 border-orange-200 border-3 border-dotted   flex '>
+                <Avatar className='w-28 h-28 border-gray-600 border-4 flex '>
                 {
                   updateProfileLoading ? 
-                  <div className="h-full w-full  flex items-center justify-center">
+                  <div className="h-full w-full  flex items-center justify-center object-contain">
                     <Spinner className="w-5 h-5 text-orange-500"/>
                     
                   </div>:
@@ -121,8 +121,8 @@ const Profile = () => {
                   if(avatarRef){
                     avatarRef.current?.click()
                   }
-                }}  className="absolute bottom-4 cursor-pointer right-0 bg-white p-1 rounded-full shadow-md hover:bg-gray-100">
-                  <SquarePen className='w-4 h-4  text-orange-500' />
+                }}  className="absolute bottom-4 cursor-pointer right-0 bg-gray-500 p-1 rounded-full shadow-md hover:bg-gray-400">
+                  <Camera className='w-4 h-4 text-white' />
                 </button>
               </div>
             </div>

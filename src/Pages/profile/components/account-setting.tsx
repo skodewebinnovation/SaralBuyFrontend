@@ -22,6 +22,7 @@ export function AccountSettings() {
   const { user, setUser } = getUserProfile()
   const [open,setOpen]= useState(false)
   const { fn: updateProfilefn, data: updateProfileRes, loading } = useFetch(userService.updateProfile)
+  const { fn: logoutFn,data:logoutRes,loading:logoutLoading} = useFetch(userService.logout)
   const { handleSubmit, formState: { errors }, register, reset } = useForm({
     resolver: zodResolver(ProfileSchema),
     defaultValues: {
@@ -33,6 +34,22 @@ export function AccountSettings() {
       aadhaarNumber: "",
     },
   })
+
+  useEffect(()=>{
+    if(logoutRes){
+      toast.success('You are Logged out')  
+      setUser(null);
+      reset({
+        phone: '',
+        firstName: "",
+        lastName: "",
+        email: "",
+        address: "",
+        aadhaarNumber: "",
+        
+      })
+    }
+  },[logoutRes])
 
   useEffect(() => {
     if (user) {
@@ -207,11 +224,16 @@ export function AccountSettings() {
 
             {/* Submit button */}
             <div className="flex justify-end">
-              <Button type="submit" className="cursor-pointer max-w-sm" disabled={loading}>
+              <Button type="submit" className="cursor-pointer w-32" disabled={loading}>
                 {
-                  loading ? <Spinner className="w-5 h-5 animate-spin" /> : 'Submit Changes'
+                  loading ? <Spinner className="w-5 h-5 animate-spin " /> : 'Save Changes'
                 }
               </Button>
+              <Button
+              disabled={!user || logoutLoading}
+              className="ml-4 w-32 cursor-pointer" variant="destructive"
+              onClick={()=>logoutFn()}
+              >Logout</Button>
             </div>
           </form>
         </CardContent>

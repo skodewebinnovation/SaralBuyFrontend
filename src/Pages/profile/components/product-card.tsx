@@ -4,8 +4,8 @@ const ProductCard = ({ product }: { product: any }) => {
   product = product.product || product || {}
   console.log(product)
   return (
-    <div className='w-full border p-2 border-gray-200 rounded-md shadow-sm bg-white'>
-      <div className='flex gap-4'>
+    <div className='w-full  border-r-2 border-gray-200 p-2 b shadow-sm '>
+      <div className='flex gap-8 justify-center '>
         <div className='w-24 h-24 flex-shrink-0'>
           <img
             src={product.image  || '/no-image.webp'}
@@ -15,7 +15,7 @@ const ProductCard = ({ product }: { product: any }) => {
         </div>
         <div className='flex flex-col justify-between text-sm'>
           <div>
-            <span className="text-orange-400 bg-orange-50 rounded-full inline-block px-3 py-1 text-xs capitalize">
+            <span className="cc">
               {product?.categoryId?.categoryName}
             </span>
           </div>

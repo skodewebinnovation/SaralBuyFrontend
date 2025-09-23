@@ -136,7 +136,7 @@ function handleSubmitDraft(targetProduct: any) {
             </Button>
           ) :
             target === "carts" ? (
-            <Button size={'default'} className='cursor-pointer text-xs' >
+            <Button size={'default'} className='cursor-pointer text-xs bg-[#2C3E50] ' >
               Place Bid
             </Button>
           ) :
