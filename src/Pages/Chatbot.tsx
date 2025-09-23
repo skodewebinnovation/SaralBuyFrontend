@@ -9,6 +9,9 @@ import { Badge } from '../Components/ui/badge'
 import { fallBackName } from '@/helper/fallBackName'
 import { getUserProfile } from "@/zustand/userProfile";
 import { useLocation } from 'react-router-dom'
+import BidService from '../services/bid.service'
+import { toast } from "sonner";
+import requirementService from '@/services/requirement.service'
 
 const ContactsList = ({
   onSelectContact,
@@ -126,6 +129,9 @@ const ChatArea = ({
 }: ChatAreaProps) => {
   const [messageText, setMessageText] = useState('');
   const [chatService] = useState(() => ChatService.getInstance());
+  const [isClosingDeal, setIsClosingDeal] = useState(false);
+
+  const [budgetAmount, setBudgetAmount] = useState<number | null>(null);
 
   useEffect(() => {
     if (!userId || !productId || !sellerId || !userType || !buyerId) {
@@ -205,6 +211,40 @@ const ChatArea = ({
     }
   };
 
+  // Handler for closing the deal
+  const handleCloseDeal = async () => {
+    if (!productId || !sellerId || !buyerId) {
+      toast.error("Missing required parameters to close deal.");
+      return;
+    }
+    let amount = budgetAmount;
+    if (amount === null || isNaN(amount)) {
+      // Prompt for budgetAmount if not set
+      const input = window.prompt("Enter the agreed budget amount to close the deal:");
+      if (!input) return;
+      amount = Number(input);
+      if (isNaN(amount)) {
+        toast.error("Invalid budget amount.");
+        return;
+      }
+      setBudgetAmount(amount);
+    }
+    setIsClosingDeal(true);
+    try {
+      await requirementService.closeDeal({
+        productId,
+        sellerId,
+        buyerId,
+        budgetAmount: amount!,
+      });
+      toast.success("Deal closed successfully!");
+    } catch (err: any) {
+      toast.error("Failed to close deal.");
+    } finally {
+      setIsClosingDeal(false);
+    }
+  };
+
   if (!selectedContact) {
     return (
       <div className="flex-1 flex items-center justify-center bg-background">
@@ -248,8 +288,14 @@ const ChatArea = ({
               </div>
             </div>
             <div className='flex items-center gap-3'>
-              <Button variant="outline" size="sm" className="text-orange-600 hover:text-orange-600 bg-transparent cursor-pointer hover:bg-transparent border-orange-600 w-32 text-sm font-medium">
-                Close Deal
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-orange-600 hover:text-orange-600 bg-transparent cursor-pointer hover:bg-transparent border-orange-600 w-32 text-sm font-medium"
+                onClick={handleCloseDeal}
+                disabled={isClosingDeal}
+              >
+                {isClosingDeal ? "Closing..." : "Close Deal"}
               </Button>
               <LayoutGrid className='w-5 h-5 text-gray-600' />
             </div>

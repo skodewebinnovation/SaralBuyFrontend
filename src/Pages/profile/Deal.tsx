@@ -7,10 +7,12 @@ import "keen-slider/keen-slider.min.css"
 
 import { SkeletonTable } from '@/const/CustomSkeletons';
 import TableListing from '@/Components/TableLisiting';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/Components/ui/button";
+import bidService from "@/services/bid.service";
+import requirementService from "@/services/requirement.service";
 
 
 const dummyCompletedRequiremnts = [
@@ -216,8 +218,24 @@ const columnsApproveBids: ColumnDef<any>[] = [
 const Deal = () => {
   const [tab, setTab] = useState('approved_bids')
 
-
-
+  useEffect(() => {
+    requirementService.getApprovedPendingRequirements()
+      .then((data: any) => {
+        console.log("Approved Pending Requirements:", data);
+      })
+      .catch((err: any) => {
+        console.error("Error fetching approved pending requirements:", err);
+      });
+  }, []);
+  useEffect(() => {
+    requirementService.getCompletedApprovedRequirements()
+      .then((data: any) => {
+        console.log("Completed Requirements:", data);
+      })
+      .catch((err: any) => {
+        console.error("Error fetching approved Completed requirements:", err);
+      });
+  }, []);
 
   return (
     <div className="w-full max-w-7xl mx-auto  space-y-6 ">
