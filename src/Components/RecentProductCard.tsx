@@ -3,8 +3,9 @@ import { mergeName } from "@/helper/mergeName";
 import { Button } from "../Components/ui/button";
 import { User, MapPin, List } from "lucide-react";
 import { dateFormatter } from "@/helper/dateFormatter";
+import { useNavigate } from "react-router-dom";
 const RecentProductCard = ({item}:{item:any}) => {
-  console.log(item)
+  const navigate = useNavigate()
   return (
       <div className='p-5 bg-white rounded-lg shadow-md '>
       <span className="border-2 border-gray-800 rounded-full mb-4 inline-block p-1  max-w-fit px-3 text-sm font-semibold"> Sationary</span>
@@ -41,7 +42,14 @@ const RecentProductCard = ({item}:{item:any}) => {
     className="flex flex-row items-center justify-between mt-3"
     >
 <p className="text-sm text-gray-600 font-semibold ">Dated: {dateFormatter(item.createdAt)}</p>
-     <Button variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
+     <Button
+     onClick={
+      ()=>{
+        navigate(`/product-overview?productId=${item?.productId?._id}`)
+      }
+     }
+     
+     variant="ghost" size="lg" className="border  shadow-orange-500 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white cursor-pointer">
           Place Quotation
     </Button>
     </div>
