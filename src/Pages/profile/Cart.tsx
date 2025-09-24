@@ -4,6 +4,8 @@ import TooltipComp from '@/utils/TooltipComp'
 import { ListFilter, SquarePen } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import RequirementSlider from './components/requirement-slide'
+import { useEffect } from 'react'
+import cartService from '@/services/cart.service'
 
 
 export const dummyProducts = [
@@ -96,7 +98,19 @@ export const dummyProducts = [
 
 
 const Cart = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // You may need to adjust the parameter as per your backend API.
+    cartService.getCart()
+      .then((res) => {
+        console.log("Cart API response:", res);
+      })
+      .catch((err) => {
+        console.error("Cart API error:", err);
+      });
+  }, []);
+
   return (
      <div className="w-full max-w-7xl mx-auto  space-y-6 ">
       <div className='grid space-y-5 w-full'>
@@ -133,7 +147,7 @@ const Cart = () => {
                     <p className="text-gray-500 text-sm">No Cart's Found</p>
                 </div>
             }
-
+       
       </div>
     </div>
   )
