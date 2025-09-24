@@ -51,7 +51,7 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="h-full object-cover rounded-lg"
+                  className="h-full w-full object-contain rounded-lg"
                 />
               </div>
 
