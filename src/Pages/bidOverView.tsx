@@ -12,6 +12,10 @@ import { NavLink } from 'react-router-dom';
 
 import { Spinner } from "@/Components/ui/shadcn-io/spinner";
 import { Button } from "@/Components/ui/button";
+import { SkeletonTable } from "@/const/CustomSkeletons";
+import TableListing from "@/Components/TableLisiting";
+import type { ColumnDef } from "@tanstack/react-table";
+import { AvatarFallback } from "@radix-ui/react-avatar";
 const getRoutePath = (value: string) => {
   switch (value) {
     case 'profile':
@@ -59,7 +63,68 @@ const tags = [
 
 const BidOverview = () => {
 
+const bidsColumns: ColumnDef<any>[] = [
+  {
+    accessorKey: "avtar",
+    header: "",
+    cell: ({row}) => {
+      console.log(row)
+      return <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
+        <Avatar className="w-10 h-10">
+          <AvatarImage src="https://github.com/shubhamsharma20007.png" alt="@shadcn" className="h-full w-full rounded-full" />
+          <AvatarFallback>{
+            'SS'
+            // fallBackName(row.original?.bid_to)
+          }</AvatarFallback>
+        </Avatar>
 
+      </div>
+    }
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+  },
+  {
+    accessorKey: "bid_by",
+    header: "Bid By",
+  },
+ 
+  {
+    accessorKey: "budget",
+    header: "Budget",
+  },
+{
+    accessorKey: "bid_budget",
+    header: "Bid Budget",
+  },
+
+];
+
+
+  const bidsData = [
+    {
+      id: 1,
+      date: "2025-09-20",
+      bid_by: "John Doe",
+      budget: "₹25,000",
+      bid_budget: "₹22,000",
+    },
+    {
+      id: 2,
+      date: "2025-09-21",
+      bid_by: "Jane Smith",
+      budget: "₹30,000",
+      bid_budget: "₹27,500",
+    },
+    {
+      id: 3,
+      date: "2025-09-22",
+      bid_by: "Ravi Kumar",
+      budget: "₹20,000",
+      bid_budget: "₹18,000",
+    },
+  ];
   return (
     <div className="w-full max-w-7xl mx-auto py-6 space-y-6 px-4">
       {/* Breadcrumb */}
@@ -141,25 +206,34 @@ const BidOverview = () => {
           {/* Main Content */}
           <div className="space-y-10">
             <section className="min-h-screen">
-            <div className="grid space-y-2">
-                 <h2 className="text-sm font-[500] mb-2">
-                            Date: 12-12-2025
-                          </h2>
-                           <div className="flex justify-between items-center gap-10">
-                               <h2 className="text-xl font-bold capitalize ">
-             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatibus, eius!
-            </h2>
-             <Button
-                                
-                              
-                                  variant={'ghost'} className="w-32 float-end border text-xs bg-orange-700  transition-all ease-in-out duration-300 hover:bg-orange-600 text-white hover:text-white cursor-pointer">
-                                  Place Bid
-                                </Button>
-                           </div>
-              <p className="text-sm text-gray-600 ">
-               Lorem ipsum, dolor sit amet consectetur adipisicing elit. Architecto mollitia et vitae, tempore odit quae laborum accusamus, nemo quas, maxime ut incidunt vero necessitatibus? Ad beatae officia unde explicabo quaerat, modi aliquam animi nobis voluptate necessitatibus nostrum alias voluptatum quod labore ipsa quos cum molestiae libero debitis, excepturi ipsum perspiciatis. 
-            </p>
-            </div>
+              <div className="grid space-y-2">
+                <h2 className="text-sm font-[500] mb-2">
+                  Date: 12-12-2025
+                </h2>
+                <div className="flex justify-between items-center gap-10">
+                  <h2 className="text-xl font-bold capitalize item-center">
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatibus, eius!
+                  </h2>
+                  <Button
+
+
+                    variant={'ghost'} className=" float-end border rounded-full text-sm bg-orange-700  transition-all ease-in-out duration-300 hover:bg-orange-600 text-white hover:text-white cursor-pointer">
+                    24.00 Hr.
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-500 mt-2 ">
+                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Architecto mollitia et vitae, tempore odit quae laborum accusamus, nemo quas, maxime ut incidunt vero necessitatibus? Ad beatae officia unde explicabo quaerat, modi aliquam animi nobis voluptate necessitatibus nostrum alias voluptatum quod labore ipsa quos cum molestiae libero debitis, excepturi ipsum perspiciatis.
+                </p>
+              </div>
+              <div className="mt-10 ">
+                 <p className="font-bold text-lg whitespace-nowrap   tracking-tight text-orange-700/90">
+            Bids Placed
+          </p>
+          {/* table */}
+          {
+             false ? <SkeletonTable /> : <TableListing data={bidsData} columns={bidsColumns} filters={false} colorPalette={'gray'} />
+          }
+              </div>
             </section>
           </div>
         </div>

@@ -36,6 +36,7 @@ function Arrow({ disabled, left, onClick }: {
 const RequirementSlider = ({ product, tab, target }: { product: any, tab?: string, target: string }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
+
   const navigate = useNavigate();
  const modifiedProducts = target ==='drafts' ? [product, ...(product?.subProducts || [])] : [product, ...(product?.product?.subProducts || [])];
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
@@ -53,7 +54,7 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
   });
 
   const handleNavigate = (productData: any) => {
-    if (target === 'drafts') return;
+    if (target === 'drafts' || target === 'carts') return;
     // Navigate with product data in state
     navigate('/account/requirements/' + productData._id, {
       state: { product: productData, sellerId: product.seller?._id, products }
@@ -62,7 +63,6 @@ const RequirementSlider = ({ product, tab, target }: { product: any, tab?: strin
 
 // only for allow arrow if more than 2 products
   const products = product?.subProducts?.length > 0 ? [product, ...product.subProducts] : [product];
-  console.log(products,"ppppppppppp")
 function handleSubmitDraft(targetProduct: any) {
   const resArr = targetProduct?.subProducts?.length > 0 ? targetProduct.subProducts : [targetProduct];
 
@@ -78,7 +78,6 @@ function handleSubmitDraft(targetProduct: any) {
   // DO THE API CALL HERE
   // toast.success('Draft submitted successfully!');
 }
-
  
 
   return (
@@ -94,7 +93,7 @@ function handleSubmitDraft(targetProduct: any) {
           </div>
         ))}
 
-        {loaded && instanceRef.current && products.length >2 && (
+        {loaded && instanceRef.current && (products.length > 2 || modifiedProducts?.length > 2 )&& (
           <>
             <Arrow
 
@@ -136,7 +135,11 @@ function handleSubmitDraft(targetProduct: any) {
             </Button>
           ) :
             target === "carts" ? (
-            <Button size={'default'} className='cursor-pointer text-xs bc ' >
+            <Button size={'default'} className='cursor-pointer text-xs bc '
+            onClick={()=>{
+              navigate(`/product-overview?productId=${product?.product?._id}`)
+            }}
+            >
               Place Bid
             </Button>
           ) :

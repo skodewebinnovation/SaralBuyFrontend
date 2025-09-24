@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import RequirementSlider from './components/requirement-slide'
 import { useEffect } from 'react'
 import cartService from '@/services/cart.service'
+import { useFetch } from '@/helper/use-fetch'
 
 
 export const dummyProducts = [
@@ -97,16 +98,10 @@ export const dummyProducts = [
 
 const Cart = () => {
   const navigate = useNavigate();
-  useEffect(() => {
-    cartService.getCart()
-      .then((res) => {
-        console.log("Cart API response:", res);
-      })
-      .catch((err) => {
-        console.error("Cart API error:", err);
-      });
-  }, []);
-
+  const {fn:getCartFn,data:getCartRes} = useFetch(cartService.getCart)
+useEffect(()=>{
+  getCartFn()
+},[])
   return (
      <div className="w-full max-w-7xl mx-auto  space-y-6 ">
       <div className='grid space-y-5 w-full'>
@@ -123,12 +118,12 @@ const Cart = () => {
          {
               false ?
                 new Array(3).fill(0).map(_ => <SliderSkeleton />) :
-                dummyProducts.length > 0 ? dummyProducts.map((item: any, idx: number) => (
+            getCartRes &&    getCartRes.length > 0 ? getCartRes.map((item: any, idx: number) => (
                   <div key={idx} className='border-2 border-gray-300 p-4 rounded-md w-full mb-2 relative'>
                     <div className='absolute top-1 left-1 z-10 bg-orange-50 text-orange-400 rounded-sm  p-1 cursor-pointer'
-                      onClick={() => {
-                        navigate('/update-draft/' + item._id)
-                      }}
+                      // onClick={() => {
+                      //   navigate('/update-draft/' + item._id)
+                      // }}
                     >
                       <TooltipComp
                         hoverChildren={<SquarePen className='h-4 w-4' />}
