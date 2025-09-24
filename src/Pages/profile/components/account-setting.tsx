@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../Components/ui
 import { Input } from "../../../Components/ui/input"
 import { Label } from "../../../Components/ui/label"
 import { Textarea } from "../../../Components/ui/textarea"
-import { Upload } from "lucide-react"
+import { CloudUpload, Plus, Upload } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useEffect, useRef, useState } from "react"
 import { useFetch } from "@/helper/use-fetch"
@@ -99,90 +99,110 @@ export function AccountSettings() {
     }
   }, [errors])
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Personal Details */}
+      <div className='flex justify-between items-center font-semibold w-full'>
+          <p className="font-bold text-xl whitespace-nowrap   tracking-tight text-gray-600">
+           Profile
+          </p>
+    
+        </div>
     <Authentication setOpen={setOpen} open={open} />
-      <Card className="shadow-none">
-        <CardHeader>
-          <CardTitle>Personal Details</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <Card className="shadow-none bg-transparent border-0 outline-0 py-0">
+           
+     
           <form onSubmit={handleSubmit(onSubmit, () => {
             if (!user) {
               setOpen(true);
               ;
             }
           })} className="space-y-4">
+            <div className="space-y-4 border border-gray-200 shadow-sm p-5 rounded-md">
+                <p className="font-[700] text-gray-600">Personal Details</p>
             <div className="grid grid-cols-2 gap-4">
+              
               <div className="space-y-2">
-                <Label htmlFor="first-name">First Name</Label>
+                <Label className="text-gray-600" htmlFor="first-name" >First Name</Label>
                 <Input
                   id="first-name"
                   placeholder="Enter first name"
+                  className="bg-transparent"
                   {...register("firstName")}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last-name">Last Name</Label>
+                <Label className="text-gray-600" htmlFor="last-name">Last Name</Label>
                 <Input
                   id="last-name"
                   placeholder="Enter last name"
+                       className="bg-transparent"
                   {...register("lastName")}
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 ">
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <div className="flex items-center gap-2">
+                <Label className="text-gray-600" htmlFor="email">Email Address</Label>
+                <div className="flex items-center gap-2 relative">
                   <Input
                     id="email"
                     type="email"
                     placeholder="Enter email"
                     {...register("email")}
+                    className="pr-16 bg-transparent"
                   />
-                  {/* <Button
+                  <Button
                     type="button"
+                    
                     variant="link"
-                    className="p-0 text-orange-600 cursor-pointer"
+                    className="p-0 text-orange-600 bg-transparent  cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 "
                   >
                     Verify
-                  </Button> */}
+                  </Button>
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label className="text-gray-600" htmlFor="phone">Phone Number</Label>
                 <Input
                   id="phone"
-                  placeholder="Enter phone number"
+                  className="bg-transparent"
+                  placeholder="Enter phone number "
                   {...register("phone")}
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Textarea
+              <Label className="text-gray-600" htmlFor="address">Address</Label>
+             <div className="relative">
+               <Textarea
+               cols={10}
                 id="address"
-                rows={5}
+                 className="min-h-24 pb-10 max-w-full whitespace-pre-wrap break-words"
                 placeholder="Enter address"
                 {...register("address")}
               />
-              {/* <Button type="button" variant="link" className="p-0 text-orange-600">
-                + Add New Address
-              </Button> */}
+                              <Button
+                    type="button"
+                    variant="link"
+                    className="p-0 text-orange-600 cursor-pointer absolute right-5 bottom-2 gap-1"
+                  >
+                    <Plus className="w-4 h-4"/>
+                    Add New Address
+                  </Button>
+             </div>
+            </div>
             </div>
 
             {/* Aadhaar Verification */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Aadhaar Verification</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="space-y-4 border border-gray-200 shadow-sm p-5 rounded-md">
+              <p className="font-[700] text-gray-600">Aadhaar Verification</p>
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="aadhaar-number">Aadhaar Number</Label>
+                  <Label className="text-gray-600" htmlFor="aadhaar-number">Aadhaar Number</Label>
                   <Input
                     id="aadhaar-number"
                     placeholder="Enter Aadhaar Number"
+                         className="bg-transparent"
                     {...register("aadhaarNumber")}
                   />
                 </div>
@@ -190,11 +210,11 @@ export function AccountSettings() {
                   className="space-y-2 cursor-pointer"
                   onClick={() => docRef.current?.click()}
                 >
-                  <Label htmlFor="aadhaar-image">Aadhaar Card Image</Label>
+                  <Label className="text-gray-600" htmlFor="aadhaar-image">Aadhaar Card Image</Label>
                   <div className="border rounded-md p-4 flex flex-col items-center justify-center text-sm text-muted-foreground">
                     <div className="flex flex-col py-5 items-center">
                       <div className="flex space-x-3 items-center">
-                        <Upload className="h-6 w-6 mb-2 text-gray-500" />
+                        <CloudUpload className="h-6 w-6 mb-2 text-gray-500" />
                         <Button type="button" variant="link" className="p-0">
                           Upload the Aadhaar Image
                         </Button>
@@ -219,24 +239,24 @@ export function AccountSettings() {
                   />
 
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Submit button */}
             <div className="flex justify-end">
-              <Button type="submit" className="cursor-pointer w-32" disabled={loading}>
+              <Button type="submit" className="cursor-pointer w-32  bc text-xs" disabled={loading}>
                 {
                   loading ? <Spinner className="w-5 h-5 animate-spin " /> : 'Save Changes'
                 }
               </Button>
               <Button
               disabled={!user || logoutLoading}
-              className="ml-4 w-32 cursor-pointer" variant="destructive"
+              className="ml-4 w-32 cursor-pointer text-xs" variant="destructive"
               onClick={()=>logoutFn()}
               >Logout</Button>
             </div>
           </form>
-        </CardContent>
+     
       </Card>
     </div>
   )

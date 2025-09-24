@@ -179,8 +179,9 @@ body {
 .bc{
   @apply bg-[#2C3E50] 
 }
+
 .cc{
-  @apply text-orange-100 bg-orange-700  min-w-20 max-w-24 text-center mb-2 rounded-full inline-block px-3 py-1 text-xs capitalize
+  @apply text-orange-100 bg-orange-700  min-w-16 max-w-24 text-center mb-2 rounded-full inline-block px-2 py-1 text-xs capitalize
 }
 
 @media screen and (max-width:767px) {

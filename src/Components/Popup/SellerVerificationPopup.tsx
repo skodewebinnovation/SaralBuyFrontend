@@ -30,8 +30,8 @@ const SellerVerificationPopup:React.FC<Props> = ({open,setOpen,setValue,value,ha
 
   return (
     <>    
-    <Dialog open={open} onOpenChange={setOpen} >
-      <DialogContent >
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="w-4xs">
     <form onSubmit={(e)=>{
         e.preventDefault();
         handleCreteBid();
@@ -45,7 +45,7 @@ const SellerVerificationPopup:React.FC<Props> = ({open,setOpen,setValue,value,ha
       <SelectTrigger id="userType" className="w-full py-5 rounded-md border border-gray-300">
         <SelectValue placeholder="Select" />
       </SelectTrigger>
-      <SelectContent className="">
+      <SelectContent className="p-1">
         <SelectItem value="individual" className="dropdown-hover">Individual</SelectItem>
         <SelectItem value="business" className="dropdown-hover">Business Owner</SelectItem>
       </SelectContent>

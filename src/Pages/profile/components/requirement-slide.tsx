@@ -119,24 +119,24 @@ function handleSubmitDraft(targetProduct: any) {
 
       {/* Right Side Info */}
       <div className='flex-1 flex justify-between items-end flex-col space-y-10'>
-        <p className="text-sm text-gray-600 font-medium whitespace-nowrap">
+        <p className="text-xs text-gray-600 font-medium whitespace-nowrap">
           Dated: {dateFormatter(product?.createdAt) || 'N/A'}
         </p>
         <div>
           {target === "requirements" ? (
-            <Button size={'default'} className='cursor-pointer text-xs'>
+            <Button size={'default'} className='cursor-pointer text-xs  bc'>
               Total Bids: <span className='font-bold'>{product?.product?.totalBidCount || 0}</span>
               <MoveRight className='w-5 h-5' />
             </Button>
           ) : target === "drafts" ? (
-            <Button size={'default'} className='cursor-pointer text-xs' onClick={()=>{
+            <Button size={'default'} className='cursor-pointer text-xs bc' onClick={()=>{
               handleSubmitDraft(product)
             }}>
               Submit Draft
             </Button>
           ) :
             target === "carts" ? (
-            <Button size={'default'} className='cursor-pointer text-xs bg-[#2C3E50] ' >
+            <Button size={'default'} className='cursor-pointer text-xs bc ' >
               Place Bid
             </Button>
           ) :

@@ -1,6 +1,6 @@
 const Brands = () => {
   return (
-    <div className="relative px-8 sm:px-16 py-10 min-h-42 flex items-center z-0 overflow-hidden">
+    <div className="relative px-8 sm:px-16 pt-10 min-h-42 flex items-center z-0 overflow-hidden">
       
       <img src="Rectangle 4320.png" className="w-full absolute top-10 left-0"/>
 

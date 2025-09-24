@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
+import { CalendarDays, Calendar as CalendarIcon } from "lucide-react"
 import { Button } from "../Components/ui/button"
 import { Calendar } from "../Components/ui/calendar"
 import {
@@ -28,9 +28,9 @@ export function DatePicker({ date, setDate,title,className,disabledBeforeDate }:
         <Button
           variant="outline"
           data-empty={!date}
-          className={`data-[empty=true]:text-muted-foreground flex-1 justify-start text-left font-normal ${className}`}
+          className={`data-[empty=true]:text-muted-foreground relative flex-1 justify-start text-left font-normal ${className}`}
         >
-          <CalendarIcon />
+          <CalendarDays className="absolute right-2 top-2 h-4 w-4" />
           {date ? format(date, "dd-MM-yyyy") : <span>{title? title:'Select a date'}</span>}
         </Button>
       </PopoverTrigger>

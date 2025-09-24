@@ -96,7 +96,7 @@ const Profile = () => {
       <div className="grid gap-8">
         <div className="grid gap-8 md:grid-cols-[220px_1fr]">
           {/* Sidebar */}
-          <div className="hidden md:block space-y-2 bg-gray-100 p-4 rounded-md  sticky top-4  self-start">
+          <div className="hidden md:block space-y-2 bg-gray-200/50 p-4 rounded-md  sticky top-4  self-start">
             <div className='flex justify-center items-center mt-2 mb-5 relative'>
               <div className='relative'>
                 <Avatar className='w-28 h-28 border-gray-600 border-4 flex '>
@@ -136,7 +136,7 @@ const Profile = () => {
                     to={routePath}
                     end={tag.value === 'profile'}
                     className={({ isActive }) =>
-                      `text-left px-3 py-2 cursor-pointer text-sm rounded-md hover:bg-muted ${isActive ? 'bg-muted text-gray-600 font-semibold' : ''
+                      `text-left px-3 py-2 cursor-pointer text-sm rounded-md hover:bg-gray-200/90 ${isActive ? 'bg-gray-200/90 text-gray-600 font-semibold' : ''
                       }`
                     }
                   >

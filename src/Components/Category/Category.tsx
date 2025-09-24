@@ -10,7 +10,7 @@ import {
 import { Button } from "../../Components/ui/button";
 import { Input } from "../../Components/ui/input";
 import { Textarea } from "../../Components/ui/textarea";
-import { PlusIcon, Upload, FileUp, MoveLeft, XIcon, Trash2 } from "lucide-react";
+import { PlusIcon, Upload, FileUp, MoveLeft, XIcon, Trash2, CloudUpload } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -210,10 +210,10 @@ const CategoryForm = ({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Panel */}
-        <div className="md:col-span-1 lg:col-span-1 bg-white shadow-sm rounded-2xl p-6 border xs:grid xs:grid-cols-2 gap-6 space-y-4">
+        <div className="md:col-span-1 lg:col-span-1 bg-transparent  border-0 p-6 xs:grid xs:grid-cols-2 gap-6 space-y-4">
           <div className="col-span-1 align-center sm:block flex flex-col justify-center">
-            <h2 className="text-lg font-semibold mb-2">Product Form ({formIndex + 1})</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-[15px] font-semibold mb-2 text-center">Product Form ({formIndex + 1})</h2>
+            <p className="text-[13px] text-muted-foreground text-center">
               Please help us tailor the experience by filling out the form below.
               If this isn't the category you meant to choose, you can go back and
               select another one.
@@ -229,9 +229,9 @@ const CategoryForm = ({
           </div>
         </div>
 
-        <div className="col-span-2 md:col-span-2 flex flex-col gap-6">
-          <div className="shadow-sm rounded-2xl p-6 border bg-gray-50">
-            <h3 className="text-lg font-semibold mb-4">Product Details</h3>
+        <div className="col-span-2 md:col-span-2 flex flex-col gap-3">
+          <div className=" rounded-[5px] p-6  bg-gray-200/50">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">Product Details</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
               <Input
                 type="text"
@@ -281,12 +281,16 @@ const CategoryForm = ({
                   className="bg-white"
                 />
               {currentCategoryName === "electronics" && (
-                <Input
+               <div className="relative">
+                <p className="absolute top-1/2 left-2 text-sm  text-orange-600 font-semibold -translate-y-1/2">
+                ₹</p>
+                 <Input
                   type="text"
-                  placeholder="₹ Enter a Minimum Budget"
+                  placeholder="Enter a Minimum Budget"
                   {...register('minimumBudget')}
-                  className="bg-white"
+                  className="bg-white  pl-5"
                 />
+               </div>
               )}
 
               {currentCategoryName !== "service" && (
@@ -566,15 +570,17 @@ const CategoryForm = ({
             </div>
           </div>
 
-          <div className="shadow-sm rounded-2xl p-6 border bg-gray-50">
-            <h3 className="text-lg font-semibold mb-4">Other Details</h3>
+          <div className="rounded-[5px] p-6  bg-gray-200/50">
+            <h3 className="text-lg font-semibold mb-4 text-gray-700">Other Details</h3>
+             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+             
               <div
                 onClick={() => (imageRef as any)?.current?.click()}
-                className="border-2 border-dashed rounded-lg flex bg-white flex-col items-center justify-center p-6 cursor-pointer"
+                className="border-2 border-dashed border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer"
               >
-                <Upload className="h-6 w-6 mb-2 text-gray-500" />
-                <span className="text-sm text-muted-foreground">Upload Image*</span>
+                <CloudUpload className="h-6 w-6 mb-2 text-gray-500" />
+                <span className="text-sm text-muted-foreground font-semibold">Upload Image*</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -598,13 +604,14 @@ const CategoryForm = ({
                   <p className="text-xs mt-2 text-green-600">{(image as any)?.name}</p>
                 )}
               </div>
+             
               <div
                 onClick={() => fileDocRef.current?.click()}
-                className="border-2 border-dashed rounded-lg bg-white flex flex-col items-center justify-center p-6 cursor-pointer"
+                className="border-2 border-dashed border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer"
               >
                 <FileUp className="h-6 w-6 mb-2 text-gray-500" />
-                <span className="text-sm text-muted-foreground">
-                  Browse From Device (doc/pdf)
+                <span className="text-sm text-muted-foreground text-center ">
+                  <span className="font-semibold">Browse From Device</span> <br/><span className="text-xs">(doc/pdf)</span>
                 </span>
                 <input
                   type="file"
@@ -639,12 +646,12 @@ const CategoryForm = ({
             />
           </div>
 
-          <div className="shadow-sm rounded-2xl p-6 border bg-gray-50">
-            <h3 className="text-lg font-semibold mb-4">Payment & Delivery Details</h3>
+          <div className="rounded-[5px] p-6  bg-gray-200/50">
+            <h3 className="text-lg font-semibold mb-4 text-gray-700">Payment & Delivery Details</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
               <DatePicker
                 date={date}
-                title="Delivery Date"
+                title="Required Delivery Date"
                 disabledBeforeDate={new Date(new Date().getTime() - 24 * 60 * 60 * 1000)}
                 setDate={(val: any) => {
                   if (val) {
@@ -1000,11 +1007,11 @@ const Category = () => {
           </Breadcrumb>
 
           <Button
-            variant={'link'}
-            className="bg-orange-600 cursor-pointer w-32 text-sm hover:bg-orange-500 text-white rounded-md flex items-center "
+
+            className="bg-orange-700 cursor-pointer w-32 text-[12px] hover:bg-orange-600 text-white  flex items-center gap-1 underline"
             onClick={handleAddForm}
           >
-            <PlusIcon className="h-4 w-4" />Add Product
+            <PlusIcon className="h-3 w-3"/>Add Product
           </Button>
         </div>
 
@@ -1039,7 +1046,7 @@ const Category = () => {
             type="button"
             variant="outline"
             disabled={loading}
-            className="w-32 cursor-pointer"
+            className="w-32 cursor-pointer border-[#2C3E50] text-xs"
             onClick={() => handleSubmitAllForms(true)}
           >
             {loading && buttonTye ? <Spinner className="w-5 h-5 animate-spin" /> : ' Save as Draft'}
@@ -1048,7 +1055,7 @@ const Category = () => {
           <Button
             type="button"
             disabled={loading}
-            className="text-white w-32 cursor-pointer bg-orange-600 hover:bg-orange-500"
+            className="text-white w-32 cursor-pointer bc  text-xs border-primary-btn border-2"
             onClick={() => handleSubmitAllForms(false)}
           >
             {loading && !buttonTye ? <Spinner className="w-5 h-5 animate-spin" /> : `Submit ${Object.keys(formsData).length > 1 ? 'All' : ''}`}

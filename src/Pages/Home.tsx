@@ -104,15 +104,12 @@ const Home = () => {
         <RequirementHome />
       </div>
       {/* trending Section */}
-      <div className="mt-10 relative mx-auto px-4 w-full">
+      <div className="mt-10 relative mx-auto px-4 w-full pt-10">
+        
         <TrendingCategory />
-        <img src="All In One Market Place that Fits You.png" className="absolute -top-5 left-0 w-full">
+        <img src="All In One Market Place that Fits You.png" className="absolute -top-5 mt-7 left-0 w-full">
 
         </img>
-
-
-
-
 
       </div>
 

@@ -47,10 +47,10 @@ const Requirement = () => {
     <div className="w-full max-w-7xl mx-auto  space-y-6 ">
       <div className='grid space-y-5 w-full'>
         <div className='flex justify-between items-center font-semibold w-full'>
-          <p className="font-bold text-3xl whitespace-nowrap sm:text-2xl border-l-4  border-gray-600 pl-3 tracking-tight text-gray-600">
-            Requirements
+           <p className="font-bold text-xl whitespace-nowrap   tracking-tight text-gray-600">
+          Requirements
           </p>
-          <Button variant={'ghost'} size={'icon'} className=' w-24 flex gap-2 items-center justify-center text-sm font-medium rounded-md text-gray-700 bg-transparent border-1 hover:bg-transparent cursor-pointer border-gray-700'>
+          <Button variant={'ghost'} size={'icon'} className=' w-24 flex gap-2 items-center justify-center text-sm font-medium  text-gray-700 bg-transparent border-1 hover:bg-transparent cursor-pointer border-gray-700'>
             Date
             <ListFilter className='w-5 h-5' />
           </Button>
@@ -59,8 +59,8 @@ const Requirement = () => {
         {/* tabs */}
         <Tabs defaultValue="requirements" className='grid space-y-2 w-full overflow-hidden' onValueChange={(val) => setTab(val)} >
           <TabsList className='bg-orange-50 '>
-            <TabsTrigger value="requirements" className=' cursor-pointer min-w-32'>Requirements</TabsTrigger>
-            <TabsTrigger value="drafts" className='cursor-pointer min-w-32'>Drafts</TabsTrigger>
+            <TabsTrigger value="requirements" className={`cursor-pointer min-w-32 ${tab === 'requirements' && 'text-orange-500'}`}>Requirements</TabsTrigger>
+            <TabsTrigger value="drafts" className={`cursor-pointer min-w-32 ${tab === 'drafts' && 'text-orange-500'}`}>Drafts</TabsTrigger>
           </TabsList>
 
           <TabsContent value="requirements" className='w-full overflow-hidden '>
@@ -76,7 +76,7 @@ const Requirement = () => {
               getMyRequirementsLoading ?
                 new Array(3).fill(0).map(_ => <SliderSkeleton />) :
                 requirements.length > 0 ? requirements.map((item: any, idx: number) => (
-                  <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
+                  <div key={idx} className='border-2 border-gray-300 p-4 rounded-md w-full mb-2 relative'>
 
                 <RequirementSlider product={item} tab={tab} target="requirements" />
                   </div>
@@ -96,8 +96,8 @@ const Requirement = () => {
               getDraftLoading ?
                 new Array(3).fill(0).map(_ => <SliderSkeleton />) :
                 drafts.length > 0 ? drafts.map((item: any, idx: number) => (
-                  <div key={idx} className='border border-gray-200 p-4 rounded-md w-full mb-2 relative'>
-                    <div className='absolute top-1 left-1 z-10 bg-orange-100 text-orange-400 rounded-xl p-1 cursor-pointer'
+                  <div key={idx} className='border-2 border-gray-300 p-4 rounded-md w-full mb-2 relative'>
+                    <div className='absolute top-1 left-1 z-10 bg-orange-50 text-orange-400 rounded-sm p-1 cursor-pointer'
                       onClick={() => {
                         navigate('/update-draft/' + item._id)
                       }}

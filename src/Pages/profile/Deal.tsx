@@ -238,16 +238,16 @@ const Deal = () => {
     <div className="w-full max-w-7xl mx-auto  space-y-6 ">
       <div className='grid space-y-5 w-full'>
         <div className='flex justify-between items-center font-semibold w-full'>
-          <p className="font-bold text-3xl whitespace-nowrap sm:text-2xl border-l-4  border-gray-600 pl-3 tracking-tight text-gray-600">
+          <p className="font-bold text-xl whitespace-nowrap   tracking-tight text-gray-600">
             Your Deals
           </p>
         </div>
 
         {/* tabs */}
         <Tabs defaultValue="approved_bids" className='grid space-y-2 w-full overflow-hidden' onValueChange={(val) => setTab(val)} >
-          <TabsList className='bg-orange-50 '>
-            <TabsTrigger value="approved_bids" className=' cursor-pointer min-w-40'>Approved Bids</TabsTrigger>
-            <TabsTrigger value="completed_requirements" className='cursor-pointer  '>Completed Requirements</TabsTrigger>
+          <TabsList className='bg-orange-50'>
+            <TabsTrigger value="approved_bids" className={`cursor-pointer min-w-40 ${tab ==='approved_bids' && 'text-orange-500'}`}>Approved Bids</TabsTrigger>
+            <TabsTrigger value="completed_requirements" className={`cursor-pointer ${tab ==='completed_requirements' && 'text-orange-500'} `}>Completed Requirements</TabsTrigger>
           </TabsList>
 
           <TabsContent value="approved_bids" className='w-full overflow-hidden '>

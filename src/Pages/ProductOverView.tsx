@@ -262,7 +262,7 @@ const handleDocumentDownload = (url: string) => {
               </div>
 
               {/* Product Info */}
-              <div className="lg:col-span-8 bg-white rounded-lg p-4 space-y-4">
+              <div className="lg:col-span-8 bg-transparent rounded-lg p-4 space-y-4">
                 <h2 className="text-sm font-medium mb-2">
                   Date : {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.createdAt : productResponse?.mainProduct?.createdAt)}
                 </h2>
@@ -293,7 +293,7 @@ const handleDocumentDownload = (url: string) => {
 
                 {/* Buttons */}
                 <div className="flex items-center gap-4 mt-5 ">
-                  <Button variant="outline" className="min-w-32 text-sm border-gray-400 border-[2px] flex items-center gap-2 hover:bg-transparent ">
+                  <Button variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent ">
                     <img src="/icons/Layer_1.png" className="w-4 h-4 " />
                     Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : productResponse?.mainProduct?.totalBidCount || 0}</span>
                   </Button>
@@ -347,7 +347,7 @@ const handleDocumentDownload = (url: string) => {
               </div>
 
               {/* Right: Form */}
-              <form className="lg:col-span-5 bg-gray-50 rounded-lg p-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+              <form className="lg:col-span-5 bg-gray-200/80 rounded-lg p-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
                 <h3 className="font-semibold text-orange-600">Fill the Details to Place Bid</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
@@ -383,7 +383,7 @@ const handleDocumentDownload = (url: string) => {
                           disabledBeforeDate={new Date(new Date().getTime() - 24 * 60 * 60 * 1000)}
                           date={field.value}
                           title="DD-MM-YYYY"
-                          className="w-full hover:bg-transparent"
+                          className="w-full"
                           setDate={(val) => field.onChange(val)}
                         />
                       )}
@@ -396,7 +396,7 @@ const handleDocumentDownload = (url: string) => {
                     <Button
                     
                     disabled={productResponse?.mainProduct?.userId?._id === userProfile?.user?._id ||createBidLoading}
-                      variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
+                      variant={'ghost'} className="w-32 float-end border text-xs bg-orange-700  transition-all ease-in-out duration-300 hover:bg-orange-600 text-white hover:text-white cursor-pointer">
                       Place Bid
                     </Button>
                   ) :
@@ -439,14 +439,14 @@ const handleDocumentDownload = (url: string) => {
                   </div>
 
                   {/* Product Info */}
-                  <div className="lg:col-span-8 bg-white rounded-lg p-4 space-y-4">
+                  <div className="lg:col-span-8 rounded-lg p-4 space-y-4">
                     <div className="flex justify-between items-center">
                       <h2 className="text-sm font-medium mb-2">
                         Date : {dateFormatter(bidOverviewRes ? bidOverviewRes?.product?.createdAt : item?.createdAt)}
                       </h2>
                       <div className="flex gap-1 items-center">
                         <Box className="w-5 h-5 text-orange-500" />
-                        <p className="text-gray-500 text-md font-semibold">Product ({idx + 1})</p>
+                        <p className="text-gray-500 text-sm font-semibold">Product ({idx + 1})</p>
                       </div>
                     </div>
 
@@ -461,7 +461,7 @@ const handleDocumentDownload = (url: string) => {
                     {/* Meta Info */}
                     <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1 pr-3 border-r-2 py-1 min-w-32 max-w-[25%]">
-                        <UserCircle className="w-5 h-5 " />
+                        <User className="w-5 h-5 " />
                         <span className="capitalize">{mergeName(bidOverviewRes ? bidOverviewRes?.buyer : item?.userId) || 'N/A'}</span>
                       </div>
                       <div className="flex items-center gap-1  pr-3 border-r-2 py-1 min-w-32   max-w-[50%]">
@@ -476,8 +476,9 @@ const handleDocumentDownload = (url: string) => {
 
                     {/* Buttons */}
                     <div className="flex items-center gap-4 mt-5 ">
-                      <Button variant="outline" className="min-w-32 text-sm border-gray-400 border-[2px] flex items-center gap-2 hover:bg-transparent ">
+                      <Button variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent ">
                         <img src="/icons/Layer_1.png" className="w-4 h-4 " />
+                        Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : item?.totalBidCount || 0}</span>
                         Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : item?.totalBidCount || 0}</span>
                       </Button>
                       {
@@ -523,7 +524,7 @@ const handleDocumentDownload = (url: string) => {
                   </div>
                   {
                     idx === productResponse?.products?.length - 1 && (
-                      <form className="lg:col-span-5  bg-gray-50 rounded-lg p-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+                      <form className="lg:col-span-5  bg-gray-200/80 rounded-lg p-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
                         <h3 className="font-semibold text-orange-600">Fill the Details to Place Bid</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
@@ -559,7 +560,7 @@ const handleDocumentDownload = (url: string) => {
                                   disabledBeforeDate={new Date(new Date().getTime() - 24 * 60 * 60 * 1000)}
                                   date={field.value}
                                   title="DD-MM-YYYY"
-                                  className="w-full hover:bg-transparent"
+                                  className="w-full"
                                   setDate={(val) => field.onChange(val)}
                                 />
                               )}
@@ -571,7 +572,7 @@ const handleDocumentDownload = (url: string) => {
                           !bidOverviewRes ? (
                             <Button
                             disabled={productResponse?.mainProduct?.userId?._id === userProfile?.user?._id || createBidLoading}
-                              variant={'ghost'} className="w-32 float-end border shadow-orange-500 border-orange-500 bg-orange-600  transition-all ease-in-out duration-300 hover:bg-orange-500 text-white hover:text-white cursor-pointer">
+                              variant={'ghost'} className="w-32 float-end border text-xs bg-orange-700  transition-all ease-in-out duration-300 hover:bg-orange-600 text-white hover:text-white cursor-pointer">
                               Place Bid
                             </Button>
                           ) :

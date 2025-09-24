@@ -62,7 +62,7 @@ export default function TableListing<TData, TValue>({
          <div className={`flex ${title ? 'justify-between  gap-4' :"justify-end"} items-center`}>
 
        {
-        title &&  <p className={`font-bold text-3xl whitespace-nowrap sm:text-2xl text-${colorPalette}-600 border-l-4 border-${colorPalette}-600 pl-3 tracking-tight`}>
+        title &&  <p className={`font-bold text-xl whitespace-nowrap   tracking-tight text-${colorPalette}-600  pl-3 tracking-tight`}>
           {title}
         </p>
        }
@@ -76,15 +76,15 @@ export default function TableListing<TData, TValue>({
             placeholder="Search..."
             value={globalFilter ?? ""}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="border px-3 py-2 rounded-md w-64"
+            className=" px-3 py-2 focus-visible:ring-0 w-64 shadow-none border-1"
           />
-          <Search className="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2 text-gray-600" />
+          <Search className="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 " />
         </div>
 
         <Button
           variant={"secondary"}
           size={"icon"}
-          className="cursor-pointer"
+          className="cursor-pointer shadow-none bg-transparent border-1 "
           onClick={() =>
             setSorting([{ id: "bid_to", desc: false }]) 
           }
@@ -95,7 +95,7 @@ export default function TableListing<TData, TValue>({
         <Button
           variant={"secondary"}
           size={"icon"}
-          className="cursor-pointer"
+          className="cursor-pointer shadow-none border-1 bg-transparent "
           onClick={() =>
             setSorting([{ id: "bid_to", desc: true }]) 
           }
@@ -107,7 +107,7 @@ export default function TableListing<TData, TValue>({
      }
      {
       target === "requirementOverview" &&(
-         <Button variant={'ghost'} size={'icon'} className=' w-24 flex gap-2 items-center justify-center text-sm font-medium rounded-md text-gray-700 bg-transparent border-1 hover:bg-transparent cursor-pointer border-gray-700'>
+         <Button variant={'ghost'} size={'icon'} className=' w-24 flex gap-2 items-center justify-center text-sm font-medium  text-gray-700 bg-transparent border-1 hover:bg-transparent cursor-pointer border-gray-700'>
             Date
             <ListFilter className='w-5 h-5' />
           </Button>
@@ -120,7 +120,7 @@ export default function TableListing<TData, TValue>({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-gray-100 ">
+              <TableRow key={headerGroup.id} className="bg-gray-200/60 ">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} className="font-semibold text-gray-600"  >

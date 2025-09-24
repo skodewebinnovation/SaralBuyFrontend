@@ -10,7 +10,7 @@ import {
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Textarea } from "@/Components/ui/textarea";
-import { PlusIcon, Upload, FileUp, MoveLeft, XIcon, Trash2 } from "lucide-react";
+import { PlusIcon, Upload, FileUp, MoveLeft, XIcon, Trash2, CloudUpload } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -197,10 +197,10 @@ const UpdateProductDraftForm = ({
     <div className="relative">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Panel */}
-        <div className="md:col-span-1 lg:col-span-1 bg-white shadow-sm rounded-2xl p-6 border xs:grid xs:grid-cols-2 gap-6 space-y-4">
+        <div className="md:col-span-1 lg:col-span-1 bg-transparent  border-0 p-6 xs:grid xs:grid-cols-2 gap-6 space-y-4">
           <div className="col-span-1 align-center sm:block flex flex-col justify-center">
-           <h2 className="text-lg font-semibold mb-2">Product Form ({formIndex+1})</h2>
-            <p className="text-sm text-muted-foreground">
+           <h2 className="text-[15px] font-semibold mb-2 text-center">Product Form ({formIndex+1})</h2>
+            <p className="text-[13px] text-muted-foreground text-center">
               Update your product details below. Make sure all required fields are filled correctly.
             </p>
           </div>
@@ -214,9 +214,9 @@ const UpdateProductDraftForm = ({
           </div>
         </div>
 
-        <div className="col-span-2 md:col-span-2 flex flex-col gap-6">
-          <div className="shadow-sm rounded-2xl p-6 border bg-gray-50">
-            <h3 className="text-lg font-semibold mb-4">Product Details</h3>
+        <div className="col-span-2 md:col-span-2 flex flex-col gap-3">
+          <div className=" rounded-[5px] p-6  bg-gray-200/50">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">Product Details</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
               <Input
                 type="text"
@@ -267,12 +267,16 @@ const UpdateProductDraftForm = ({
                 />
 
               {currentCategoryName === "electronics" && (
-                <Input
+               <div className="relative">
+                <p className="absolute top-1/2 left-2 text-sm  text-orange-600 font-semibold -translate-y-1/2">
+                ₹</p>
+                 <Input
                   type="text"
-                  placeholder="₹ Enter a Minimum Budget"
+                  placeholder="Enter a Minimum Budget"
                   {...register('minimumBudget')}
-                  className="bg-white"
+                  className="bg-white  pl-5"
                 />
+               </div>
               )}
 
               {currentCategoryName !== "service" && (
@@ -552,14 +556,14 @@ const UpdateProductDraftForm = ({
             </div>
           </div>
 
-          <div className="shadow-sm rounded-2xl p-6 border bg-gray-50">
-            <h3 className="text-lg font-semibold mb-4">Other Details</h3>
+          <div className="rounded-[5px] p-6  bg-gray-200/50">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">Other Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div
                 onClick={() => (imageRef as any)?.current?.click()}
-                className="border-2 border-dashed rounded-lg flex bg-white flex-col items-center justify-center p-6 cursor-pointer relative"
+                className="border-2 border-dashed border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer"
               >
-                <Upload className="h-6 w-6 mb-2 text-gray-500" />
+                <CloudUpload className="h-6 w-6 mb-2 text-gray-500" />
                 <span className="text-sm text-muted-foreground">Upload Image*</span>
                 <input
                   type="file"
@@ -594,7 +598,7 @@ const UpdateProductDraftForm = ({
               </div>
               <div
                 onClick={() => fileDocRef.current?.click()}
-                className="border-2 border-dashed rounded-lg bg-white flex flex-col items-center justify-center p-6 cursor-pointer"
+                className="border-2 border-dashed border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer"
               >
                 <FileUp className="h-6 w-6 mb-2 text-gray-500" />
                 <span className="text-sm text-muted-foreground">
@@ -636,8 +640,8 @@ const UpdateProductDraftForm = ({
             />
           </div>
 
-          <div className="shadow-sm rounded-2xl p-6 border bg-gray-50">
-            <h3 className="text-lg font-semibold mb-4">Payment & Delivery Details</h3>
+          <div className="rounded-[5px] p-6  bg-gray-200/50">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">Payment & Delivery Details</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
               <DatePicker
                 date={date}
@@ -958,8 +962,8 @@ if (!isValidForms(formsData)) {
         <div className="flex justify-end gap-3 my-5">
           <Button 
             type="button" 
-            disabled={ loading}
-            className="text-white w-32 cursor-pointer bg-orange-600 hover:bg-orange-500"
+            disabled={loading}
+            className="text-white w-32 cursor-pointer bc  text-xs border-primary-btn border-2 "
             onClick={handleSubmitAllForms}
           >
             {loading ? (

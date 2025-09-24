@@ -1,5 +1,5 @@
 
-const RING_CLASS =['ring-gray-300','ring-gray-500','ring-yellow-300','ring-red-300','ring-green-300']
+const RING_CLASS =['ring-gray-600','ring-gray-500','ring-yellow-500','ring-red-700','ring-green-700']
 
 const TrendingCategory = () => {
 
@@ -31,7 +31,7 @@ const TrendingCategory = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-5 px-5 sm:px-10  mt-10  ">
        {
         data.map((_,idx:number)=>(<div className="flex justify-center items-center flex-col">
-        <div className={`ring-3 ${RING_CLASS[idx]} rounded-full  h-32 w-32 overflow-hidden mx-auto `}>
+        <div className={`ring-4 ${RING_CLASS[idx]} rounded-full  h-32 w-32 overflow-hidden mx-auto `}>
             <img src="https://etimg.etb2bimg.com/thumb/msid-94146979,width-1200,height-900,resizemode-4/.jpg" className="w-full h-full object-cover"/>
         </div>
         <p className="text-gray-600 text-center mt-3">{_.title}</p>

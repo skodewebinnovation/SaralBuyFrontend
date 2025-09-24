@@ -144,7 +144,7 @@ console.log(currentProduct,"curr")
 
       {/* Display all products (main + sub-products) */}
       {iterateData.map((item: any, idx: number) => (
-        <div key={idx} className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6 bg-white rounded-lg shadow-sm p-4">
+        <div key={idx} className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6  p-4">
           {/* Image */}
           <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 h-64">
             <img
@@ -158,7 +158,7 @@ console.log(currentProduct,"curr")
           </div>
 
           {/* Product Info */}
-          <div className="lg:col-span-8 p-4 space-y-4">
+          <div className="lg:col-span-8 p-4 space-y-2">
             <h2 className="text-sm font-medium mb-2">
               Date: {dateFormatter(item.createdAt) || 'N/A'}
             </h2>
@@ -172,7 +172,7 @@ console.log(currentProduct,"curr")
             </p>
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-              <div className="flex items-center gap-4 pr-3 border-r-2 py-1">
+              <div className="flex items-center gap-2 pr-3 border-r-2 py-1">
                 <div className='flex gap-1 items-center'>
                   <Banknote className="w-5 h-5" />
                   <span className="capitalize">Quantity:</span>
@@ -210,12 +210,14 @@ console.log(currentProduct,"curr")
       ))}
 
       {/* Table Listing */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <TableListing
+
+      <div className='bg-orange-50 p-4 rounded-md'>
+          <TableListing
           data={bidData}
           columns={columns}
           filters={false}
-          title={`Available Bids (${bidData.length})`}
+          // (${bidData.length})
+          title={`Available Bids `}
           target="requirementOverview"
           colorPalette="orange"
         />

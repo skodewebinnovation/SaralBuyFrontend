@@ -321,7 +321,7 @@ const HomeNavbar = () => {
           <div className="flex items-center gap-6">
             {/* Logo */}
             <Link to={'/'} className="flex items-center gap-2">
-
+              
               <img
                 src={saralBuyLogo}
                 className="max-h-20 mix-blend-darken  dark:invert"
@@ -341,7 +341,7 @@ const HomeNavbar = () => {
           {/* search */}
           <div className="relative w-1/2">
             <Input
-              type="search"
+              type="text"
               onInput={handleInputValue}
               value={text}
               onKeyPress={handleKeyPress}
@@ -354,7 +354,7 @@ const HomeNavbar = () => {
             {showDropdown && (
               <div
                 ref={productsRef}
-                className="absolute top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
+                className="absolute right-0  max-w-96 top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
                 {isPending() ? (
                   Array.from({ length: 3 }).map((_, i) => (
                     <Skeleton key={i} className="h-20 rounded-md w-full" />

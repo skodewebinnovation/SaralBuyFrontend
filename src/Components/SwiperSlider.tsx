@@ -12,7 +12,6 @@ type Props = {
 }
 
 const SwiperSlider = ({ title, color, target,data }: Props) => {
-  console.log(data,7)
   const [sliderRef] = useKeenSlider<HTMLDivElement>({
     mode: "free-snap",
     slides: {
@@ -58,13 +57,17 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
 
               {/* Content */}
               <div className="flex flex-col justify-between">
-                <div className="grid space-y-1">
-                  <p className="text-sm text-gray-500 mb-1">
+                <div className="grid space-y-1 w-full">
+                 <div>
+                  {
+                    target === "bids" &&  <p className="text-sm text-gray-500 mb-1">
                     Dated: {item.date}
                   </p>
-                  <p className="cc">
+                  }
+                  <p className={` ${target === "bids" ? 'text-orange-700 capitalize font-semibold' : 'cc'}`}>
                     {item.category}
                   </p>
+                 </div>
                   <p className="font-medium">{item.title}</p>
                   <p className="text-sm text-gray-600">
                     Deliver by:{" "}
@@ -82,9 +85,9 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
                   <span className="font-semibold text-orange-600">
                     {item.totalBids}
                   </span>
-                </p>: <div>
-
-                </div>
+                </p>: <p className="text-sm text-orange-500 mb-1">
+                    Dated: {item.date}
+                  </p>
                 }
                 <div className="flex gap-1 items-center justify-end">
                   <a
