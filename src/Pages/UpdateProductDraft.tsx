@@ -932,7 +932,7 @@ if (!isValidForms(formsData)) {
                 </BreadcrumbPage>
                 <BreadcrumbSeparator />
                 <BreadcrumbPage className="capitalize font-semibold text-orange-600">
-                  {currentCategoryName || ""}
+                  {currentCategoryName === "beauty" ? 'Personal Care' : currentCategoryName === "electronics" ? 'Electronics Appliances' : currentCategoryName  === "sports" ? 'Sports & Stationary' : currentCategoryName === 'home' ? 'Home Appliances' : currentCategoryName  === 'industrial' ?"Industrial & Construction Material" : currentCategoryName }
                 </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
