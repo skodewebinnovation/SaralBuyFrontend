@@ -14,7 +14,7 @@ class RequirementService {
             .then(res => res.data?.data || res.data);
     }
 
-    closeDeal(params: { productId: string; sellerId: string;buyerId:string, budgetAmount: number }) {
+    closeDeal(params: { productId: string; sellerId: string;buyerId:string, finalBudget: number }) {
         return instance.post('/requirement/close-deal', params, { withCredentials: true })
             .then(res => res.data?.data || res.data);
     }
