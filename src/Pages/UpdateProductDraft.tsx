@@ -561,7 +561,7 @@ const UpdateProductDraftForm = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div
                 onClick={() => (imageRef as any)?.current?.click()}
-                className="border-2 border-dashed border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer"
+                className="border-2 border-dashed relative border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer"
               >
                 <CloudUpload className="h-6 w-6 mb-2 text-gray-500" />
                 <span className="text-sm text-muted-foreground">Upload Image*</span>

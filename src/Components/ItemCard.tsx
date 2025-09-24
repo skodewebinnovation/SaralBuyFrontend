@@ -98,9 +98,9 @@ const ItemCard = ({
           alt="Category"
         />
         <div className="py-2 text-center flex justify-between items-center">
-          <p className="text-sm pl-1 capitalize font-semibold">{categoryName}</p>
+          <p className="text-sm pl-1 capitalize font-medium ">{categoryName}</p>
           <ChevronDown
-            className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${
+            className={`w-5 h-5 text-gray-500 transition-transform duration-300 flex-shrink-0 ${
               open ? "rotate-180" : ""
             }`}
           />
@@ -110,7 +110,7 @@ const ItemCard = ({
       {/* Dropdown with scrollbar */}
       <div
         className={`
-          absolute left-0 top-full rounded-md z-30 w-[240px] bg-white border border-gray-200 mt-1
+          absolute left-0 top-full rounded-md z-30 w-[200px] bg-white border border-gray-200 mt-1
           transition-all duration-300 origin-top
           ${open ? "max-h-56 opacity-100 scale-y-100 pointer-events-auto" : "max-h-0 opacity-0 scale-y-95 pointer-events-none"}
         `}

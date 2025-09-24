@@ -14,55 +14,11 @@ import { Button } from "@/Components/ui/button";
 import bidService from "@/services/bid.service";
 import requirementService from "@/services/requirement.service";
 import { useFetch } from "@/helper/use-fetch";
+import { dateFormatter } from "@/helper/dateFormatter";
+import { mergeName } from "@/helper/mergeName";
+import { fallBackName } from "@/helper/fallBackName";
 
 
-const dummyCompletedRequiremnts = [
-  {
-    _id: "deal_001",
-    avtar: "https://i.pravatar.cc/150?img=1",
-    date: "2025-09-15",
-    finalized_with: "Amit Sharma",       // Person name
-    product_categories: "Laptops",       // Category
-    your_budget: 110000,
-    final_budget: 115000,
-  },
-  {
-    _id: "deal_002",
-    avtar: "https://i.pravatar.cc/150?img=2",
-    date: "2025-09-12",
-    finalized_with: "Priya Verma",
-    product_categories: "Smartphones",
-    your_budget: 125000,
-    final_budget: 128000,
-  },
-  {
-    _id: "deal_003",
-    avtar: "https://i.pravatar.cc/150?img=3",
-    date: "2025-09-10",
-    finalized_with: "Rahul Khanna",
-    product_categories: "Headphones",
-    your_budget: 32000,
-    final_budget: 33500,
-  },
-  {
-    _id: "deal_004",
-    avtar: "https://i.pravatar.cc/150?img=4",
-    date: "2025-09-05",
-    finalized_with: "Neha Gupta",
-    product_categories: "Televisions",
-    your_budget: 80000,
-    final_budget: 82500,
-  },
-  {
-    _id: "deal_005",
-    avtar: "https://i.pravatar.cc/150?img=5",
-    date: "2025-09-01",
-    finalized_with: "Rohit Mehta",
-    product_categories: "Ultrabooks",
-    your_budget: 105000,
-    final_budget: 107000,
-  },
-];
 
 
 export const dummyApprovedBids = [
@@ -117,13 +73,13 @@ const columnsCompletedReq: ColumnDef<any>[] = [
   {
     accessorKey: "avtar",
     header: "",
-    cell: () => {
+    cell: ({row}) => {
+      console.log(row.original)
       return <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
-        <Avatar className="w-10 h-10">
-          <AvatarImage src="https://github.com/shubhamsharma20007.png" alt="@shadcn" className="h-full w-full rounded-full" />
-          <AvatarFallback>{
-            'SS'
-            // fallBackName(row.original?.bid_to)
+        <Avatar className="w-10 h-10 flex items-center justify-center  border rounded-full">
+          <AvatarImage src={row.original?.avatar} alt={row.original?.finalized_with } className="h-full w-full rounded-full" />
+          <AvatarFallback className="" >{
+            fallBackName(row.original?.finalized_with)
           }</AvatarFallback>
         </Avatar>
 
@@ -144,7 +100,7 @@ const columnsCompletedReq: ColumnDef<any>[] = [
   },
   {
     accessorKey: "your_budget",
-    header: "Your Budget",
+    header: "Budget",
   },
   {
     accessorKey: "final_budget",
@@ -168,7 +124,8 @@ const columnsApproveBids: ColumnDef<any>[] = [
   {
     accessorKey: "avtar",
     header: "",
-    cell: () => {
+    cell: ({row}) => {
+      console.log(row)
       return <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
         <Avatar className="w-10 h-10">
           <AvatarImage src="https://github.com/shubhamsharma20007.png" alt="@shadcn" className="h-full w-full rounded-full" />
@@ -193,7 +150,7 @@ const columnsApproveBids: ColumnDef<any>[] = [
     accessorKey: "product_categories",
     header: "Product Category",
   },
-   {
+  {
     accessorKey: "min_budget",
     header: "Min Budget",
   },
@@ -201,7 +158,7 @@ const columnsApproveBids: ColumnDef<any>[] = [
     accessorKey: "your_budget",
     header: "Budget",
   },
- 
+
   {
     accessorKey: "action",
     header: "Action",
@@ -218,21 +175,37 @@ const columnsApproveBids: ColumnDef<any>[] = [
 
 const Deal = () => {
   const [tab, setTab] = useState('approved_bids')
-  const {fn:pendingApprovedFn,data:pendingApprovedData} = useFetch(requirementService.getApprovedPendingRequirements)
-  const {fn:completedApproveFn,data:completedApproveData} = useFetch(requirementService.getCompletedApprovedRequirements)
+  const { fn: pendingApprovedFn, data: pendingApprovedData } = useFetch(requirementService.getApprovedPendingRequirements)
+  const { fn: completedApproveFn, data: completedApproveData } = useFetch(requirementService.getCompletedApprovedRequirements)
+  const [completeRequirements, setCompleteRequirements] = useState<any>([])
 
-
-  useEffect(()=>{
-    if(tab === 'approved_bids'){
+  useEffect(() => {
+    if (tab === 'approved_bids') {
       pendingApprovedFn()
-    }else{
+    } else {
       completedApproveFn()
     }
-  },[tab])
-  console.log({
-    pendingApprovedData,
-    completedApproveData
-  })
+  }, [tab])
+
+  useEffect(() => {
+    if (completedApproveData) {
+      if (completedApproveData.length > 0) {
+        console.log(completedApproveData)
+        completedApproveData.map((item: any) => (
+          setCompleteRequirements([{
+            _id: item._id,
+            avtar: item?.sellerId?.profileImage,
+            date: dateFormatter(item?.createdAt),
+            finalized_with: mergeName(item?.seller),       
+            product_categories: item?.product?.title,      
+            your_budget: item?.product?.budget,
+            final_budget: item?.finalBudget,
+          },])
+        ))
+
+      }
+    }
+  }, [pendingApprovedData, completedApproveData])
 
   return (
     <div className="w-full max-w-7xl mx-auto  space-y-6 ">
@@ -246,20 +219,20 @@ const Deal = () => {
         {/* tabs */}
         <Tabs defaultValue="approved_bids" className='grid space-y-2 w-full overflow-hidden' onValueChange={(val) => setTab(val)} >
           <TabsList className='bg-orange-50'>
-            <TabsTrigger value="approved_bids" className={`cursor-pointer min-w-40 ${tab ==='approved_bids' && 'text-orange-500'}`}>Approved Bids</TabsTrigger>
-            <TabsTrigger value="completed_requirements" className={`cursor-pointer ${tab ==='completed_requirements' && 'text-orange-500'} `}>Completed Requirements</TabsTrigger>
+            <TabsTrigger value="approved_bids" className={`cursor-pointer min-w-40 ${tab === 'approved_bids' && 'text-orange-500'}`}>Approved Bids</TabsTrigger>
+            <TabsTrigger value="completed_requirements" className={`cursor-pointer ${tab === 'completed_requirements' && 'text-orange-500'} `}>Completed Requirements</TabsTrigger>
           </TabsList>
 
           <TabsContent value="approved_bids" className='w-full overflow-hidden '>
 
-{
+            {
               false ? <SkeletonTable /> : <TableListing data={dummyApprovedBids} columns={columnsApproveBids} filters={true} colorPalette={'gray'} />
             }
           </TabsContent>
 
           <TabsContent value="completed_requirements" className='w-full overflow-hidden'>
             {
-              false ? <SkeletonTable /> : <TableListing data={dummyCompletedRequiremnts} columns={columnsCompletedReq} filters={true} colorPalette={'gray'} />
+              false ? <SkeletonTable /> : <TableListing data={completeRequirements} columns={columnsCompletedReq} filters={true} colorPalette={'gray'} />
             }
           </TabsContent>
 

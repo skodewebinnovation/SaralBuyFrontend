@@ -327,7 +327,7 @@ const handleDocumentDownload = (url: string) => {
                      
 
                       <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.budget
-                        : productResponse?.mainProduct?.budget) || 'N/A'}</p>
+                        : productResponse?.mainProduct?.budget || 0) || 'N/A'}</p>
                    
 
                   <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : productResponse?.mainProduct?.additionalDeliveryAndPackage) || "N/A"}</p>
@@ -479,7 +479,7 @@ const handleDocumentDownload = (url: string) => {
                       <Button variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent ">
                         <img src="/icons/Layer_1.png" className="w-4 h-4 " />
                         Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : item?.totalBidCount || 0}</span>
-                        Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : item?.totalBidCount || 0}</span>
+
                       </Button>
                       {
                         !bidOverviewRes && <Button className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer " variant="outline" >Add to Cart</Button>
@@ -508,7 +508,7 @@ const handleDocumentDownload = (url: string) => {
                       } */}
                 
                           <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.budget
-                            : item?.budget) || 'N/A'}</p>
+                            : item?.budget || 0) || 'N/A'}</p>
                       
 
                       <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : item?.additionalDeliveryAndPackage) || "N/A"}</p>

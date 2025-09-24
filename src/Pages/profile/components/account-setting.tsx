@@ -249,11 +249,12 @@ export function AccountSettings() {
                   loading ? <Spinner className="w-5 h-5 animate-spin " /> : 'Save Changes'
                 }
               </Button>
+             {user &&
               <Button
-              disabled={!user || logoutLoading}
+              disabled={logoutLoading}
               className="ml-4 w-32 cursor-pointer text-xs" variant="destructive"
               onClick={()=>logoutFn()}
-              >Logout</Button>
+              >Logout</Button>}
             </div>
           </form>
      
