@@ -6,7 +6,7 @@ import {
   BreadcrumbSeparator,
 } from "../../Components/ui/breadcrumb";
 import { Outlet } from "react-router-dom";
-import { Camera, SquarePen } from 'lucide-react';
+import { Camera, House, SquarePen } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "../../Components/ui/avatar";
 import { NavLink } from 'react-router-dom';
 import { useFetch } from "@/helper/use-fetch";
@@ -86,7 +86,7 @@ const Profile = () => {
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>
           <BreadcrumbItem className="flex items-center gap-2 cursor-pointer">
-            <BreadcrumbPage className="capitalize font-regular text-gray-500">Home</BreadcrumbPage>
+            <BreadcrumbPage className="capitalize font-regular text-gray-500"><House className="w-5 h-5"/></BreadcrumbPage>
             <BreadcrumbSeparator />
             <BreadcrumbPage className="capitalize font-regular text-orange-600 font-semibold">Account</BreadcrumbPage>
           </BreadcrumbItem>

@@ -27,6 +27,7 @@ import UpdateDraft from "./Pages/UpdateProductDraft";
 import Authentication from "./Components/auth/Authentication";
 import { useFetch } from "./helper/use-fetch";
 import userService from "./services/user.service";
+import BidOverview from "./Pages/bidOverView";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -60,12 +61,14 @@ export default function AppRouters() {
         <Route path="/account" element={<Profile />}  >
           <Route path="" element={<AccountSettings/>} index/>
           <Route path="bid" element={<BidListing/>}/>
+        
           <Route path="cart" element={<Cart/>}/>
           <Route path="deal" element={<Deal/>}/>
           <Route path="requirements" element={<BidRequirements/>}/>
           <Route path="requirements/:requirementId" element={<RequirementOverview/>}/>
           <Route path="notification" element={<Notification/>}/>
         </Route>
+        <Route path="/bid-overview/:bidId" element={<BidOverview/>}/>
         <Route path="/product-listing" element={ <ProductLisiting/>}/>
        <Route path="/product-overview" element={<ProductOverView />} />
         <Route path="/contact-verification" element={<ContactVerification/>}/>

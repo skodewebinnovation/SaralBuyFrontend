@@ -146,7 +146,7 @@ console.log(currentProduct,"curr")
       {iterateData.map((item: any, idx: number) => (
         <div key={idx} className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6  p-4">
           {/* Image */}
-          <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 h-64">
+          <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 h-48">
             <img
               src={item.image || "https://via.placeholder.com/300x200?text=No+Image"}
               alt={item.title || "Product"}

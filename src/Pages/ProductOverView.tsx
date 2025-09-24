@@ -38,11 +38,13 @@ const ProductOverview = () => {
   const { fn: bidOverviewFn, data: bidOverviewRes } = useFetch(bidService.bidOverViewbyId)
   const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading } = useFetch(bidService.updateUserBidDets)
   const { fn: createBidFn, data: createBidRes, loading: createBidLoading} = useFetch(bidService.createBid);
+  const {fn:addToCartFn, data: addToCartRes, loading: addToCartLoading} = useFetch(cartService.addToCart)
   const [open, setOpen] = useState(false)
   const [sellerVerification, setSellerVerification] = useState(false)
   const [businessType, setBusinessType] = useState('')
   const [downloading, setDownloading] = useState(false);
-  const [addToCartLoading, setAddToCartLoading] = useState(false);
+  // const [addToCartLoading, setAddToCartLoading] = useState(false);
+
 
   const { handleSubmit, formState: { errors }, register, reset, control, getValues } = useForm({
     resolver: zodResolver(productOverviewBidSchema) as any,
@@ -57,25 +59,15 @@ const ProductOverview = () => {
 
   // Add to Cart Handler
   const handleAddToCart = async (productId: string) => {
-    if (!userProfile?.user?._id) {
-      toast.error("Please login to add to cart");
-      setOpen(true);
-      return;
-    }
-    if (!productId) {
-      toast.error("Invalid product");
-      return;
-    }
-    setAddToCartLoading(true);
-    try {
-      await cartService.addToCart({ productId });
-      toast.success("Added to cart!");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to add to cart");
-    } finally {
-      setAddToCartLoading(false);
-    }
+   await addToCartFn(productId)
   };
+
+  useEffect(()=>{
+    if(addToCartRes){
+      toast.success(addToCartRes.message)
+    }
+  },[addToCartRes])
+
   useEffect(() => {
     if (productId) {
       getProductById(productId)
@@ -511,7 +503,9 @@ const handleDocumentDownload = (url: string) => {
                     </div>
 
                     {/* Buttons */}
-                    <div className="flex items-center gap-4 mt-5 ">
+                   {
+                    idx === 0 && (
+                       <div className="flex items-center gap-4 mt-5 ">
                       <Button variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent ">
                         <img src="/icons/Layer_1.png" className="w-4 h-4 " />
                         Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : item?.totalBidCount || 0}</span>
@@ -533,6 +527,8 @@ const handleDocumentDownload = (url: string) => {
                         )
                       }
                     </div>
+                    )
+                   }
                   </div>
                 </div>
 

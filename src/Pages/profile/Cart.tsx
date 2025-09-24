@@ -95,13 +95,9 @@ export const dummyProducts = [
   },
 ];
 
-
-
 const Cart = () => {
   const navigate = useNavigate();
-
   useEffect(() => {
-    // You may need to adjust the parameter as per your backend API.
     cartService.getCart()
       .then((res) => {
         console.log("Cart API response:", res);
