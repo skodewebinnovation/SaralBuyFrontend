@@ -235,7 +235,7 @@ const ChatArea = ({
         productId,
         sellerId,
         buyerId,
-        budgetAmount: amount!,
+        finalBudget: amount!,
       });
       toast.success("Deal closed successfully!");
     } catch (err: any) {

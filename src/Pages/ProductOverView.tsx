@@ -13,6 +13,7 @@ import { DatePicker } from "@/utils/DatePicker";
 import { useFetch } from "@/helper/use-fetch";
 import productService from "@/services/product.service";
 import { useEffect, useState } from "react";
+import cartService from "@/services/cart.service";
 import { mergeName } from "@/helper/mergeName";
 import { currencyConvertor } from "@/helper/currencyConvertor";
 import { dateFormatter } from "@/helper/dateFormatter";
@@ -41,7 +42,8 @@ const ProductOverview = () => {
   const [sellerVerification, setSellerVerification] = useState(false)
   const [businessType, setBusinessType] = useState('')
   const [downloading, setDownloading] = useState(false);
-  
+  const [addToCartLoading, setAddToCartLoading] = useState(false);
+
   const { handleSubmit, formState: { errors }, register, reset, control, getValues } = useForm({
     resolver: zodResolver(productOverviewBidSchema) as any,
     defaultValues: {
@@ -52,6 +54,28 @@ const ProductOverview = () => {
       earliestDeliveryDate: undefined,
     }
   })
+
+  // Add to Cart Handler
+  const handleAddToCart = async (productId: string) => {
+    if (!userProfile?.user?._id) {
+      toast.error("Please login to add to cart");
+      setOpen(true);
+      return;
+    }
+    if (!productId) {
+      toast.error("Invalid product");
+      return;
+    }
+    setAddToCartLoading(true);
+    try {
+      await cartService.addToCart({ productId });
+      toast.success("Added to cart!");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to add to cart");
+    } finally {
+      setAddToCartLoading(false);
+    }
+  };
   useEffect(() => {
     if (productId) {
       getProductById(productId)
@@ -298,7 +322,19 @@ const handleDocumentDownload = (url: string) => {
                     Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : productResponse?.mainProduct?.totalBidCount || 0}</span>
                   </Button>
                   {
-                    !bidOverviewRes && <Button className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer " variant="outline" >Add to Cart</Button>
+                    !bidOverviewRes && (
+                      <Button
+                        className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer"
+                        variant="outline"
+                        onClick={() => handleAddToCart(productResponse?.mainProduct?._id)}
+                        disabled={
+                          addToCartLoading ||
+                          productResponse?.mainProduct?.userId?._id === userProfile?.user?._id
+                        }
+                      >
+                        {addToCartLoading ? <Spinner className="w-5 h-5 animate-spin" /> : "Add to Cart"}
+                      </Button>
+                    )
                   }
                 </div>
               </div>
@@ -482,7 +518,19 @@ const handleDocumentDownload = (url: string) => {
 
                       </Button>
                       {
-                        !bidOverviewRes && <Button className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer " variant="outline" >Add to Cart</Button>
+                        !bidOverviewRes && (
+                          <Button
+                            className="min-w-32 border-[2px] border-orange-500 text-orange-500 hover:bg-orange-600 hover:text-white transition-all ease-in-out duration-300 cursor-pointer"
+                            variant="outline"
+                            onClick={() => handleAddToCart(item?._id)}
+                            disabled={
+                              addToCartLoading ||
+                              item?.userId?._id === userProfile?.user?._id
+                            }
+                          >
+                            {addToCartLoading ? <Spinner className="w-5 h-5 animate-spin" /> : "Add to Cart"}
+                          </Button>
+                        )
                       }
                     </div>
                   </div>
