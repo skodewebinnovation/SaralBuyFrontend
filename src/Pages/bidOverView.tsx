@@ -141,7 +141,7 @@ const bidsColumns: ColumnDef<any>[] = [
       </Breadcrumb>
 
       <div className="grid gap-8">
-        <div className="grid gap-8 md:grid-cols-[250px_1fr]">
+        <div className="grid gap-8 md:grid-cols-[270px_1fr]">
           {/* Sidebar */}
           <div className="hidden md:block space-y-2 bg-gray-200/50 p-4 rounded-md  sticky top-4  self-start">
             <div className='flex justify-center items-center mt-2 mb-12 relative'>

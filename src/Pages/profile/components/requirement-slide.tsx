@@ -119,7 +119,7 @@ function handleSubmitDraft(targetProduct: any) {
       {/* Right Side Info */}
       <div className='flex-1 flex justify-between items-end flex-col space-y-10'>
         <p className="text-xs text-gray-600 font-medium whitespace-nowrap">
-          Dated: {dateFormatter(product?.createdAt) || 'N/A'}
+          Dated: {dateFormatter(product?.createdAt || product?.product?.createdAt)  || 'N/A'}
         </p>
         <div>
           {target === "requirements" ? (

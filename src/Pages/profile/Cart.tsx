@@ -98,7 +98,7 @@ export const dummyProducts = [
 
 const Cart = () => {
   const navigate = useNavigate();
-  const {fn:getCartFn,data:getCartRes} = useFetch(cartService.getCart)
+  const {fn:getCartFn,data:getCartRes,loading:getCartLoading} = useFetch(cartService.getCart)
 useEffect(()=>{
   getCartFn()
 },[])
@@ -116,7 +116,7 @@ useEffect(()=>{
         </div>
         {/*  cart list */}
          {
-              false ?
+              getCartLoading ?
                 new Array(3).fill(0).map(_ => <SliderSkeleton />) :
             getCartRes &&    getCartRes.length > 0 ? getCartRes.map((item: any, idx: number) => (
                   <div key={idx} className='border-2 border-gray-300 p-4 rounded-md w-full mb-2 relative'>

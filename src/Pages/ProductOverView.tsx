@@ -64,7 +64,11 @@ const ProductOverview = () => {
 
   useEffect(()=>{
     if(addToCartRes){
-      toast.success(addToCartRes.message)
+      if(addToCartRes && (addToCartRes?.message as string).match(/already/) !== null){
+        toast.warning(addToCartRes.message)
+      }else{
+        toast.success(addToCartRes.message)
+      }
     }
   },[addToCartRes])
 
