@@ -8,7 +8,7 @@ import {
   DisclosurePanel,
 } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid'
+import { FunnelIcon } from '@heroicons/react/20/solid'
 import { Label } from "../Components/ui/label"
 import { RadioGroup, RadioGroupItem } from "../Components/ui/radio-group"
 import { useCategoriesStore } from '@/zustand/getCategories'
@@ -19,12 +19,13 @@ import { Spinner } from '../Components/ui/shadcn-io/spinner';
 import productService from '@/services/product.service'
 import ProductListingCard from '@/Components/ProductListingCard'
 import { ProductListingCardSkeleton } from '@/const/CustomSkeletons'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 export default function ProductListing() {
   const [values, setValues] = useState([100, 4000]);
   const [filters, setFilters] = useState([
     {
       id: 'category',
-      name: 'Category',
+      name: 'All Category',
       options: [
         // DYNAMIC CATEGORIES
       ],
@@ -42,7 +43,7 @@ export default function ProductListing() {
     },
     {
       id: 'sort',
-      name: 'Sort',
+      name: 'Sort By',
       options: [
         { value: 'newly_added', label: 'Newly Added', checked: true },
         { value: 'feature', label: 'Feature', checked: false },
@@ -160,8 +161,8 @@ export default function ProductListing() {
                       <DisclosureButton className="group flex w-full items-center justify-between  py-2 text-sm text-gray-400 hover:text-gray-500">
                         <span className="font-semibold text-lg text-gray-600 tracking-wide" >{section.name}</span>
                         <span className="ml-6 flex items-center">
-                          <PlusIcon aria-hidden="true" className="size-5 group-data-open:hidden" />
-                          <MinusIcon aria-hidden="true" className="size-5 group-not-data-open:hidden" />
+                          <ChevronUp aria-hidden="true" className="size-5 group-data-open:hidden" />
+                          <ChevronDown aria-hidden="true" className="size-5 group-not-data-open:hidden " />
                         </span>
                       </DisclosureButton>
                     </h3>
@@ -188,8 +189,8 @@ export default function ProductListing() {
                         <DisclosureButton className="group flex w-full items-center justify-between  py-3 text-sm text-gray-400 hover:text-gray-500">
                           <span className="font-semibold text-lg text-gray-600">{section.name}</span>
                           <span className="ml-6 flex items-center">
-                            <PlusIcon aria-hidden="true" className="size-5 group-data-open:hidden" />
-                            <MinusIcon aria-hidden="true" className="size-5 group-not-data-open:hidden" />
+                            <ChevronUp aria-hidden="true" className="size-5 group-data-open:hidden" />
+                            <ChevronDown aria-hidden="true" className="size-5 group-not-data-open:hidden" />
                           </span>
                         </DisclosureButton>
                       </h3>
@@ -283,18 +284,18 @@ export default function ProductListing() {
 
             <div className="grid grid-cols-1 gap-x-4 gap-y-10 lg:grid-cols-4">
               {/* Category */}
-              <form className="hidden lg:block shadow-sm rounded-2xl p-6 border bg-orange-50/90 sticky top-4  self-start">
+              <form className="hidden lg:block  rounded-2xl p-4 shadow-xs  bg-[#fcf3ed] sticky top-4  self-start">
                 <h3 className="sr-only">Categories</h3>
 
 
                 {filters.map((section) => (
-                  section.id !== 'budget' ? <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-5">
+                  section.id !== 'budget' ? <Disclosure key={section.id} as="div" className="border-b border-gray-200 pb-3 mt-3">
                     <h3 className="-my-3 flow-root">
                       <DisclosureButton className="group flex w-full items-center justify-between  py-2 text-sm text-gray-400 hover:text-gray-500">
-                        <span className="font-semibold text-[15px] text-gray-600 tracking-wide" >{section.name}</span>
+                        <span className="font-semibold text-[17px] text-orange-700 tracking-wide" >{section.name}</span>
                         <span className="ml-6 flex items-center">
-                          <PlusIcon aria-hidden="true" className="size-5 group-data-open:hidden" />
-                          <MinusIcon aria-hidden="true" className="size-5 group-not-data-open:hidden" />
+                          <ChevronUp aria-hidden="true" className="size-5 group-data-open:hidden" />
+                          <ChevronDown aria-hidden="true" className="size-5 group-not-data-open:hidden" />
                         </span>
                       </DisclosureButton>
                     </h3>
@@ -305,9 +306,10 @@ export default function ProductListing() {
                             <div key={option.value} className="flex items-center gap-2">
                               <RadioGroupItem
                                 value={option.value}
+                                className='border border-orange-700  focus-visible:border-orange-700 focus-visible:ring-orange-700  '
                                 id={`filter-${section.id}-${optionIdx}`}
                               />
-                              <Label htmlFor={`filter-${section.id}-${optionIdx}`} className="text-sm text-gray-600 capitalize tracking-wide">
+                              <Label htmlFor={`filter-${section.id}-${optionIdx}`} className="text-sm text-gray-700 capitalize tracking-wide">
                                 {option.label}
                               </Label>
                             </div>
@@ -316,18 +318,18 @@ export default function ProductListing() {
                       </div>
                     </DisclosurePanel>
                   </Disclosure> :
-                    <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-3">
+                    <Disclosure key={section.id} as="div" className="border-b border-gray-200 pb-3 mt-3">
                       <h3 className="-my-3 flow-root">
                         <DisclosureButton className="group flex w-full items-center justify-between  py-3 text-sm text-gray-400 hover:text-gray-500">
-                          <span className="font-semibold text-[15px] text-gray-600">{section.name}</span>
+                          <span className="font-semibold text-[17px] text-orange-700">{section.name}</span>
                           <span className="ml-6 flex items-center">
-                            <PlusIcon aria-hidden="true" className="size-5 group-data-open:hidden" />
-                            <MinusIcon aria-hidden="true" className="size-5 group-not-data-open:hidden" />
+                            <ChevronUp aria-hidden="true" className="size-5 group-data-open:hidden" />
+                            <ChevronDown aria-hidden="true" className="size-5 group-not-data-open:hidden" />
                           </span>
                         </DisclosureButton>
                       </h3>
                       <DisclosurePanel className="pt-6">
-                        <div className="w-full max-w-md border-[1.5px] border-gray-200 rounded-lg  p-3">
+                        <div className="w-full max-w-md ">
                           <div className="flex justify-between items-center mb-3">
                             {/* <Label className=" font-medium text-gray-500">Old Product</Label> */}
 
@@ -349,7 +351,7 @@ export default function ProductListing() {
                               return (
                                 <div {...props} className="h-1 w-full bg-gray-300 rounded relative">
                                   <div
-                                    className="absolute h-1 bg-orange-600 rounded"
+                                    className="absolute h-1 bg-orange-700 rounded"
                                     style={{
                                       left: `${leftPercent}%`,
                                       width: `${rightPercent - leftPercent}%`,
@@ -362,7 +364,7 @@ export default function ProductListing() {
                             renderThumb={({ props }) => (
                               <div
                                 {...props}
-                                className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center shadow"
+                                className="w-4 h-4 border-orange-700 border-2 bg-white rounded-full flex items-center justify-center shadow"
                               />
                             )}
                           />
