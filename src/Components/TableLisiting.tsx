@@ -41,7 +41,7 @@ export default function TableListing<TData, TValue>({
   limit,
   setSearch,
   search,
-  isPending
+  isPending,
 
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -95,7 +95,7 @@ const totalPages = Math.ceil(total / limit);
           size={"icon"}
           className="cursor-pointer shadow-none bg-transparent border-1 "
           onClick={() =>
-            setSorting([{ id: "bid_to", desc: false }]) 
+            setSorting([{ id: "your_budget", desc: false }]) 
           }
         >
           <ArrowUpNarrowWide className="w-4 h-4 text-gray-600" />
@@ -106,7 +106,7 @@ const totalPages = Math.ceil(total / limit);
           size={"icon"}
           className="cursor-pointer shadow-none border-1 bg-transparent "
           onClick={() =>
-            setSorting([{ id: "bid_to", desc: true }]) 
+            setSorting([{ id: "your_budget", desc: true }]) 
           }
         >
           <ArrowDownWideNarrow className="w-4 h-4 text-gray-600" />

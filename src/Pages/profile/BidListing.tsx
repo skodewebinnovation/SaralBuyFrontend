@@ -20,8 +20,9 @@ const BidListing = () => {
     const { fn: fetchBidsFn, data: fetchBidsResponse, loading: bidLoading } = useFetch(bidService.getAllBids)
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
-    const [limit, setLimit] = useState(2);
+    const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState("");
+    const [sort,setSort] = useState("desc")
       const [value,{isPending}] = useDebounce(search, 600);
     const columns: ColumnDef<any>[] = [
         {
@@ -95,7 +96,7 @@ const BidListing = () => {
             }
         },
     ];
-    useEffect(() => { fetchBidsFn(limit, page, value, '') }, [limit, page, value])
+    useEffect(() => { fetchBidsFn(limit, page, value) }, [limit, page, value])
 
     useEffect(() => {
         if (fetchBidsResponse) {
