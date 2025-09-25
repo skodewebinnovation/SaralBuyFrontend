@@ -10,13 +10,19 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Trash2Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {SkeletonTable} from '@/const/CustomSkeletons';
+import { SkeletonTable } from '@/const/CustomSkeletons';
 import TableListing from '@/Components/TableLisiting';
+import { useDebounce } from 'use-debounce';
 
 const BidListing = () => {
     const [data, setData] = useState([])
     const navigate = useNavigate()
-    const { fn: fetchBidsFn, data: fetchBidsResponse,loading:bidLoading } = useFetch(bidService.getAllBids)
+    const { fn: fetchBidsFn, data: fetchBidsResponse, loading: bidLoading } = useFetch(bidService.getAllBids)
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [limit, setLimit] = useState(2);
+    const [search, setSearch] = useState("");
+      const [value,{isPending}] = useDebounce(search, 600);
     const columns: ColumnDef<any>[] = [
         {
             accessorKey: "avtar",
@@ -63,7 +69,6 @@ const BidListing = () => {
             accessorKey: "action",
             header: "Action",
             cell: ({ row }) => {
-                console.log(row,21)
                 return <div className="flex items-center gap-2">
                     <Button className="text-sm cursor-pointer text-gray-600 underline" variant={"link"} onClick={() => {
                         navigate('/bid-overview/' + row.original?._id);
@@ -90,20 +95,19 @@ const BidListing = () => {
             }
         },
     ];
-    useEffect(() => {
-        fetchBidsFn()
-    }, [])
+    useEffect(() => { fetchBidsFn(limit, page, value, '') }, [limit, page, value])
 
     useEffect(() => {
-        if (fetchBidsResponse && fetchBidsResponse.length > 0) {
-            const formattedData = fetchBidsResponse.map((item: any) => {
-                // Use main product _id if available, else fallback
+        if (fetchBidsResponse) {
+            const { bids, total: totalCount, limit: pageLimit } = fetchBidsResponse;
+
+            const formattedData = bids.map((item: any) => {
                 let mainProductId = item.product?.product?._id || item.product?._id;
                 let mainProductBuyerId = item.product?.product?.userId || item.product?.userId;
+
                 return {
                     _id: item._id,
                     date: dateFormatter(item.createdAt),
-                    // bid_to: mergeName(item.buyer),
                     product: item.product.title,
                     productId: mainProductId,
                     productBuyerId: mainProductBuyerId,
@@ -112,17 +116,36 @@ const BidListing = () => {
                     status: item?.status || "active",
                 };
             });
+
             setData(formattedData);
+            setTotal(totalCount);
+            setLimit(pageLimit);
         }
     }, [fetchBidsResponse]);
 
+
+
+
     return (
-       <>
-       
-       {
-        bidLoading ? <SkeletonTable/> : <TableListing data={data} columns={columns} filters={true}  title='Your Bids' colorPalette={'gray'} />
-       }
-       </>
+        <>
+            {
+                (bidLoading && !fetchBidsResponse) ? <SkeletonTable /> : <TableListing
+                    data={data}
+                    columns={columns}
+                    filters={true}
+                    title="Your Bids"
+                    colorPalette="gray"
+                    page={page}
+                    setPage={setPage}
+                    total={total}
+                    limit={limit}
+                    setSearch={setSearch}
+                    search={search}
+                    isPending={isPending}
+                />
+
+            }
+        </>
     )
 }
 

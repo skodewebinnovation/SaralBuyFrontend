@@ -190,7 +190,6 @@ const Deal = () => {
   useEffect(() => {
     if (completedApproveData) {
       if (completedApproveData.length > 0) {
-        console.log(completedApproveData)
         completedApproveData.map((item: any) => (
           setCompleteRequirements([{
             _id: item._id,

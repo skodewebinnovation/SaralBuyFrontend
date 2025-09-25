@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-
+import {useDebounce} from "use-debounce"
 import {
   Table,
   TableBody,
@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { Input } from "./ui/input";
-import { ArrowDownWideNarrow, ArrowUpNarrowWide, ListFilter, Search } from "lucide-react";
+import { ArrowDownWideNarrow, ArrowUpNarrowWide, ListFilter, LoaderCircle, Search } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface DataTableProps<TData, TValue> {
@@ -34,20 +34,29 @@ export default function TableListing<TData, TValue>({
   title,
   filters= true,
   colorPalette,
-  target
+  target,
+  page,
+  setPage,
+  total,
+  limit,
+  setSearch,
+  search,
+  isPending
+
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  // const [globalFilter, setGlobalFilter] = useState("");
 
+const totalPages = Math.ceil(total / limit);
   const table = useReactTable({
     data,
     columns,
     state: {
       sorting,
-      globalFilter,
+      // globalFilter,
     },
     onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
+    // onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -74,8 +83,8 @@ export default function TableListing<TData, TValue>({
           <Input
             type="text"
             placeholder="Search..."
-            value={globalFilter ?? ""}
-            onChange={(e) => setGlobalFilter(e.target.value)}
+            value={search ?? ""}
+            onChange={(e) => setSearch(e.target.value)}
             className=" px-3 py-2 focus-visible:ring-0 w-64 shadow-none border-1"
           />
           <Search className="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 " />
@@ -115,7 +124,6 @@ export default function TableListing<TData, TValue>({
      }
       </div>
    
-
       <div className={`overflow-hidden rounded-md ${colorPalette ? `bg-${colorPalette}-50  rounded-lg` : ''}`} >
         <Table>
           <TableHeader>
@@ -137,56 +145,61 @@ export default function TableListing<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    return(
-                      <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                    )
-                  })}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
+{
+ isPending && isPending() ? (
+    <TableRow>
+      <TableCell colSpan={columns.length}>
+        <div className="flex justify-center items-center py-10 w-full">
+          <LoaderCircle className="w-8 h-8 text-orange-700 animate-spin duration-100" />
+        </div>
+      </TableCell>
+    </TableRow>
+  ) : table.getRowModel().rows?.length ? (
+    table.getRowModel().rows.map((row) => (
+      <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+        {row.getVisibleCells().map((cell) => (
+          <TableCell key={cell.id}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={columns.length} className="h-24 text-center">
+        No results.
+      </TableCell>
+    </TableRow>
+  )
+}
+
+           
           </TableBody>
         </Table>
       </div>
 
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-gray-600">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </span>
-        <div className="flex gap-2">
-          <Button
-         
-            className="px-3 py-1 border rounded disabled:opacity-50 cursor-pointer"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            className="px-3 py-1 border rounded disabled:opacity-50 cursor-pointer"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+     <div className="flex items-center justify-between">
+  <span className="text-sm text-gray-600">
+    Page {page} of {totalPages}
+  </span>
+  <div className="flex gap-2">
+    <Button
+      className="px-3 py-1 border rounded disabled:opacity-50 cursor-pointer"
+      onClick={() => setPage(page - 1)}
+      disabled={page <= 1}
+    >
+      Previous
+    </Button>
+    <Button
+      className="px-3 py-1 border rounded disabled:opacity-50 cursor-pointer"
+      onClick={() => setPage(page + 1)}
+      disabled={page >= totalPages}
+    >
+      Next
+    </Button>
+  </div>
+</div>
+
     </div>
   );
 }

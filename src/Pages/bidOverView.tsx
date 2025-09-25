@@ -143,7 +143,7 @@ const bidsColumns: ColumnDef<any>[] = [
       <div className="grid gap-8">
         <div className="grid gap-8 md:grid-cols-[270px_1fr]">
           {/* Sidebar */}
-          <div className="hidden md:block space-y-2 bg-gray-200/50 p-4 rounded-md  sticky top-4  self-start">
+          <div className="hidden md:block space-y-2 bg-gray-200/50 p-4 rounded-md sticky max-h-fit">
             <div className='flex justify-center items-center mt-2 mb-12 relative'>
               <div className='relative'>
                 <Avatar className='w-28 h-28 border-gray-600 border-4 flex '>

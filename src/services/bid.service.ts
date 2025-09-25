@@ -7,8 +7,13 @@ class BidService{
             withCredentials:true
         }).then(res => res.data?.data|| res.data)
     }
-    getAllBids(){
-        return instance.get('/bid/get-all-bid',{withCredentials:true}).then(res => res.data?.data|| res.data)
+    getAllBids(limit = 10, page = 1, search = "",sortBy = "desc" ){
+        return instance.get('/bid/get-all-bid',{withCredentials:true,params:{
+            limit,
+            page, 
+            search,
+            sortBy
+        }}).then(res => res.data?.data|| res.data)
     }
     bidOverViewbyId(bidId:string){
         return instance.get(`/bid/bid-overview/${bidId}`,{withCredentials:true}).then(res => res.data?.data|| res.data)

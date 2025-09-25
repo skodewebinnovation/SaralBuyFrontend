@@ -20,8 +20,9 @@ import productService from '@/services/product.service'
 import ProductListingCard from '@/Components/ProductListingCard'
 import { ProductListingCardSkeleton } from '@/const/CustomSkeletons'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { Controller, useForm } from 'react-hook-form'
 export default function ProductListing() {
-  const [values, setValues] = useState([100, 4000]);
+  const [values, setValues] = useState([0, 0]);
   const [filters, setFilters] = useState([
     {
       id: 'category',
@@ -54,9 +55,16 @@ export default function ProductListing() {
       ],
     },
   ])
+
+type FilterForm = {
+  category: string  
+  budget: string
+  sort: string        
+  }
+
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const { data } = useCategoriesStore();
-  const [searchParams] = useSearchParams()
+  const [searchParams,setSearchParams] = useSearchParams()
 
   const [title, setTitle] = useState('')
   const [key, setKey] = useState('')
@@ -65,6 +73,62 @@ export default function ProductListing() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const limit = 10;
+  const formState = useForm({
+    defaultValues: {
+      category: searchParams.get("category") || '',
+      budget: searchParams.get("budget") || '',
+      sort: searchParams.get("sort") || ''
+    },
+  })
+  const watchAll = formState.watch();
+
+
+
+ useEffect(() => {
+    const updateSearchParams = () => {
+      setSearchParams(prevParams => {
+        const newParams = new URLSearchParams(prevParams);
+        
+        // Handle category
+        if (watchAll.category) {
+          newParams.set('category', watchAll.category);
+        } else {
+          newParams.delete('category');
+        }
+        
+        // Handle sort
+        if (watchAll.sort) {
+          newParams.set('sort', watchAll.sort);
+        } else {
+          newParams.delete('sort');
+        }
+        
+  
+       if(values[1] >0){
+         newParams.set('min_budget', values[0].toString());
+        newParams.set('max_budget', values[1].toString());
+       }
+        
+        return newParams;
+      });
+    };
+    const timeoutId = setTimeout(updateSearchParams, 300);
+    return () => clearTimeout(timeoutId);
+  }, [watchAll.category,watchAll.sort, values, setSearchParams]);
+
+
+  useEffect(()=>{
+    if(searchParams.get("min_budget")){
+      setValues([parseInt(searchParams.get("min_budget")!), parseInt(searchParams.get("max_budget")!)])
+    }else if(searchParams.get("max_budget")){
+      setValues([parseInt(searchParams.get("min_budget")!), parseInt(searchParams.get("max_budget")!)])
+    }else if(searchParams.get('categoryId')){
+      formState.setValue('category',searchParams.get('category')!)
+    }else if(searchParams.get('sort')){
+      formState.setValue('sort',searchParams.get('sort')!)
+    }
+    
+  },[searchParams])
 
   useEffect(() => {
     if (!searchParams) return;
@@ -153,7 +217,7 @@ export default function ProductListing() {
               </div>
 
               {/* Filters */}
-              <form className="mt-4 border-t border-gray-200 p-6">
+              {/* <form className="mt-4 border-t border-gray-200 p-6">
                 <h3 className="sr-only">Categories</h3>
                 {filters.map((section) => (
                   section.id !== 'budget' ? <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-6">
@@ -197,8 +261,7 @@ export default function ProductListing() {
                       <DisclosurePanel className="pt-6">
                         <div className="w-full max-w-md border-[1.5px] border-gray-200 rounded-lg  p-3">
                           <div className="flex justify-between items-center mb-3">
-                            {/* <Label className=" font-medium text-gray-500">Old Product</Label> */}
-
+                           
                           </div>
                           <Range
                             values={values}
@@ -244,7 +307,7 @@ export default function ProductListing() {
 
 
                 ))}
-              </form>
+              </form> */}
             </DialogPanel>
           </div>
         </Dialog>
@@ -284,44 +347,15 @@ export default function ProductListing() {
 
             <div className="grid grid-cols-1 gap-x-4 gap-y-10 lg:grid-cols-4">
               {/* Category */}
-              <form className="hidden lg:block  rounded-2xl p-4 shadow-xs  bg-[#fcf3ed] sticky top-4  self-start">
+               <form className="hidden lg:block rounded-2xl p-4 shadow-xs bg-[#fcf3ed] sticky top-4 self-start">
                 <h3 className="sr-only">Categories</h3>
 
-
                 {filters.map((section) => (
-                  section.id !== 'budget' ? <Disclosure key={section.id} as="div" className="border-b border-gray-200 pb-3 mt-3">
-                    <h3 className="-my-3 flow-root">
-                      <DisclosureButton className="group flex w-full items-center justify-between  py-2 text-sm text-gray-400 hover:text-gray-500">
-                        <span className="font-semibold text-[17px] text-orange-700 tracking-wide" >{section.name}</span>
-                        <span className="ml-6 flex items-center">
-                          <ChevronUp aria-hidden="true" className="size-5 group-data-open:hidden" />
-                          <ChevronDown aria-hidden="true" className="size-5 group-not-data-open:hidden" />
-                        </span>
-                      </DisclosureButton>
-                    </h3>
-                    <DisclosurePanel className="pt-6">
-                      <div className="space-y-4">
-                        <RadioGroup defaultValue={section.options[0]?.value}>
-                          {section.options.map((option, optionIdx) => (
-                            <div key={option.value} className="flex items-center gap-2">
-                              <RadioGroupItem
-                                value={option.value}
-                                className='border border-orange-700  focus-visible:border-orange-700 focus-visible:ring-orange-700  '
-                                id={`filter-${section.id}-${optionIdx}`}
-                              />
-                              <Label htmlFor={`filter-${section.id}-${optionIdx}`} className="text-sm text-gray-700 capitalize tracking-wide">
-                                {option.label}
-                              </Label>
-                            </div>
-                          ))}
-                        </RadioGroup>
-                      </div>
-                    </DisclosurePanel>
-                  </Disclosure> :
+                  section.id !== 'budget' ? (
                     <Disclosure key={section.id} as="div" className="border-b border-gray-200 pb-3 mt-3">
                       <h3 className="-my-3 flow-root">
-                        <DisclosureButton className="group flex w-full items-center justify-between  py-3 text-sm text-gray-400 hover:text-gray-500">
-                          <span className="font-semibold text-[17px] text-orange-700">{section.name}</span>
+                        <DisclosureButton className="group flex w-full items-center justify-between py-2 text-sm text-gray-400 hover:text-gray-500" onChange={(e)=>{alert(e)}}>
+                          <span className="font-regular text-[16px] text-orange-700">{section.name}</span>
                           <span className="ml-6 flex items-center">
                             <ChevronUp aria-hidden="true" className="size-5 group-data-open:hidden" />
                             <ChevronDown aria-hidden="true" className="size-5 group-not-data-open:hidden" />
@@ -329,17 +363,58 @@ export default function ProductListing() {
                         </DisclosureButton>
                       </h3>
                       <DisclosurePanel className="pt-6">
-                        <div className="w-full max-w-md ">
-                          <div className="flex justify-between items-center mb-3">
-                            {/* <Label className=" font-medium text-gray-500">Old Product</Label> */}
-
-                          </div>
+                        <div className="space-y-4">
+                          <Controller
+                            name={section.id as keyof FilterForm}
+                            control={formState.control}
+                            render={({ field }) => (
+                              <RadioGroup 
+                                value={field.value} 
+                                onValueChange={(value) => {
+                                  field.onChange(value);
+                                  console.log(`${section.id} changed to:`, value);
+                                }}
+                              >
+                                {section.options.map((option, optionIdx) => (
+                                  <div key={option.value} className="flex items-center gap-2">
+                                    <RadioGroupItem
+                                      value={option.value}
+                                      className='border border-orange-700 focus-visible:border-orange-700 focus-visible:ring-orange-700'
+                                      id={`filter-${section.id}-${optionIdx}`}
+                                    />
+                                    <Label htmlFor={`filter-${section.id}-${optionIdx}`} className="text-sm text-gray-700 capitalize tracking-wide">
+                                      {option.label}
+                                    </Label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                            )}
+                          />
+                        </div>
+                      </DisclosurePanel>
+                    </Disclosure>
+                  ) : (
+                    <Disclosure key={section.id} as="div" className="border-b border-gray-200 pb-3 mt-3">
+                      <h3 className="-my-3 flow-root">
+                        <DisclosureButton className="group flex w-full items-center justify-between py-3 text-sm text-gray-400 hover:text-gray-500">
+                          <span className="font-regular text-[16px] text-orange-700">{section.name}</span>
+                          <span className="ml-6 flex items-center">
+                            <ChevronUp aria-hidden="true" className="size-5 group-data-open:hidden" />
+                            <ChevronDown aria-hidden="true" className="size-5 group-not-data-open:hidden" />
+                          </span>
+                        </DisclosureButton>
+                      </h3>
+                      <DisclosurePanel className="pt-6">
+                        <div className="w-full max-w-md">
                           <Range
                             values={values}
                             step={100}
-                            min={100}
+                            min={0}
                             max={10000}
-                            onChange={(vals) => setValues(vals)}
+                            onChange={(vals) => {
+                              setValues(vals);
+                              console.log('Price range changed:', vals);
+                            }}
                             renderTrack={({ props, children }) => {
                               const min = 100;
                               const max = 10000;
@@ -375,10 +450,10 @@ export default function ProductListing() {
                         </div>
                       </DisclosurePanel>
                     </Disclosure>
-
-
+                  )
                 ))}
               </form>
+
 
               {/* Product grid */}
               <div className="lg:col-span-3   ">
