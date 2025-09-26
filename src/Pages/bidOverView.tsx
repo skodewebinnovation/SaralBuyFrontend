@@ -5,7 +5,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/Components/ui/breadcrumb";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import { Banknote, CalendarDays, Camera, House, List, MapPin, User, UserRound } from 'lucide-react';
 import { Avatar, AvatarImage } from "@/Components/ui/avatar";
 import { NavLink } from 'react-router-dom';
@@ -16,52 +16,46 @@ import { SkeletonTable } from "@/const/CustomSkeletons";
 import TableListing from "@/Components/TableLisiting";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AvatarFallback } from "@radix-ui/react-avatar";
-const getRoutePath = (value: string) => {
-  switch (value) {
-    case 'profile':
-      return '/account';
-    case 'your_biding':
-      return '/account/bid';
-    case 'requirements':
-      return '/account/requirements';
-    case 'your_deal':
-      return '/account/deal';
-    case 'notifications':
-      return '/account/notification';
-    case 'cart':
-      return '/account/cart';
-    default:
-      return '/account';
-  }
-};
-
-
-const tags = [
-  {
-    title: 'Profile',
-    value: 'profile'
-  },
-  {
-    title: "Cart",
-    value: 'cart'
-  },
-  {
-    title: "Your Biding",
-    value: 'your_biding'
-  }, {
-    title: "Requirements",
-    value: 'requirements'
-  }, {
-    title: "Your Deal",
-    value: 'your_deal'
-  },
-  {
-    title: 'Notifications',
-    value: 'notifications'
-  }
-]
-
+import { useFetch } from "@/helper/use-fetch";
+import bidService from "@/services/bid.service";
+import { useEffect, useState } from "react";
+import { dateFormatter } from "@/helper/dateFormatter";
+import { mergeName } from "@/helper/mergeName";
+import { currencyConvertor } from "@/helper/currencyConvertor";
+  const bidsData = [
+    {
+      id: 1,
+      date: "2025-09-20",
+      bid_by: "John Doe",
+      budget: "₹25,000",
+      bid_budget: "₹22,000",
+    },
+    {
+      id: 2,
+      date: "2025-09-21",
+      bid_by: "Jane Smith",
+      budget: "₹30,000",
+      bid_budget: "₹27,500",
+    },
+    {
+      id: 3,
+      date: "2025-09-22",
+      bid_by: "Ravi Kumar",
+      budget: "₹20,000",
+      bid_budget: "₹18,000",
+    },
+  ];
 const BidOverview = () => {
+  const {bidId} = useParams();
+  const {fn:bidFn,data:bidRes} = useFetch(bidService.getBidById)
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [total,setTotal] = useState(0)
+  const [sellers,setSellers] = useState<any>([])
+  useEffect(()=>{
+    
+    bidFn(bidId,limit,page)
+  },[bidId,limit,page])
 
 const bidsColumns: ColumnDef<any>[] = [
   {
@@ -101,30 +95,26 @@ const bidsColumns: ColumnDef<any>[] = [
 
 ];
 
+useEffect(()=>{
+  if(bidRes){
+      const {totalSellers: totalCount, limit: pageLimit,page } = bidRes;
+       const budget = bidRes?.product?.budget || 0;
+        bidRes?.sellers?.map((item:any)=>(
+        setSellers([ {
+        id: item?._id,
+        date:dateFormatter(item?.createdAt),
+        bid_by: mergeName(item?.seller),
+        budget: currencyConvertor(budget),
+        bid_budget: currencyConvertor(item?.budgetQuation),
+      },])
+      ))
+      setTotal(totalCount)
+      setLimit(pageLimit)
+      setPage(page)
+  } 
+},[bidRes])
+console.log(bidRes)
 
-  const bidsData = [
-    {
-      id: 1,
-      date: "2025-09-20",
-      bid_by: "John Doe",
-      budget: "₹25,000",
-      bid_budget: "₹22,000",
-    },
-    {
-      id: 2,
-      date: "2025-09-21",
-      bid_by: "Jane Smith",
-      budget: "₹30,000",
-      bid_budget: "₹27,500",
-    },
-    {
-      id: 3,
-      date: "2025-09-22",
-      bid_by: "Ravi Kumar",
-      budget: "₹20,000",
-      bid_budget: "₹18,000",
-    },
-  ];
   return (
     <div className="w-full max-w-7xl mx-auto py-6 space-y-6 px-4">
       {/* Breadcrumb */}
@@ -135,7 +125,7 @@ const bidsColumns: ColumnDef<any>[] = [
             <BreadcrumbSeparator />
             <BreadcrumbPage className="capitalize font-regular text-gray-500">Bid Overview</BreadcrumbPage>
             <BreadcrumbSeparator />
-            <BreadcrumbPage className="capitalize font-regular text-orange-600 font-semibold">Product Name</BreadcrumbPage>
+            <BreadcrumbPage className="capitalize font-regular text-orange-600 font-semibold">{bidRes?.product?.title}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -153,7 +143,7 @@ const bidsColumns: ColumnDef<any>[] = [
                         <Spinner className="w-5 h-5 text-orange-500" />
 
                       </div> :
-                      <AvatarImage src={'/avatar.jpg'} className="w-full h-full object-contain rounded-full" />
+                      <AvatarImage src={bidRes?.product?.image|| '/no-image.webp'} className="w-full h-full object-contain rounded-full" />
                   }
 
                   {/* {
@@ -161,7 +151,7 @@ const bidsColumns: ColumnDef<any>[] = [
                 } */}
                 </Avatar>
                 {/* <input type="file" name="image" hidden id="" ref={avatarRef} onChange={handleUpdateProfile} /> */}
-                <button
+                {/* <button
                   // disabled={updateProfileLoading}
                   onClick={(e) => {
                     e.preventDefault()
@@ -170,7 +160,7 @@ const bidsColumns: ColumnDef<any>[] = [
                     // }
                   }} className="absolute bottom-4 cursor-pointer right-0 bg-gray-500 p-1 rounded-full shadow-md hover:bg-gray-400">
                   <Camera className='w-4 h-4 text-white' />
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -208,21 +198,19 @@ const bidsColumns: ColumnDef<any>[] = [
             <section className="min-h-screen">
               <div className="grid space-y-2">
                 <h2 className="text-sm font-[500] mb-2">
-                  Date: 12-12-2025
+                  Date: {dateFormatter(bidRes?.createdAt)}
                 </h2>
                 <div className="flex justify-between items-center gap-10">
                   <h2 className="text-xl font-bold capitalize item-center">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatibus, eius!
+                   {bidRes?.product?.title}
                   </h2>
                   <Button
-
-
-                    variant={'ghost'} className=" float-end border rounded-full text-sm bg-orange-700  transition-all ease-in-out duration-300 hover:bg-orange-600 text-white hover:text-white cursor-pointer">
+                    variant={'ghost'} className=" float-end border rounded-full hover:bg-orange-700 hover:text-white text-sm bg-orange-700  text-white cursor-pointer">
                     24.00 Hr.
                   </Button>
                 </div>
                 <p className="text-sm text-gray-500 mt-2 ">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Architecto mollitia et vitae, tempore odit quae laborum accusamus, nemo quas, maxime ut incidunt vero necessitatibus? Ad beatae officia unde explicabo quaerat, modi aliquam animi nobis voluptate necessitatibus nostrum alias voluptatum quod labore ipsa quos cum molestiae libero debitis, excepturi ipsum perspiciatis.
+                 {bidRes?.product?.description}
                 </p>
               </div>
               <div className="mt-10 ">
@@ -231,7 +219,16 @@ const bidsColumns: ColumnDef<any>[] = [
           </p>
           {/* table */}
           {
-             false ? <SkeletonTable /> : <TableListing data={bidsData} columns={bidsColumns} filters={false} colorPalette={'gray'} />
+             false ? <SkeletonTable /> : <TableListing 
+             data={sellers} 
+             columns={bidsColumns} 
+             filters={false} 
+             colorPalette={'gray'}
+                page={page}
+                    setPage={setPage}
+                    total={total}
+                    limit={limit}
+                   />
           }
               </div>
             </section>

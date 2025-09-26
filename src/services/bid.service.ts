@@ -34,6 +34,14 @@ class BidService{
         return instance.get('/requirement/my-requirements', { withCredentials: true })
             .then(res => res.data?.data || res.data);
     }
+    getBidById(id:string,limit = 10, page = 1, search = "",sortBy = "desc" ){
+        return instance.get(`/bid/bid-details/${id}`,{withCredentials:true,params:{
+            limit,
+            page, 
+            search,
+            sortBy
+        }}).then(res => res.data?.data|| res.data)
 
+    }
 }
 export default new BidService();
