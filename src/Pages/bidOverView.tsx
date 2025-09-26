@@ -95,18 +95,19 @@ const bidsColumns: ColumnDef<any>[] = [
 
 ];
 
+console.log(bidRes,123)
 useEffect(()=>{
   if(bidRes){
       const {totalSellers: totalCount, limit: pageLimit,page } = bidRes;
        const budget = bidRes?.product?.budget || 0;
         bidRes?.sellers?.map((item:any)=>(
-        setSellers([ {
+        setSellers((prev:any)=>[...prev,{
         id: item?._id,
         date:dateFormatter(item?.createdAt),
         bid_by: mergeName(item?.seller),
         budget: currencyConvertor(budget),
         bid_budget: currencyConvertor(item?.budgetQuation),
-      },])
+      }])
       ))
       setTotal(totalCount)
       setLimit(pageLimit)

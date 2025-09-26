@@ -415,7 +415,7 @@ const HomeNavbar = () => {
                 </div>
               </PopoverTrigger>
 
-             <PopoverContent className="mt-2 w-80 p-2 rounded-xl shadow-lg border border-gray-200 bg-white">
+             <PopoverContent className="mt-2 w-80  empty:p-0 p-2 rounded-xl shadow-lg border border-gray-200 bg-white">
   {showNotifDropdown && (
     <>
       {notifications.length === 0 ? (
@@ -484,7 +484,7 @@ const HomeNavbar = () => {
     </div>
   </PopoverTrigger>
 
-  <PopoverContent className="mt-2 w-80 p-2 rounded-xl shadow-lg border border-gray-200 bg-white">
+  <PopoverContent className="mt-2 w-80 p-2 rounded-xl shadow-lg border border-gray-200 bg-white empty:p-0">
     {productNotifications.length === 0 ? (
       <p className="text-sm text-center text-gray-500 py-4">
         No new product notifications
