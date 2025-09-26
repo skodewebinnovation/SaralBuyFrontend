@@ -164,15 +164,37 @@ type FilterForm = {
       fetchMoreData(true);
     }
   }, [title]);
+  useEffect(() => {
+    if (!title) return;
+    fetchMoreData(true);
+  }, [
+    searchParams.get("category"),
+    searchParams.get("sort"),
+    searchParams.get("min_budget"),
+    searchParams.get("max_budget")
+  ]);
 
   const fetchMoreData = async (reset: boolean = false) => {
     if (!title) return console.warn("title missing");
     const currentPage = reset ? 1 : page;
 
-    try {
-      const response = await productService.getProductByTitle(title, currentPage, limit);
-      const newProducts = response?.data?.data?.products || [];
+    // Extract filters from searchParams
+    const category = searchParams.get("category") || undefined;
+    const min_budget = searchParams.get("min_budget") ? Number(searchParams.get("min_budget")) : undefined;
+    const max_budget = searchParams.get("max_budget") ? Number(searchParams.get("max_budget")) : undefined;
+    const sort = searchParams.get("sort") || undefined;
 
+    try {
+      const response = await productService.getProductByTitle(
+        title,
+        currentPage,
+        limit,
+        { category, min_budget, max_budget, sort }
+      );
+      // Console log the data as requested
+      console.log("Fetched products data:", response);
+
+      const newProducts = response?.data?.data?.products || [];
 
       setProducts(prev => reset ? newProducts : [...prev, ...newProducts]);
       setTotal(response?.data?.data.total);
