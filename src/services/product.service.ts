@@ -13,15 +13,21 @@ class ProductService{
     getProductById(productId:string){
         return instance.get('/product/get-product-by-id/'+productId).then(res => res.data?.data|| res.data)
     }
-   getProductByTitle(title: string, page: number = 1, limit: number = 10) {
-  return instance.get("/product/get-products-by-title/search", {
-    params: {
-      title,
-      page,
-      limit,
-    },
-  });
-}
+   getProductByTitle(
+    title: string,
+    page: number = 1,
+    limit: number = 10,
+    filters: { category?: string; min_budget?: number; max_budget?: number; sort?: string } = {}
+  ) {
+    return instance.get("/product/get-products-by-title/search", {
+      params: {
+        title,
+        page,
+        limit,
+        ...filters,
+      },
+    });
+  }
 getDrafts(){
   return instance.get('/product/get-draft-products',{
     withCredentials:true
