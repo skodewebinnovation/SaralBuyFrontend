@@ -150,7 +150,7 @@ const Profile = () => {
 
           {/* Main Content */}
           <div className="space-y-10">
-            <section id="account" className="min-h-screen">
+            <section id="account" >
               <Outlet />
             </section>
           </div>

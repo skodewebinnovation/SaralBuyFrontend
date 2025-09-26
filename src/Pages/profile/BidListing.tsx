@@ -22,17 +22,17 @@ const BidListing = () => {
     const [total, setTotal] = useState(0);
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState("");
-    const [sort,setSort] = useState("desc")
       const [value,{isPending}] = useDebounce(search, 600);
     const columns: ColumnDef<any>[] = [
         {
             accessorKey: "avtar",
             header: "",
             cell: ({ row }) => {
+                console.log()
                 return <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
-                    <Avatar className="w-10 h-10">
-                        <AvatarImage src="https://github.com/shubhamsharma20007.png" alt="@shadcn" />
-                        <AvatarFallback>{fallBackName(row.original?.bid_to)}</AvatarFallback>
+                    <Avatar className="w-12 h-12">
+                        <AvatarImage src={row.original.avatar} alt="@shadcn" className='object-contain w-full h-full' />
+                        <AvatarFallback>{fallBackName(row.original?.product)}</AvatarFallback>
                     </Avatar>
 
                 </div>
@@ -105,10 +105,10 @@ const BidListing = () => {
             const formattedData = bids.map((item: any) => {
                 let mainProductId = item.product?.product?._id || item.product?._id;
                 let mainProductBuyerId = item.product?.product?.userId || item.product?.userId;
-
                 return {
                     _id: item._id,
                     date: dateFormatter(item.createdAt),
+                    avatar:item?.product?.image,
                     product: item.product.title,
                     productId: mainProductId,
                     productBuyerId: mainProductBuyerId,

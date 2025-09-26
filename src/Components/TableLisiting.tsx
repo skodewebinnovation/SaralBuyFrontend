@@ -124,7 +124,7 @@ const totalPages = Math.ceil(total / limit);
      }
       </div>
    
-      <div className={`overflow-hidden rounded-md ${colorPalette ? `bg-${colorPalette}-50  rounded-lg` : ''}`} >
+      <div className={`overflow-hidden min-h-[600px] rounded-md ${colorPalette ? `bg-${colorPalette}-50  rounded-lg` : ''}`} >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
