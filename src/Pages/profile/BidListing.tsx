@@ -29,8 +29,8 @@ const BidListing = () => {
             header: "",
             cell: ({ row }) => {
                 console.log()
-                return <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
-                    <Avatar className="w-12 h-12">
+                return <div className=" ">
+                    <Avatar className="w-10 h-10">
                         <AvatarImage src={row.original.avatar} alt="@shadcn" className='object-contain w-full h-full' />
                         <AvatarFallback>{fallBackName(row.original?.product)}</AvatarFallback>
                     </Avatar>

@@ -16,71 +16,18 @@ import requirementService from "@/services/requirement.service";
 import { useFetch } from "@/helper/use-fetch";
 import { dateFormatter } from "@/helper/dateFormatter";
 import { mergeName } from "@/helper/mergeName";
-import { fallBackName } from "@/helper/fallBackName";
 
 
-
-
-export const dummyApprovedBids = [
-  {
-    _id: "bid_001",
-    avtar: "https://i.pravatar.cc/150?img=11",
-    date: "2025-09-18",
-    bid_to: "Karan Singh",
-    product_categories: "Laptops",
-    min_budget: 100000,
-    your_budget: 105000,
-  },
-  {
-    _id: "bid_002",
-    avtar: "https://i.pravatar.cc/150?img=12",
-    date: "2025-09-16",
-    bid_to: "Simran Kaur",
-    product_categories: "Smartphones",
-    min_budget: 80000,
-    your_budget: 85000,
-  },
-  {
-    _id: "bid_003",
-    avtar: "https://i.pravatar.cc/150?img=13",
-    date: "2025-09-14",
-    bid_to: "Rahul Verma",
-    product_categories: "Headphones",
-    min_budget: 25000,
-    your_budget: 27000,
-  },
-  {
-    _id: "bid_004",
-    avtar: "https://i.pravatar.cc/150?img=14",
-    date: "2025-09-10",
-    bid_to: "Neha Gupta",
-    product_categories: "Televisions",
-    min_budget: 75000,
-    your_budget: 78000,
-  },
-  {
-    _id: "bid_005",
-    avtar: "https://i.pravatar.cc/150?img=15",
-    date: "2025-09-05",
-    bid_to: "Rohit Mehta",
-    product_categories: "Ultrabooks",
-    min_budget: 95000,
-    your_budget: 98000,
-  },
-];
 
 const columnsCompletedReq: ColumnDef<any>[] = [
   {
     accessorKey: "avtar",
     header: "",
     cell: ({row}) => {
-      console.log(row.original)
-      return <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
-        <Avatar className="w-10 h-10 flex items-center justify-center  border rounded-full">
-          <AvatarImage src={row.original?.avatar} alt={row.original?.finalized_with } className="h-full w-full rounded-full" />
-          <AvatarFallback className="" >{
-            fallBackName(row.original?.finalized_with)
-          }</AvatarFallback>
+      return  <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
+        <Avatar className="w-10 h-10">
+          <AvatarImage src={row.original.avatar} className='object-cover rounded-full w-full h-full' />
+          <AvatarFallback>PI</AvatarFallback>
         </Avatar>
 
       </div>
@@ -127,12 +74,9 @@ const columnsApproveBids: ColumnDef<any>[] = [
     cell: ({row}) => {
       console.log(row)
       return <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
-        <Avatar className="w-10 h-10">
-          <AvatarImage src="https://github.com/shubhamsharma20007.png" alt="@shadcn" className="h-full w-full rounded-full" />
-          <AvatarFallback>{
-            'SS'
-            // fallBackName(row.original?.bid_to)
-          }</AvatarFallback>
+        <Avatar className="w-12 h-12">
+          <AvatarImage src={row.original.avatar} alt="@shadcn" className="h-full w-full rounded-full object-contain" />
+          <AvatarFallback>PI</AvatarFallback>
         </Avatar>
 
       </div>
@@ -178,7 +122,7 @@ const Deal = () => {
   const { fn: pendingApprovedFn, data: pendingApprovedData } = useFetch(requirementService.getApprovedPendingRequirements)
   const { fn: completedApproveFn, data: completedApproveData } = useFetch(requirementService.getCompletedApprovedRequirements)
   const [completeRequirements, setCompleteRequirements] = useState<any>([])
-
+  const [approvedRequirements,setApprovedRequirements]= useState<any>([])
   useEffect(() => {
     if (tab === 'approved_bids') {
       pendingApprovedFn()
@@ -193,7 +137,7 @@ const Deal = () => {
         completedApproveData.map((item: any) => (
           setCompleteRequirements([{
             _id: item._id,
-            avtar: item?.sellerId?.profileImage,
+            avatar: item?.product?.image,
             date: dateFormatter(item?.createdAt),
             finalized_with: mergeName(item?.seller),       
             product_categories: item?.product?.title,      
@@ -204,7 +148,26 @@ const Deal = () => {
 
       }
     }
+    if(pendingApprovedData){
+      if (pendingApprovedData.length > 0) {
+      pendingApprovedData.map((item:any)=>(
+        setApprovedRequirements([
+          {
+            _id: item._id,
+            avatar: item?.product?.image,
+            bid_to:mergeName(item?.sellerDetails?.sellerId),
+            date: dateFormatter(item?.date),
+            product_categories: item?.product?.categoryId?.categoryName,
+            min_budget:item?.minBudget,
+            your_budget:item?.sellerDetails?.budgetAmount
+
+          }
+        ])
+      ))
+    }
+  }
   }, [pendingApprovedData, completedApproveData])
+
 
   return (
     <div className="w-full max-w-7xl mx-auto  space-y-6 ">
@@ -225,7 +188,7 @@ const Deal = () => {
           <TabsContent value="approved_bids" className='w-full overflow-hidden '>
 
             {
-              false ? <SkeletonTable /> : <TableListing data={dummyApprovedBids} columns={columnsApproveBids} filters={true} colorPalette={'gray'} />
+              false ? <SkeletonTable /> : <TableListing data={approvedRequirements} columns={columnsApproveBids} filters={true} colorPalette={'gray'} />
             }
           </TabsContent>
 
