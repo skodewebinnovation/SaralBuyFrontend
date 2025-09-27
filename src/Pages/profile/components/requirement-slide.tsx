@@ -89,7 +89,7 @@ function handleSubmitDraft(targetProduct: any) {
             className={`keen-slider__slide ${target === 'requirement' ? 'cursor-pointer' : ''}`}
             onClick={() => handleNavigate(prt)}
           >
-            <ProductCard product={prt} />
+            <ProductCard product={prt} target={target} />
           </div>
         ))}
 

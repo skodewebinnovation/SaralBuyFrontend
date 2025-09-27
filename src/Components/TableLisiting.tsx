@@ -124,7 +124,7 @@ const totalPages = Math.ceil(total / limit);
      }
       </div>
    
-      <div className={`overflow-hidden min-h-[600px] rounded-md ${colorPalette ? `bg-${colorPalette}-50  rounded-lg` : ''}`} >
+      <div className={`overflow-hidden max-h-[600px] rounded-md ${colorPalette ? `bg-${colorPalette}-50  rounded-lg` : ''}`} >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -178,7 +178,8 @@ const totalPages = Math.ceil(total / limit);
         </Table>
       </div>
 
-     <div className="flex items-center justify-between">
+{
+  total > 10 &&<div className="flex items-center justify-between">
   <span className="text-sm text-gray-600">
     Page {page} of {totalPages}
   </span>
@@ -199,6 +200,8 @@ const totalPages = Math.ceil(total / limit);
     </Button>
   </div>
 </div>
+}
+     
 
     </div>
   );

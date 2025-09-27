@@ -16,6 +16,7 @@ import requirementService from "@/services/requirement.service";
 import { useFetch } from "@/helper/use-fetch";
 import { dateFormatter } from "@/helper/dateFormatter";
 import { mergeName } from "@/helper/mergeName";
+import { fallBackName } from "@/helper/fallBackName";
 
 
 
@@ -25,9 +26,9 @@ const columnsCompletedReq: ColumnDef<any>[] = [
     header: "",
     cell: ({row}) => {
       return  <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
-        <Avatar className="w-10 h-10">
+        <Avatar className="w-10 h-10 flex justify-center items-center rounded-full border-2">
           <AvatarImage src={row.original.avatar} className='object-cover rounded-full w-full h-full' />
-          <AvatarFallback>PI</AvatarFallback>
+          <AvatarFallback>{fallBackName(row.original.finalized_with)}</AvatarFallback>
         </Avatar>
 
       </div>
@@ -72,11 +73,11 @@ const columnsApproveBids: ColumnDef<any>[] = [
     accessorKey: "avtar",
     header: "",
     cell: ({row}) => {
-      console.log(row)
+      console.log(row.original)
       return <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 ">
-        <Avatar className="w-12 h-12">
-          <AvatarImage src={row.original.avatar} alt="@shadcn" className="h-full w-full rounded-full object-contain" />
-          <AvatarFallback>PI</AvatarFallback>
+        <Avatar className="w-10 h-10 justify-center items-center rounded-full border-2">
+          <AvatarImage src={row.original.avatar} alt="@shadcn" className='object-cover rounded-full w-full h-full' />
+          <AvatarFallback>{fallBackName(row.original.bid_to)}</AvatarFallback>
         </Avatar>
 
       </div>
@@ -119,8 +120,8 @@ const columnsApproveBids: ColumnDef<any>[] = [
 
 const Deal = () => {
   const [tab, setTab] = useState('approved_bids')
-  const { fn: pendingApprovedFn, data: pendingApprovedData } = useFetch(requirementService.getApprovedPendingRequirements)
-  const { fn: completedApproveFn, data: completedApproveData } = useFetch(requirementService.getCompletedApprovedRequirements)
+  const { fn: pendingApprovedFn, data: pendingApprovedData ,loading:approvedLoading} = useFetch(requirementService.getApprovedPendingRequirements)
+  const { fn: completedApproveFn, data: completedApproveData ,loading:completedLoading} = useFetch(requirementService.getCompletedApprovedRequirements)
   const [completeRequirements, setCompleteRequirements] = useState<any>([])
   const [approvedRequirements,setApprovedRequirements]= useState<any>([])
   useEffect(() => {
@@ -179,22 +180,22 @@ const Deal = () => {
         </div>
 
         {/* tabs */}
-        <Tabs defaultValue="approved_bids" className='grid space-y-2 w-full overflow-hidden' onValueChange={(val) => setTab(val)} >
-          <TabsList className='bg-orange-50'>
-            <TabsTrigger value="approved_bids" className={`cursor-pointer min-w-40 ${tab === 'approved_bids' && 'text-orange-500'}`}>Approved Bids</TabsTrigger>
-            <TabsTrigger value="completed_requirements" className={`cursor-pointer ${tab === 'completed_requirements' && 'text-orange-500'} `}>Completed Requirements</TabsTrigger>
+        <Tabs defaultValue="approved_bids" className='grid space-y-2 w-full bg-transparent overflow-hidden' onValueChange={(val) => setTab(val)} >
+          <TabsList className='bg-transparent'>
+            <TabsTrigger value="approved_bids" className={`cursor-pointer min-w-40`}>Approved Bids</TabsTrigger>
+            <TabsTrigger value="completed_requirements" className={`cursor-pointer `}>Completed Requirements</TabsTrigger>
           </TabsList>
 
           <TabsContent value="approved_bids" className='w-full overflow-hidden '>
 
             {
-              false ? <SkeletonTable /> : <TableListing data={approvedRequirements} columns={columnsApproveBids} filters={true} colorPalette={'gray'} />
+              approvedLoading ? <SkeletonTable /> : <TableListing data={approvedRequirements} columns={columnsApproveBids} filters={true} colorPalette={'gray'} />
             }
           </TabsContent>
 
           <TabsContent value="completed_requirements" className='w-full overflow-hidden'>
             {
-              false ? <SkeletonTable /> : <TableListing data={completeRequirements} columns={columnsCompletedReq} filters={true} colorPalette={'gray'} />
+              completedLoading ? <SkeletonTable /> : <TableListing data={completeRequirements} columns={columnsCompletedReq} filters={true} colorPalette={'gray'} />
             }
           </TabsContent>
 

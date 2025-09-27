@@ -58,9 +58,9 @@ const Requirement = () => {
 
         {/* tabs */}
         <Tabs defaultValue="requirements" className='grid space-y-2 w-full overflow-hidden' onValueChange={(val) => setTab(val)} >
-          <TabsList className='bg-orange-50 '>
-            <TabsTrigger value="requirements" className={`cursor-pointer min-w-32 ${tab === 'requirements' && 'text-orange-500'}`}>Requirements</TabsTrigger>
-            <TabsTrigger value="drafts" className={`cursor-pointer min-w-32 ${tab === 'drafts' && 'text-orange-500'}`}>Drafts</TabsTrigger>
+          <TabsList className='bg-transparent'>
+            <TabsTrigger value="requirements" className={`cursor-pointer min-w-32`}>Your Requirements</TabsTrigger>
+            <TabsTrigger value="drafts" className={`cursor-pointer min-w-32 `}>Drafts</TabsTrigger>
           </TabsList>
 
           <TabsContent value="requirements" className='w-full overflow-hidden '>

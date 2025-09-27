@@ -130,7 +130,7 @@ console.log(currentProduct,"curr")
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6 p-4">
+    <div className="w-full max-w-7xl mx-auto space-y-3 p-4">
       <Breadcrumb className="sm:block hidden">
         <BreadcrumbList>
           <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
@@ -144,7 +144,7 @@ console.log(currentProduct,"curr")
 
       {/* Display all products (main + sub-products) */}
       {iterateData.map((item: any, idx: number) => (
-        <div key={idx} className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6  p-4">
+        <div key={idx} className="grid grid-cols-1 lg:grid-cols-12 gap-6  p-4">
           {/* Image */}
           <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 h-48">
             <img

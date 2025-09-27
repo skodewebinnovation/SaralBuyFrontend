@@ -94,12 +94,12 @@ const Profile = () => {
       </Breadcrumb>
 
       <div className="grid gap-8">
-        <div className="grid gap-8 md:grid-cols-[220px_1fr]">
+        <div className="grid gap-8 md:grid-cols-[230px_1fr]">
           {/* Sidebar */}
           <div className="hidden md:block space-y-2 bg-gray-200/50 p-4 rounded-md  sticky top-4  self-start">
             <div className='flex justify-center items-center mt-2 mb-5 relative'>
               <div className='relative'>
-                <Avatar className='w-28 h-28 border-gray-600 border-4 flex '>
+                <Avatar className='w-28 h-28 border-gray-600 border-3 flex '>
                 {
                   updateProfileLoading ? 
                   <div className="h-full w-full  flex items-center justify-center object-contain">
@@ -126,6 +126,7 @@ const Profile = () => {
                 </button>
               </div>
             </div>
+              <span className="mb-5 block text-md underline text-center font-semibold text-gray-700">Update Photo</span>
 
             <div className="grid gap-1 text-gray-600">
               {tags.map((tag) => {

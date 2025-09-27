@@ -423,12 +423,12 @@ const HomeNavbar = () => {
           No new chat messages
         </p>
       ) : (
-        <div className="max-h-80 overflow-y-auto overflow-x-hidden custom-scrollbar w-full">
+        <div className="max-h-80 overflow-y-auto overflow-x-hidden custom-scrollbar w-full grid space-y-1">
           {notifications.map((notif, idx) => (
             <div
               key={idx}
               onClick={() => handleNotificationClick(notif)}
-              className="flex w-full items-center gap-3 p-2 rounded-lg hover:bg-orange-50 transition cursor-pointer border-b last:border-b-0 mb-2"
+              className="flex w-full items-center gap-3 p-2 rounded-lg hover:bg-orange-50 transition cursor-pointer  "
             >
               <div className="bg-orange-500 p-2 rounded-full text-white flex items-center justify-center shadow-sm flex-shrink-0">
                 <MessageCircle className="w-4 h-4 " />

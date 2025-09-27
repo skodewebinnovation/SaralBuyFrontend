@@ -1,5 +1,5 @@
 //Styles
-import Brands from "@/Components/Brands";
+// import Brands from "@/Components/Brands";
 import "../Styling/Home/homePage.css";
 import Banner from "@/Components/Banner/Banner";
 
@@ -11,6 +11,10 @@ import { useEffect, useState } from "react";
 import { useFetch } from "@/helper/use-fetch";
 import bidService from "@/services/bid.service";
 import { Skeleton } from "@/Components/ui/skeleton";
+import productService from "@/services/product.service";
+import DyanmicHomeCard from "@/Components/DyanmicHomeCard";
+import { useCategoriesStore } from "@/zustand/getCategories";
+import Brands from "@/Components/Brands";
 
 
 
@@ -28,9 +32,9 @@ const ItemSkeleton = () => (
 
 const Home = () => {
 
-
+ const { data:categories} = useCategoriesStore();
   const { fn: getLatestThreeBidsFn, data: getLatestBidandDrafts, loading: bidResponseLoading } = useFetch(bidService.getThreeLatestBids);
-  
+  const {fn,data}= useFetch(productService.getHomeCards)
   const [bids, setBids] = useState<any>([])
   const [drafts, setDrafts] = useState([
 
@@ -38,11 +42,9 @@ const Home = () => {
 
 
 
-
-
-
   useEffect(() => {
  getLatestThreeBidsFn()
+ fn()
   }, [])
 
   useEffect(() => {
@@ -106,7 +108,7 @@ const Home = () => {
       {/* trending Section */}
       <div className="mt-10 relative mx-auto px-4 w-full pt-10">
         
-        <TrendingCategory />
+        <TrendingCategory  categories={categories}/>
         <img src="All In One Market Place that Fits You.png" className="absolute -top-5 mt-7 left-0 w-full">
 
         </img>
@@ -117,8 +119,13 @@ const Home = () => {
       <div >
         {/* <Requirement title="Electronics" color="orange" /> */}
       </div>
+       {/* dyanmic data */}
+      {
+        data && data.map((item:any,idx:number)=><DyanmicHomeCard key={idx+1} bg={idx === 0 ?'gray' :''} item={item}/>)
+      }
       {/* brands */}
-      <Brands></Brands>
+      <Brands ></Brands>
+     
 
     </main>);
 };

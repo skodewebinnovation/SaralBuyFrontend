@@ -29,13 +29,14 @@ import { Spinner } from "@/Components/ui/shadcn-io/spinner";
 import Authentication from "@/Components/auth/Authentication";
 import fileDownload from "js-file-download";
 import instance from "@/lib/instance";
+import { CategoryFormSkeleton } from "@/const/CustomSkeletons";
 const ProductOverview = () => {
   const [searchParams] = useSearchParams();
   const productId = searchParams.get('productId');
   const bidId = searchParams.get('bidId');
   const userProfile = getUserProfile()
   const { fn: getProductById, data: productResponse, error, setData: setProductResponse } = useFetch(productService.getProductById);
-  const { fn: bidOverviewFn, data: bidOverviewRes } = useFetch(bidService.bidOverViewbyId)
+  const { fn: bidOverviewFn, data: bidOverviewRes,loading:bidOverLoading } = useFetch(bidService.bidOverViewbyId)
   const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading } = useFetch(bidService.updateUserBidDets)
   const { fn: createBidFn, data: createBidRes, loading: createBidLoading} = useFetch(bidService.createBid);
   const {fn:addToCartFn, data: addToCartRes, loading: addToCartLoading} = useFetch(cartService.addToCart)
@@ -242,7 +243,13 @@ const handleDocumentDownload = (url: string) => {
 };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
+    
+     <>
+     {
+      false ? <div className="max-w-7xl mx-auto p-4 ">
+        <CategoryFormSkeleton/>
+      </div> :<div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
+    
       {
         <Authentication setOpen={setOpen} open={open} />
       }
@@ -298,15 +305,21 @@ const handleDocumentDownload = (url: string) => {
                 {/* Meta Info */}
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                   <div className="flex items-center gap-1 pr-3 border-r-2 py-1 min-w-32 max-w-[25%]">
-                    <UserCircle className="w-5 h-5 " />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 text-gray-500">
+  <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
+</svg>
                     <span className="capitalize">{mergeName(bidOverviewRes ? bidOverviewRes?.buyer : productResponse?.mainProduct?.userId) || 'N/A'}</span>
                   </div>
                   <div className="flex items-center gap-1  pr-3 border-r-2 py-1 min-w-32   max-w-[50%]">
-                    <MapPin className="w-4 h-4 " />
+                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 text-gray-500">
+  <path fillRule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clipRule="evenodd" />
+</svg>
                     <span className=" line-clamp-2">{bidOverviewRes ? bidOverviewRes?.buyer?.address : productResponse?.mainProduct?.userId?.address || 'N/A'}</span>
                   </div>
                   <div className="flex items-center gap-1 py-1 min-w-32 max-w-[25%]">
-                    <List className="w-4 h-4 " />
+                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 text-gray-500">
+  <path fillRule="evenodd" d="M2.625 6.75a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875 0A.75.75 0 0 1 8.25 6h12a.75.75 0 0 1 0 1.5h-12a.75.75 0 0 1-.75-.75ZM2.625 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0ZM7.5 12a.75.75 0 0 1 .75-.75h12a.75.75 0 0 1 0 1.5h-12A.75.75 0 0 1 7.5 12Zm-4.875 5.25a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875 0a.75.75 0 0 1 .75-.75h12a.75.75 0 0 1 0 1.5h-12a.75.75 0 0 1-.75-.75Z" clipRule="evenodd" />
+</svg>
                     <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.product?.quantity : productResponse?.mainProduct?.quantity || 'N/A'} units</span>
                   </div>
                 </div>
@@ -493,15 +506,21 @@ const handleDocumentDownload = (url: string) => {
                     {/* Meta Info */}
                     <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1 pr-3 border-r-2 py-1 min-w-32 max-w-[25%]">
-                        <User className="w-5 h-5 " />
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 text-gray-500">
+  <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
+</svg>
                         <span className="capitalize">{mergeName(bidOverviewRes ? bidOverviewRes?.buyer : item?.userId) || 'N/A'}</span>
                       </div>
                       <div className="flex items-center gap-1  pr-3 border-r-2 py-1 min-w-32   max-w-[50%]">
-                        <MapPin className="w-4 h-4 " />
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 text-gray-500">
+  <path fillRule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clipRule="evenodd" />
+</svg>
                         <span className=" line-clamp-2">{bidOverviewRes ? bidOverviewRes?.buyer?.address : item?.userId?.address || 'N/A'}</span>
                       </div>
                       <div className="flex items-center gap-1 py-1 min-w-32 max-w-[25%]">
-                        <List className="w-4 h-4 " />
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 text-gray-500">
+  <path fillRule="evenodd" d="M2.625 6.75a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875 0A.75.75 0 0 1 8.25 6h12a.75.75 0 0 1 0 1.5h-12a.75.75 0 0 1-.75-.75ZM2.625 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0ZM7.5 12a.75.75 0 0 1 .75-.75h12a.75.75 0 0 1 0 1.5h-12A.75.75 0 0 1 7.5 12Zm-4.875 5.25a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875 0a.75.75 0 0 1 .75-.75h12a.75.75 0 0 1 0 1.5h-12a.75.75 0 0 1-.75-.75Z" clipRule="evenodd" />
+</svg>
                         <span className="capitalize">{bidOverviewRes ? bidOverviewRes?.product?.quantity : item?.quantity || 'N/A'} units</span>
                       </div>
                     </div>
@@ -650,6 +669,10 @@ const handleDocumentDownload = (url: string) => {
 
 
     </div>
+     }
+     
+     </>
+    
   );
 };
 

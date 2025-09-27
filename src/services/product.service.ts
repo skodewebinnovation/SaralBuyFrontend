@@ -43,6 +43,10 @@ updateDrafts(payload:any[],isMultiple:boolean){
   return instance.patch(`/product/updatedraft/${isMultiple}`,payload,{
     withCredentials:true
   }).then(res => res.data?.data|| res.data)
+};
+
+getHomeCards(){
+  return instance.get('/product/get-home-products').then(res => res.data?.data|| res.data)
 }
 
 

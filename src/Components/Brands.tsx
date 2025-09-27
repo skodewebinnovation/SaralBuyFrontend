@@ -2,7 +2,7 @@ const Brands = () => {
   return (
     <div className="relative px-8 sm:px-16 pt-10 min-h-42 flex items-center z-0 overflow-hidden">
       
-      <img src="Rectangle 4320.png" className="w-full absolute top-10 left-0"/>
+      <img src="brand-grid.png" className="w-full absolute top-10 left-0"/>
 
       {/* Content */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full max-w-7xl mx-auto px-4 gap-6 relative z-10">

@@ -126,7 +126,6 @@ const BidListing = () => {
 
 
 
-
     return (
         <>
             {
