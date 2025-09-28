@@ -1,18 +1,15 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
-//Pages
+// import "@fontsource/poppins"; // Imports the default 400 weight
+import "@fontsource/poppins/400.css"; // Imports the regular 400 weight
+import "@fontsource/poppins/600.css"; // Imports the bold 700 weight
 import Home from "./Pages/Home";
 import Profile from "./Pages/profile/Profile";
 import "./App.css";
 import HomeNavbar from "./Components/Navbar/HomeNavbar";
-import Footer from "./Components/Footer/Footer";
-import Category from "./Components/Category/Category";
+import Footer from "./Components/Footer/Footer"
 import Requirement from "./Pages/Requirement";
 import ProductLisiting from "./Pages/ProductLisiting";
-// import "@fontsource/poppins"; // Imports the default 400 weight
-import "@fontsource/poppins/400.css"; // Imports the regular 400 weight
-import "@fontsource/poppins/600.css"; // Imports the bold 700 weight
-import ProductOverView from "./Pages/ProductOverView";
 import ContactVerification from "./Pages/ContactVerification";
 import  BidRequirements from "./Pages/profile/Requirements";
 import Chatbot from "./Pages/Chatbot";
@@ -22,13 +19,12 @@ import Notification from "./Pages/profile/Notification";
 import Deal from "./Pages/profile/Deal";
 import Cart from "./Pages/profile/Cart";
 import { useLocation } from "react-router-dom";
-import RequirementOverview from "./Pages/RequirementOverview";
 import UpdateDraft from "./Pages/UpdateProductDraft";
 import Authentication from "./Components/auth/Authentication";
-import { useFetch } from "./helper/use-fetch";
-import userService from "./services/user.service";
-import BidOverview from "./Pages/bidOverView";
-
+const ProductOverView = lazy(() => import("./Pages/ProductOverView"));
+const Category = lazy(() => import("./Components/Category/Category"));
+const RequirementOverview = lazy(()=>import("./Pages/RequirementOverview"))
+const BidOverview = lazy(()=>import("./Pages/bidOverView"))
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
@@ -54,10 +50,11 @@ export default function AppRouters() {
         <HomeNavbar/>
         <Authentication open={open} setOpen={setOpen}/>
 
-      <Routes>
+      <Suspense fallback>
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/requirement" element={<Requirement/>} />
-        <Route path="/category/:categoryId/:subCategoryId" element={<Category />} />
+        <Route path="/category/:categoryId/:subCategoryId" element={<Category/>}/>
         <Route path="/account" element={<Profile />}  >
           <Route path="" element={<AccountSettings/>} index/>
           <Route path="bid" element={<BidListing/>}/>
@@ -76,6 +73,7 @@ export default function AppRouters() {
         <Route path="/chat" element={<Chatbot/>}/>
       <Route path="*" element={<h1>No Page found</h1>}/>
       </Routes>
+      </Suspense>
             <Footer/> 
     </Router>
   );
