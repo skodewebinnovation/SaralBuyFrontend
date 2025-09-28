@@ -35,7 +35,7 @@ const ProductOverview = () => {
   const productId = searchParams.get('productId');
   const bidId = searchParams.get('bidId');
   const userProfile = getUserProfile()
-  const { fn: getProductById, data: productResponse, error, setData: setProductResponse } = useFetch(productService.getProductById);
+  const { fn: getProductById, data: productResponse, error, setData: setProductResponse,loading:productViewLoading } = useFetch(productService.getProductById);
   const { fn: bidOverviewFn, data: bidOverviewRes,loading:bidOverLoading } = useFetch(bidService.bidOverViewbyId)
   const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading } = useFetch(bidService.updateUserBidDets)
   const { fn: createBidFn, data: createBidRes, loading: createBidLoading} = useFetch(bidService.createBid);
@@ -72,6 +72,7 @@ const ProductOverview = () => {
       }
     }
   },[addToCartRes])
+  console.log(bidOverLoading)
 
   useEffect(() => {
     if (productId) {
@@ -246,7 +247,7 @@ const handleDocumentDownload = (url: string) => {
     
      <>
      {
-      bidOverLoading ? <div className="max-w-7xl mx-auto p-4 ">
+      (bidOverLoading || productViewLoading) ? <div className="max-w-7xl mx-auto p-4 ">
         <CategoryFormSkeleton/>
       </div> :
       <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
