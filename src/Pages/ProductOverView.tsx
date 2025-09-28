@@ -246,9 +246,10 @@ const handleDocumentDownload = (url: string) => {
     
      <>
      {
-      false ? <div className="max-w-7xl mx-auto p-4 ">
+      bidOverLoading ? <div className="max-w-7xl mx-auto p-4 ">
         <CategoryFormSkeleton/>
-      </div> :<div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
+      </div> :
+      <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
     
       {
         <Authentication setOpen={setOpen} open={open} />
