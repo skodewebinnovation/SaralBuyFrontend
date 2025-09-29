@@ -541,7 +541,11 @@ const HomeNavbar = () => {
             {/* Bell icon for product notifications */}
         
 
-           <div  className="cursor-pointer  bg-transparent border-0 shadow-none">
+           <div  className="cursor-pointer  bg-transparent border-0 shadow-none"
+           onClick={()=>{
+            navigate('/account/cart')
+           }}
+           >
                 <ShoppingCart className="w-5 h-5 text-gray-600 " />
               </div>
  </div>

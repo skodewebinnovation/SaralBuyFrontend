@@ -184,7 +184,7 @@ useEffect(() => {
 
               <p className="text-left   cursor-pointer text-sm rounded-md  text-gray-600 flex items-center gap-2">
                 <Banknote className="h-4 w-4" />
-                <span>Budget: <span className="font-semibold pl-1">Rs {currencyConvertor(bidRes?.product?.budget)}</span></span>
+                <span>Budget: <span className="font-semibold pl-1">{bidRes?.product?.minimumBudget ? 'Rs '+ currencyConvertor(bidRes?.product?.minimumBudget) : 'N/A'}</span></span>
               </p>
 
             </div>

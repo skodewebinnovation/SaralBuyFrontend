@@ -129,6 +129,8 @@ console.log(currentProduct,"curr")
     )
   }
 
+  console.log(iterateData,32)
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-3 p-4">
       <Breadcrumb className="sm:block hidden">
@@ -148,12 +150,10 @@ console.log(currentProduct,"curr")
           {/* Image */}
           <div className="lg:col-span-4 bg-gray-100 flex justify-center items-center rounded-lg p-4 h-48">
             <img
-              src={item.image || "https://via.placeholder.com/300x200?text=No+Image"}
+              src={ item.image ||"/no-image.webp"}
               alt={item.title || "Product"}
               className="object-contain h-full w-full rounded-lg"
-              onError={(e) => {
-                e.currentTarget.src = "https://via.placeholder.com/300x200?text=No+Image"
-              }}
+           
             />
           </div>
 

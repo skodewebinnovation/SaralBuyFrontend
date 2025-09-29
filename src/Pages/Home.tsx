@@ -53,6 +53,7 @@ const Home = () => {
       // bids
       const formattedBids = getLatestBidandDrafts?.bids.map((bid: any) => ({
         _id: bid._id,
+        productId:bid?.productId?._id,
         date: dateFormatter(bid.createdAt),
         category: bid.productId?.categoryId?.categoryName || "N/A",
         title: bid.productId?.title || "Untitled",

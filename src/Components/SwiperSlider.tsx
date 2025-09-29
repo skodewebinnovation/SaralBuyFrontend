@@ -4,6 +4,7 @@ import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
 import { MoveRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
 type Props = {
   title: string,
   color: string,
@@ -20,8 +21,6 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
     },
   })
   const navigate = useNavigate()
-
-
 
   return (
     <Card className={`shadow-none  p-5 ${target === "bids" ?`bg-${color}-100` :`bg-${color}-50`}`}>
@@ -91,7 +90,10 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
                 }
                 <div className="flex gap-1 items-center justify-end">
                   <a
-                  href="#"
+                  href="javascript:void(0)"
+                  onClick={()=>{
+                   target === "bids" ?  navigate('/product-overview?productId='+item?.productId) :  navigate('/update-draft/'+item._id)
+                  }}
                   className={`text-sm text-gray-600 font-semibold hover:underline  text-right underline`}
                 >
                   View {target === 'drafts' && 'Bids'}
