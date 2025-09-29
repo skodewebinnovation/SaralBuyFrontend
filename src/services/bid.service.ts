@@ -42,6 +42,9 @@ class BidService{
             sortBy
         }}).then(res => res.data?.data|| res.data)
 
+    };
+    getbidByProductId(productId:string){
+        return instance.get(`/bid/get-bid-by-productId/${productId}`).then(res => res.data?.data|| res.data)
     }
 }
 export default new BidService();

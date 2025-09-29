@@ -38,6 +38,7 @@ const ProductOverview = () => {
   const { fn: getProductById, data: productResponse, error, setData: setProductResponse,loading:productViewLoading } = useFetch(productService.getProductById);
   const { fn: bidOverviewFn, data: bidOverviewRes,loading:bidOverLoading } = useFetch(bidService.bidOverViewbyId)
   const { fn: updateUserBidDets, data: updateUserBidDetsRes, loading: updateUserBidDetsLoading } = useFetch(bidService.updateUserBidDets)
+  const {fn:getBidByProductIdFn,data:getBidByProductIdRes,loading:getBidByProductIdLoading}= useFetch(bidService.getbidByProductId)
   const { fn: createBidFn, data: createBidRes, loading: createBidLoading} = useFetch(bidService.createBid);
   const {fn:addToCartFn, data: addToCartRes, loading: addToCartLoading} = useFetch(cartService.addToCart)
   const [open, setOpen] = useState(false)
@@ -285,6 +286,18 @@ const handleDocumentDownload = (url: string) => {
     });
 };
 
+const handleBidView =async(productId:string)=>{
+  await getBidByProductIdFn(productId)
+}
+
+
+useEffect(()=>{
+  if(getBidByProductIdRes){
+    const {_id} = getBidByProductIdRes;
+     navigate('/bid-overview/' + _id)
+  }
+},[getBidByProductIdRes])
+
   return (
     
      <>
@@ -368,14 +381,17 @@ const handleDocumentDownload = (url: string) => {
                   </div>
                 </div>
 
+
                 {/* Buttons */}
                 <div className="flex items-center gap-4 mt-5 ">
                   <Button
+                  disabled={getBidByProductIdLoading || (bidOverviewRes ? bidOverviewRes.product?.totalBidCount : productResponse?.mainProduct?.totalBidCount) === 0}
                   // onClick={()=>{
                   //   console.log( productResponse?.mainProduct?._id,123)
                   //   alert('asd')
                   //  navigate('/bid-overview/' + (bidOverviewRes ? bidOverviewRes?.product?._id : productResponse?.mainProduct?._id))
                   // }}
+                  onClick={()=>handleBidView(bidOverviewRes ? bidOverviewRes?.product?._id : productResponse?.mainProduct?._id)}
                   variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent  cursor-pointer">
                     <img src="/icons/Layer_1.png" className="w-4 h-4 " />
                     Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : productResponse?.mainProduct?.totalBidCount || 0}</span>
@@ -578,13 +594,18 @@ const handleDocumentDownload = (url: string) => {
                     {/* Buttons */}
                    {
                     idx === 0 && (
-                       <div className="flex items-center gap-4 mt-5  cursor-pointer">
+                       <div className="flex items-center gap-4 mt-5 ">
                       <Button
+                   disabled={getBidByProductIdLoading || (bidOverviewRes ? bidOverviewRes.product?.totalBidCount : item?.totalBidCount) === 0}
+              
+                  onClick={()=>handleBidView(bidOverviewRes ? bidOverviewRes?.product?._id : item?._id)}
+
+
                   //     onClick={()=>{
                   //       console.log(bidOverviewRes ? bidOverviewRes?.product?._id : item?._id,12)
                   //   navigate('/bid-overview/'+(bidOverviewRes ? bidOverviewRes?.product?._id : item?._id))
                   // }}
-                      variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent ">
+                      variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent  cursor-pointer ">
                         <img src="/icons/Layer_1.png" className="w-4 h-4 " />
                         Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : item?.totalBidCount || 0}</span>
 
