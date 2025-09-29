@@ -103,7 +103,7 @@ const HomeNavbar = () => {
   const { fn, data } = useFetch(ProductService.getSeachProduct)
   const [text, setText] = useState('');
   const [products, setProducts] = useState<ProductsType[]>([]);
-  const [value, { isPending, flush }] = useDebounce(text, 1000);
+  const [value, { isPending, flush }] = useDebounce(text, 500);
   const [currenLocation, setCurrentLocation] = useState('')
   const [showDropdown, setShowDropdown] = useState(false);
   const productsRef = useRef<HTMLDivElement>(null);

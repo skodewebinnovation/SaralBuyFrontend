@@ -74,7 +74,7 @@ console.log(bidRes,123)
 useEffect(()=>{
   if(bidRes){
       const {totalSellers: totalCount, limit: pageLimit,page } = bidRes;
-       const budget = bidRes?.product?.budget || 0;
+       const budget = bidRes?.product?.minimumBudget|| 0;
        const mappedSellers = bidRes?.sellers?.map((item: any) => ({
       id: item?._id,
       avatar: item?.seller?.profileImage,

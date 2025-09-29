@@ -135,7 +135,7 @@ const UpdateProductDraftForm = ({
       conditionOfProduct: initialData?.conditionOfProduct || '',
       toolType: initialData?.toolType || '',
       rateAService: initialData?.rateAService || '',
-      budget:initialData?.budget || ''
+      // budget:initialData?.budget || ''
     }
   });
 
@@ -259,12 +259,12 @@ const UpdateProductDraftForm = ({
                   renderItems={brandRenderItems}
                 />
               )}
-              <Input
+              {/* <Input
                   type="number"
                   placeholder="Product Budget*"
                   {...register('budget')}
                   className="bg-white"
-                />
+                /> */}
 
               {currentCategoryName === "electronics" && (
                <div className="relative">
@@ -779,10 +779,10 @@ const UpdateDraft = () => {
       toast.error(`Brand is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
       return false;
     }
-     if (!form.budget || form.budget.trim() === '') {
-      toast.error(`Budget is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
-      return false;
-    }
+    //  if (!form.budget || form.budget.trim() === '') {
+    //   toast.error(`Budget is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
+    //   return false;
+    // }
     
     if (currentCategoryName?.toLowerCase() !== 'service' && (!form.quantity || form.quantity.toString().trim() === '')) {
       toast.error(`Quantity is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);

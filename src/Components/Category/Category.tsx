@@ -132,7 +132,7 @@ const CategoryForm = ({
       conditionOfProduct: '',
       toolType: '',
       rateAService: '',
-      budget:''
+      // budget:''
     }
   });
 
@@ -274,12 +274,12 @@ const CategoryForm = ({
                   renderItems={brandRenderItems}
                 />
               )}
-              <Input
+              {/* <Input
                   type="number"
                   placeholder="Product Budget*"
                   {...register('budget')}
                   className="bg-white"
-                />
+                /> */}
               {currentCategoryName === "electronics" && (
                <div className="relative">
                 <p className="absolute top-1/2 left-2 text-sm  text-orange-600 font-semibold -translate-y-1/2">
@@ -776,10 +776,10 @@ const Category = () => {
         toast.error(`Brand is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
         return false
       }
-      else if (!forms[i].budget  && !isDraft) {
-        toast.error(`Budget is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
-        return false
-      }
+      // else if (!forms[i].budget  && !isDraft) {
+      //   toast.error(`Budget is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
+      //   return false
+      // }
       else if (!forms[i].quantity && currentCategoryName?.toLowerCase() !== 'service' && !isDraft) {
         toast.error(`Quantity is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
         return false
@@ -965,7 +965,7 @@ const Category = () => {
         setFormsData({});
         setResetForms(false);
       }, 100);
-      window.scrollTo(0, 0);
+      // window.scrollTo(0, 0);
 
     } catch (error) {
       console.error("Error submitting forms:", error);
@@ -977,9 +977,11 @@ const Category = () => {
     if (productCreateData) {
       // toast.success("Product Created Successfully");
       // Reset forms
-      setButtonType(null)
-      setForms([0]);
-      setFormsData({});
+
+      // setButtonType(null)
+      // setForms([0]);
+      // setFormsData({});
+      navigate('/')
     }
   }, [productCreateData]);
 

@@ -23,7 +23,7 @@ import { getUserProfile } from "@/zustand/userProfile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { productOverviewBidSchema } from "@/validations/Schema";
 import bidService from "@/services/bid.service";
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import SellerVerificationPopup from "@/Components/Popup/SellerVerificationPopup";
 import { Spinner } from "@/Components/ui/shadcn-io/spinner";
 import Authentication from "@/Components/auth/Authentication";
@@ -43,8 +43,8 @@ const ProductOverview = () => {
   const [open, setOpen] = useState(false)
   const [sellerVerification, setSellerVerification] = useState(false)
   const [businessType, setBusinessType] = useState('')
-  const [downloading, setDownloading] = useState(false);
-  // const [addToCartLoading, setAddToCartLoading] = useState(false);
+  const navigate = useNavigate()
+
 
 
   const { handleSubmit, formState: { errors }, register, reset, control, getValues } = useForm({
@@ -158,33 +158,75 @@ const ProductOverview = () => {
   }, [updateUserBidDetsRes])
 
 
-  useEffect(() => {
-    if (createBidRes) {
-      if(productResponse.mainProduct){
-      setProductResponse(()=>{
-        return{
-          ...productResponse,
-          mainProduct:{
-            ...productResponse.mainProduct,
-            totalBidCount:productResponse.mainProduct.totalBidCount+1
-          }
-        }
-      })
-      }else{
-        console.log('main product to missing update bid count')
-      }
-      toast.success('Bid created successfully')
-      setSellerVerification(false)
-      setBusinessType('')
-      reset({
-        firstName: userProfile.user.firstName,
-        lastName: userProfile.user.lastName,
-        budgetQuation: '',
-        availableBrand: '',
-        earliestDeliveryDate: undefined
+  // useEffect(() => {
+  //   if (createBidRes) {
+  //     if(productResponse.mainProduct){
+  //     setProductResponse(()=>{
+  //       return{
+  //         ...productResponse,
+  //         mainProduct:{
+  //           ...productResponse.mainProduct,
+  //           totalBidCount:productResponse.mainProduct.totalBidCount+1
+  //         }
+  //       }
+  //     })
+  //     }else{
+  //       console.log('main product to missing update bid count')
+  //     }
+  //     toast.success('Bid created successfully')
+  //     setSellerVerification(false)
+  //     setBusinessType('')
+  //     reset({
+  //       firstName: userProfile.user.firstName,
+  //       lastName: userProfile.user.lastName,
+  //       budgetQuation: '',
+  //       availableBrand: '',
+  //       earliestDeliveryDate: undefined
+  //     });
+  //   }
+  // }, [createBidRes])
+
+  // Replace the existing useEffect for createBidRes with this updated version:
+
+useEffect(() => {
+  if (createBidRes) {
+    if (productResponse?.mainProduct) {
+      setProductResponse((prev:any) => {
+        // Update mainProduct totalBidCount
+        const updatedMainProduct = {
+          ...prev.mainProduct,
+          totalBidCount: prev.mainProduct.totalBidCount + 1
+        };
+
+    
+        const updatedSubProducts = prev.subProducts?.map((product: any) => ({
+          ...product,
+          totalBidCount: (product.totalBidCount || 0) + 1
+        }));
+
+        return {
+          ...prev,
+          mainProduct: updatedMainProduct,
+          subProducts: updatedSubProducts,
+          products: updatedSubProducts // Update products array as well
+        };
       });
+    } else {
+      console.log('main product is missing to update bid count');
     }
-  }, [createBidRes])
+    
+    toast.success('Bid created successfully');
+    setSellerVerification(false);
+    setBusinessType('');
+    reset({
+      firstName: userProfile.user.firstName,
+      lastName: userProfile.user.lastName,
+      budgetQuation: '',
+      availableBrand: '',
+      earliestDeliveryDate: undefined
+    });
+  }
+}, [createBidRes]);
 
 
   useEffect(() => {
@@ -328,7 +370,13 @@ const handleDocumentDownload = (url: string) => {
 
                 {/* Buttons */}
                 <div className="flex items-center gap-4 mt-5 ">
-                  <Button variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent ">
+                  <Button
+                  // onClick={()=>{
+                  //   console.log( productResponse?.mainProduct?._id,123)
+                  //   alert('asd')
+                  //  navigate('/bid-overview/' + (bidOverviewRes ? bidOverviewRes?.product?._id : productResponse?.mainProduct?._id))
+                  // }}
+                  variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent  cursor-pointer">
                     <img src="/icons/Layer_1.png" className="w-4 h-4 " />
                     Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : productResponse?.mainProduct?.totalBidCount || 0}</span>
                   </Button>
@@ -373,8 +421,8 @@ const handleDocumentDownload = (url: string) => {
                    
                      
 
-                      <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.budget
-                        : productResponse?.mainProduct?.budget || 0) || 'N/A'}</p>
+                      {/* <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.budget
+                        : productResponse?.mainProduct?.budget || 0) || 'N/A'}</p> */}
                    
 
                   <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : productResponse?.mainProduct?.additionalDeliveryAndPackage) || "N/A"}</p>
@@ -386,8 +434,8 @@ const handleDocumentDownload = (url: string) => {
                   {/* <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(productResponse?.mainProduct?.document || bidOverviewRes?.product?.document) ? <a download target="_blank" href={productResponse?.mainProduct?.document || bidOverviewRes?.product?.document} className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" />Download Document</a> : 'N/A'}</p> */}
                       <p className="flex items-center justify-between py-2 border-b-2  "><span className="font-semibold">Supporting Documents:</span>{(productResponse?.mainProduct?.document || bidOverviewRes?.product?.document) ? <p  
                       onClick={() => handleDocumentDownload(
-    productResponse?.mainProduct?.document || bidOverviewRes?.product?.document,
-  )}
+                        productResponse?.mainProduct?.document || bidOverviewRes?.product?.document,
+                      )}
                       className="flex gap-1 items-center hover:underline cursor-pointer"><Paperclip className="w-4 h-4 text-orange-600" />Download Document</p> : 'N/A'}</p>
 
                 </div>
@@ -530,8 +578,13 @@ const handleDocumentDownload = (url: string) => {
                     {/* Buttons */}
                    {
                     idx === 0 && (
-                       <div className="flex items-center gap-4 mt-5 ">
-                      <Button variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent ">
+                       <div className="flex items-center gap-4 mt-5  cursor-pointer">
+                      <Button
+                  //     onClick={()=>{
+                  //       console.log(bidOverviewRes ? bidOverviewRes?.product?._id : item?._id,12)
+                  //   navigate('/bid-overview/'+(bidOverviewRes ? bidOverviewRes?.product?._id : item?._id))
+                  // }}
+                      variant="outline" className="min-w-32 text-sm border-gray-400 bg-transparent border-[2px] flex items-center gap-2 hover:bg-transparent ">
                         <img src="/icons/Layer_1.png" className="w-4 h-4 " />
                         Total Bids :<span className="font-semibold">{bidOverviewRes ? bidOverviewRes.product?.totalBidCount : item?.totalBidCount || 0}</span>
 
@@ -576,8 +629,8 @@ const handleDocumentDownload = (url: string) => {
                         )
                       } */}
                 
-                          <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.budget
-                            : item?.budget || 0) || 'N/A'}</p>
+                          {/* <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.budget
+                            : item?.budget || 0) || 'N/A'}</p> */}
                       
 
                       <p className="flex items-center justify-between py-2 border-b-2 capitalize "><span className="font-semibold capitalize">Additional Delivery & Packaging:</span> {(bidOverviewRes ? bidOverviewRes?.product?.additionalDeliveryAndPackage : item?.additionalDeliveryAndPackage) || "N/A"}</p>

@@ -6,7 +6,7 @@ export const CategoryFormSchema = z.object({
   quantity: z.string().min(1, "Quantity is required"),
   minimumBudget: z.string().optional(),
   productType: z.string().optional(),
-  budget:z.coerce.number().refine((value)=> value >= 0, { message: "Budget must be greater than 0" }),
+  // budget:z.coerce.number().refine((value)=> value >= 0, { message: "Budget must be greater than 0" }),
   
   oldProductValue: z.object({
     min: z.string().optional(),

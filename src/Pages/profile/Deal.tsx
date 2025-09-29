@@ -131,6 +131,7 @@ const Deal = () => {
       completedApproveFn()
     }
   }, [tab])
+  console.log(completedApproveData,1232)
 
   useEffect(() => {
     if (completedApproveData) {
@@ -142,7 +143,7 @@ const Deal = () => {
             date: dateFormatter(item?.createdAt),
             finalized_with: mergeName(item?.seller),       
             product_categories: item?.product?.title,      
-            your_budget: item?.product?.budget,
+            your_budget: item?.product?.minimumBudget,
             final_budget: item?.finalBudget,
           },])
         ))

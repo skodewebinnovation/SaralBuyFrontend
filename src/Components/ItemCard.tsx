@@ -111,8 +111,8 @@ const ItemCard = ({
       <div
         className={`
           absolute left-0 top-full rounded-md z-30 w-[200px] bg-white border border-gray-200 mt-1
-          transition-all duration-300 origin-top
-          ${open ? "max-h-56 opacity-100 scale-y-100 pointer-events-auto" : "max-h-0 opacity-0 scale-y-95 pointer-events-none"}
+           origin-top
+          ${open ? "max-h-56 opacity-100 scale-y-100 pointer-events-auto " : "max-h-0 opacity-0 scale-y-95 pointer-events-none"}
         `}
       >
         <div
@@ -122,7 +122,7 @@ const ItemCard = ({
             <div
               onClick={() => navigate(`/category/${_id}/${item._id}`)}
               key={index}
-              className="px-3 py-2 text-sm hover:bg-orange-100 transition-all duration-300 hover:text-orange-500 ease-in-out hover:pl-5 cursor-pointer flex items-center justify-between border-b last:border-none"
+              className=" hover:bg-orange-100 dropdown-hover border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50  gap-2  px-3 py-2 text-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 ease-in-out hover:pl-5 cursor-pointer flex items-center justify-between border-b last:border-none"
             >
               <span>{item?.name || item}</span>
             </div>
