@@ -941,7 +941,7 @@ if (!isValidForms(formsData)) {
 
         {/* Render all forms */}
         <div className="space-y-8">
-          {forms.map((formIndex:number) => (
+          {forms.map((_:any,formIndex:number) => (
             <div key={formIndex} >
               <UpdateProductDraftForm
                 formIndex={formIndex}
@@ -953,6 +953,9 @@ if (!isValidForms(formsData)) {
                 initialData={getInitialDataForForm(formIndex)}
                 resetForm={resetForms}
               />
+                 {
+             forms.length > -1 && formIndex < forms.length - 1 && <div className="bg-gray-400 w-full h-[2px] my-5"></div>
+           }
             </div>
           ))}
         </div>

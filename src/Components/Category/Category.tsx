@@ -1040,6 +1040,7 @@ const Category = () => {
         {/* Render all forms */}
         <div className="space-y-6">
           {forms.map((formIndex, arrayIndex) => (
+            <>
             <CategoryForm
               key={formIndex}
               formIndex={formIndex}
@@ -1052,7 +1053,12 @@ const Category = () => {
               showRemoveButton={arrayIndex > 0}
               resetForm={resetForms}
             />
+           {
+             forms.length > -1 && arrayIndex < forms.length - 1 && <div className="bg-gray-400 w-full h-[2px] my-5"></div>
+           }
+            </>
           ))}
+          
         </div>
 
         {/* Global Actions - Single Submit and Draft buttons for all forms */}

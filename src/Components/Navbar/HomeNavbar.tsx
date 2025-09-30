@@ -346,7 +346,7 @@ const HomeNavbar = () => {
               value={text}
               onKeyPress={handleKeyPress}
               placeholder="Looking For..."
-              className="pl-2 shadow-none rounded-sm max-w-96 float-end focus-visible:ring-0 border border-gray-300  focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
+              className="pl-2 shadow-none rounded-sm w-full float-end focus-visible:ring-0 border border-gray-300  focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
             />
             <SearchIcon className="absolute right-2.5 top-2.5 h-4 w-4 pointer-events-none opacity-50" />
 
@@ -354,7 +354,7 @@ const HomeNavbar = () => {
             {showDropdown && (
               <div
                 ref={productsRef}
-                className="absolute right-0  max-w-96 top-full mt-2 w-full z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
+                className="absolute right-0  w-full top-full mt-2 z-[99] max-h-[300px] overflow-y-auto bg-white rounded-lg shadow-lg p-2 space-y-2">
                 {isPending() ? (
                   Array.from({ length: 3 }).map((_, i) => (
                     <Skeleton key={i} className="h-20 rounded-md w-full" />
