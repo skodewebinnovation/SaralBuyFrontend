@@ -44,6 +44,11 @@ const ProductOverview = () => {
   const [open, setOpen] = useState(false)
   const [sellerVerification, setSellerVerification] = useState(false)
   const [businessType, setBusinessType] = useState('')
+  const [businessDets,setBusinessDets] = useState({
+    company_name:'',
+    company_reg_num:'',
+    gst_num:''
+  })
   const navigate = useNavigate()
 
 
@@ -110,6 +115,12 @@ const ProductOverview = () => {
   async function handleCreteBid() {
     if (!productResponse) return;
     if(productResponse?.mainProduct?.userId?._id === userProfile?.user?._id) return;
+
+    //  validation
+    if(businessType === "business" && !businessDets.company_name.trim()){
+      toast.error('company name is required')
+      return;
+    }
     const buyerId = productResponse?.mainProduct.userId?._id;
     const productId = productResponse?.mainProduct._id;
     const sellerId = userProfile?.user._id;
@@ -117,7 +128,8 @@ const ProductOverview = () => {
     let obj = {
       ...getValues(),
       status: "active",
-      businessType
+      businessType,
+      ...(businessType === "business" && {businessDets})
     }
     if (!businessType) {
       toast.error('business is required !');
@@ -310,7 +322,10 @@ useEffect(()=>{
       {
         <Authentication setOpen={setOpen} open={open} />
       }
-      <SellerVerificationPopup setOpen={setSellerVerification} open={sellerVerification} setValue={setBusinessType} value={businessType} handleCreteBid={handleCreteBid} createBidLoading={createBidLoading} />
+      <SellerVerificationPopup
+      businessDets={businessDets}
+      setBusinessDets={setBusinessDets}
+      setOpen={setSellerVerification} open={sellerVerification} setValue={setBusinessType} value={businessType} handleCreteBid={handleCreteBid} createBidLoading={createBidLoading} />
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>
           <BreadcrumbItem className="flex items-center gap-2 ">

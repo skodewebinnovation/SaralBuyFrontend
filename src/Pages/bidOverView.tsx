@@ -105,6 +105,7 @@ useEffect(() => {
     }
 
     const hours = Math.floor(diff / (1000 * 60 * 60));
+    // const minutes
 
 
     setTimeLeft(`${hours}:00 Hr.`);

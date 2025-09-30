@@ -15,6 +15,7 @@ import {
 } from "../../Components/ui/select"; // Adjust path based on your structure
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/shadcn-io/spinner";
+import { Input } from "../ui/input";
 
 type Props={
   open:boolean;
@@ -23,11 +24,10 @@ type Props={
   value?:string;
   handleCreteBid:()=>void;
   createBidLoading:boolean
+  [key:string]:any
 
 } 
-const SellerVerificationPopup:React.FC<Props> = ({open,setOpen,setValue,value,handleCreteBid,createBidLoading}) => {
-    
-
+const SellerVerificationPopup:React.FC<Props> = ({open,setOpen,setValue,value,handleCreteBid,createBidLoading,setBusinessDets,businessDets}) => {
   return (
     <>    
     <Dialog open={open} onOpenChange={setOpen}>
@@ -40,16 +40,34 @@ const SellerVerificationPopup:React.FC<Props> = ({open,setOpen,setValue,value,ha
          <DialogHeader className=" text-black text-3xl font-extrabold ">Seller Verification</DialogHeader>
          <DialogTitle className=" text-sm text-gray-600"> Placing Bid as an Individual or Business Owner?</DialogTitle>
        </div>
-     <div className="space-y-5">
+     <div className="space-y-3">
     <Select onValueChange={(value) => setValue?.(value)} value={value}>
       <SelectTrigger id="userType" className="w-full py-5 rounded-md border border-gray-300">
         <SelectValue placeholder="Select" />
       </SelectTrigger>
-      <SelectContent className="p-1">
-        <SelectItem value="individual" className="dropdown-hover">Individual</SelectItem>
-        <SelectItem value="business" className="dropdown-hover">Business Owner</SelectItem>
+      <SelectContent >
+        <SelectItem value="individual" className="dropdown-hover py-2">Individual</SelectItem>
+        <SelectItem value="business" className="dropdown-hover py-2">Business Owner</SelectItem>
       </SelectContent>
     </Select>
+    {
+      value === "business" && (
+        <div className="grid space-y-2 mt-4">
+        <Input
+        value={businessDets.company_name}
+        onChange={(e)=>{setBusinessDets({...businessDets, company_name: e.target.value})}}
+        className="w-full py-5 rounded-md border border-gray-300" name="company_name" placeholder="Company Name"/>
+        <Input  
+         value={businessDets.company_reg_num}
+          onChange={(e)=>{setBusinessDets({...businessDets, company_reg_num: e.target.value})}}
+        className="w-full py-5 rounded-md border border-gray-300" name="company_reg_num" placeholder="Company Reg. Number"/>
+        <Input
+             value={businessDets.gst_num}
+          onChange={(e)=>{setBusinessDets({...businessDets, gst_num: e.target.value})}}
+        className="w-full py-5 rounded-md border border-gray-300" name="gst_num" placeholder="GSTIN Number"/>
+        </div>
+      )
+    }
 
          <Button 
          disabled={!value || createBidLoading}

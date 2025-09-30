@@ -9,58 +9,64 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { toast } from "sonner";
+import { Spinner } from "../ui/shadcn-io/spinner";
 
 type Props={
   open:boolean;
   setOpen:React.Dispatch<React.SetStateAction<boolean>>
+  createProductFn:(isDraft: boolean) => Promise<void>;
+  bidDuration:number|undefined;
+  setBidDuration:React.Dispatch<React.SetStateAction<number | undefined>>;
+  loading:boolean;
+  buttonType:boolean|null;
 } 
-const PlaceRequirementPopup:React.FC<Props> = ({open,setOpen}) => {
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+const PlaceRequirementPopup:React.FC<Props> = ({open,setOpen,createProductFn,bidDuration,setBidDuration,loading,buttonType}) => {
 
-  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    if (/^\d{0,10}$/.test(value)) {
-      setMobileNumber(value);
-      setError("");
-    }
-  };
-
-  const handleSendOTP = () => {
-    if (mobileNumber.length !== 10) {
-      setError("Enter a valid 10 digit mobile number");
+  async function handleSubmit(e:React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const value = Number(e.currentTarget?.bidDuration.value);
+    if(value <= 0){
+      toast.error("Bid duration must be greater than 0");
       return;
     }
-    if (!error) {
-      navigate("/login/otp", { state: { mobileNumber } });
+    setBidDuration(value)
+    if(bidDuration){
+    await createProductFn(false);
+    setOpen(false);
     }
-  };
-
+  }
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-md w-full p-6 space-y-5">
+    <Dialog open={open} onOpenChange={setOpen} >
+      <DialogContent style={{
+        maxWidth:'400px'
+      }}>
               <DialogHeader>
-            <DialogTitle className=" text-gray-700 text-3xl font-bold">Place Requirement</DialogTitle>
-            <DialogDescription>
-              How Long Should You Bid Remain Active ?
+            <DialogTitle className="text-black text-3xl font-extrabold">Place Requirement</DialogTitle>
+            <DialogDescription className="text-sm text-gray-600">
+              How Long Should You Bid Remain Active ? <small className="italic">(in Days)</small>
             </DialogDescription>
           </DialogHeader>
-
+ <form className="py-2 max-w-md inline-block mb-0" onSubmit={(e)=>(handleSubmit(e))}>
 
         <div className="space-y-4 w-full">   
           <Input
-            className="w-full py-5"
-            type="text"
+            type="number"
+            name="bidDuration"
             placeholder="Enter your bid"
-            value={mobileNumber}
-            onChange={handleNumberChange}
+            value={bidDuration|| undefined}
+            className="w-full py-5 rounded-md border border-gray-300"
+            onChange={(e) => setBidDuration(Number(e.target.value))}
           />
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-          <Button className="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-bold rounded-md" onClick={handleSendOTP}>
-            Place Requirement 
+          <Button 
+          disabled={(bidDuration&& bidDuration <= 0) || loading }
+          type="submit" className="w-full rounded-sm py-5  text-white font-bold cursor-pointer" >
+           {
+            loading && !buttonType ? <Spinner className="w-5 h-5 animate-spin" /> : 'Place Requirement '
+           } 
           </Button>
         </div>
+</form>
       </DialogContent>
     </Dialog>
   );

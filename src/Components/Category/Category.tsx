@@ -35,6 +35,7 @@ import { SearchableDropdown } from "@/utils/searchableDropdown";
 import { electronicCategories, constructionIndustrialCategories, fashionCategories, furnitureCategories, homeAppliancesCategories, beautyCategories, sportCategories, vehicleCategories, serviceCategories } from "@/const/categoriesData";
 import { getCategorySpecificFields } from "@/const/categoriesFormdataFields";
 import Authentication from "../auth/Authentication";
+import PlaceRequirementPopup from "../Popup/PlaceRequirementPopup";
 
 const innerFormImages = {
   automobile: "automobileFormImage.png",
@@ -196,6 +197,7 @@ const CategoryForm = ({
 
   return (
     <div className=" relative">
+     
       {showRemoveButton && (
         <Button
           type="button"
@@ -739,7 +741,9 @@ const Category = () => {
   const [open, setOpen] = useState(false);
   const [subCategoriesData, setSubCategoriesData] = useState([]);
   const [resetForms, setResetForms] = useState(false);
-  const [buttonTye, setButtonType] = useState<boolean | null>(null)
+  const [buttonType, setButtonType] = useState<boolean | null>(null)
+  const [bidDuration,setBidDuration]= useState<number|undefined>(undefined)
+  const [bidPopUpOpen,setBidPopUpOpen] = useState(false)
   useEffect(() => {
     (async () => {
       await getCatByIdFn(categoryId);
@@ -826,7 +830,7 @@ const Category = () => {
     }));
   };
 
-  const handleSubmitAllForms = async (isDraft: boolean) => {
+  const handleSubmitAllForms = async (isDraft: boolean,isPlaceRequirementPopup?:boolean) => {
     setButtonType(isDraft ? true : false)
     if (!user) {
       setOpen(true);
@@ -837,7 +841,14 @@ const Category = () => {
     const formsArray = Object.values(formsData) as any;
     const hasValidForms = isValidForms(formsArray, isDraft);
 
+    
     if (!hasValidForms) return
+
+    if(hasValidForms  && isPlaceRequirementPopup){
+      setBidPopUpOpen(true);
+      return;
+    } 
+
 
     const invalidForms: any[] = [];
     const formsMissingImage: any[] = [];
@@ -908,6 +919,7 @@ const Category = () => {
 
         formDataToSend.append('products', JSON.stringify(productsData));
         formDataToSend.append('draft', isDraft ? 'true' : 'false');
+    formDataToSend.append('bidActiveDuration', bidDuration ? bidDuration.toString() : '0');
 
         console.log('Multiple products data:', productsData);
 
@@ -948,6 +960,7 @@ const Category = () => {
         }
 
         formDataToSend.append('draft', isDraft ? 'true' : 'false');
+   formDataToSend.append('bidActiveDuration', bidDuration ? bidDuration.toString() : '0');
 
         console.log('Single product FormData entries:');
         for (let [key, value] of formDataToSend.entries()) {
@@ -959,12 +972,12 @@ const Category = () => {
 
       toast.success(`${formsArray.length} product form(s) ${isDraft ? 'saved as draft' : 'submitted'} successfully!`)
 
-      setResetForms(true);
-      setTimeout(() => {
-        setForms([0]);
-        setFormsData({});
-        setResetForms(false);
-      }, 100);
+      // setResetForms(true);
+      // setTimeout(() => {
+      //   setForms([0]);
+      //   setFormsData({});
+      //   setResetForms(false);
+      // }, 100);
       // window.scrollTo(0, 0);
 
     } catch (error) {
@@ -985,11 +998,11 @@ const Category = () => {
     }
   }, [productCreateData]);
 
-  useEffect(() => window.scrollTo(0, 0), []);
 
   return (
     <>
       <Authentication setOpen={setOpen} open={open} />
+       <PlaceRequirementPopup buttonType={buttonType} loading={loading} open={bidPopUpOpen} setOpen={setBidPopUpOpen} setBidDuration={setBidDuration} bidDuration={bidDuration}  createProductFn={handleSubmitAllForms as any}/>
       <div className="w-full max-w-7xl mx-auto p-4">
         {/* Breadcrumb + Action */}
         <div className="flex flex-row sm:justify-between justify-end items-center gap-3 mb-6">
@@ -1051,16 +1064,17 @@ const Category = () => {
             className="w-32 cursor-pointer border-[#2C3E50] text-xs"
             onClick={() => handleSubmitAllForms(true)}
           >
-            {loading && buttonTye ? <Spinner className="w-5 h-5 animate-spin" /> : ' Save as Draft'}
+            {loading && buttonType ? <Spinner className="w-5 h-5 animate-spin" /> : ' Save as Draft'}
 
           </Button>
           <Button
             type="button"
             disabled={loading}
             className="text-white w-32 cursor-pointer bc  text-xs border-primary-btn border-2"
-            onClick={() => handleSubmitAllForms(false)}
+            onClick={() => handleSubmitAllForms(false,true)}
+            // loading && !buttonType ? <Spinner className="w-5 h-5 animate-spin" /> : 
           >
-            {loading && !buttonTye ? <Spinner className="w-5 h-5 animate-spin" /> : `Submit ${Object.keys(formsData).length > 1 ? 'All' : ''}`}
+            {`Submit ${Object.keys(formsData).length > 1 ? 'All' : ''}`}
           </Button>
         </div>
 
