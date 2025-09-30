@@ -55,7 +55,7 @@ const ItemCard = ({
       {/* Dropdown with scrollbar */}
       <div
         className={`
-          absolute left-0 top-full rounded-md z-30 w-[200px] bg-white border border-gray-200 mt-1
+           left-0 top-full rounded-md z-30 w-[200px] bg-white border border-gray-200 mt-1
            origin-top
           ${open ? "max-h-56 opacity-100 scale-y-100 pointer-events-auto " : "max-h-0 opacity-0 scale-y-95 pointer-events-none"}
         `}
