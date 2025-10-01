@@ -548,7 +548,6 @@ useEffect(()=>{
           :
           //  Multiple products
           productResponse?.subProducts && productResponse?.subProducts.map((item: any, idx: any) => {
-            console.log(item)
               const isLast = idx === productResponse?.subProducts?.length - 1;
             return (
               <>
@@ -751,6 +750,9 @@ useEffect(()=>{
                     )
                   }
                 </div>
+                {
+                    productResponse?.subProducts.length > -1 && idx < productResponse?.subProducts.length - 1 && <div className="bg-gray-4r00 w-full h-[2px] my-5"></div>
+                }
               </>
             )
           })
