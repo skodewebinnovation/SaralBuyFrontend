@@ -7,13 +7,11 @@ import {
 type Props={
     hoverChildren:JSX.Element;
     contentChildren:JSX.Element;
-    onClick ?:()=> void;
-    disabled?:boolean
 }
-const TooltipComp = ({hoverChildren,contentChildren,onClick,disabled}:Props) => {
+const TooltipComp = ({hoverChildren,contentChildren}:Props) => {
     return (
-        <Tooltip >
-            <TooltipTrigger asChild onClick={onClick} disabled={disabled}>
+        <Tooltip>
+            <TooltipTrigger asChild>
                 {hoverChildren}
             </TooltipTrigger>
             <TooltipContent>
