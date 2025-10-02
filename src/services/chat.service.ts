@@ -3,6 +3,7 @@ import { io, Socket } from "socket.io-client";
 class ChatService {
   private static instance: ChatService;
   public socket: Socket | null = null;
+  private _currentRoomId: string | null = null;
 
   private constructor() {}
 
@@ -88,9 +89,27 @@ class ChatService {
     return this.socket;
   }
 
-  // FIXED: Join room with proper parameters including buyerId
+  // Leave the current room if joining a new one
+  public leaveRoom(roomId?: string) {
+    if (this.socket && (roomId || this._currentRoomId)) {
+      const leaveRoomId = roomId || this._currentRoomId;
+      if (leaveRoomId) {
+        console.log(`[ChatService] Leaving room:`, leaveRoomId);
+        this.socket.emit("leave_room", { roomId: leaveRoomId });
+        this._currentRoomId = null;
+      }
+    }
+  }
+
+  // Join room with proper parameters including buyerId, and leave previous room if needed
   public joinRoom(userId: string, productId: string, sellerId: string, userType: "buyer" | "seller", buyerId?: string) {
     if (this.socket) {
+      // Compute the new roomId
+      const newRoomId = `product_${productId}_buyer_${buyerId}_seller_${sellerId}`;
+      // Leave previous room if different
+      if (this._currentRoomId && this._currentRoomId !== newRoomId) {
+        this.leaveRoom(this._currentRoomId);
+      }
       // Determine buyerId if not provided
       let finalBuyerId = buyerId;
       if (!finalBuyerId) {
@@ -105,13 +124,14 @@ class ChatService {
         buyerId: finalBuyerId
       });
       
-      this.socket.emit("join_room", { 
-        userId, 
-        productId, 
-        sellerId, 
+      this.socket.emit("join_room", {
+        userId,
+        productId,
+        sellerId,
         userType,
         buyerId: finalBuyerId
       });
+      this._currentRoomId = newRoomId;
     }
   }
 

@@ -104,6 +104,12 @@ const ContactsList = ({
                           {unreadCount}
                         </span>
                       )}
+                      {/* DEBUG: Show both counts */}
+                      {!isSelected && (
+                        <span className="ml-2 text-[10px] text-gray-400">
+                          [B:{contact.buyerUnreadCount}|S:{contact.sellerUnreadCount}]
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -119,7 +125,8 @@ const ContactsList = ({
 interface ChatAreaProps {
   selectedContact: any;
   userType: "seller" | "buyer";
-  userId: string;
+  userId: string; // for socket join (buyerId)
+  currentUserId: string; // actual logged-in user (senderId)
   productId: string;
   buyerId: string;
   sellerId: string;
@@ -131,7 +138,8 @@ interface ChatAreaProps {
 const ChatArea = ({
   selectedContact,
   userType,
-  userId,
+  userId, // for socket join (buyerId)
+  currentUserId, // actual logged-in user (senderId)
   productId,
   buyerId,
   sellerId,
@@ -145,20 +153,21 @@ const ChatArea = ({
   const [budgetAmount, setBudgetAmount] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!userId || !productId || !sellerId || !userType || !buyerId) {
+    if (!productId || !sellerId || !userType || !buyerId) {
       console.error('Missing required parameters:', { userId, productId, sellerId, userType, buyerId });
       return;
     }
     
-    console.log('Joining room with:', { userId, productId, sellerId, userType, buyerId });
-    chatService.joinRoom(userId, productId, sellerId, userType, buyerId);
+    // userId is buyerId for joinRoom
+    chatService.joinRoom(buyerId, productId, sellerId, userType);
 
     // Emit get_chat_history after joining room
     if (chatService.socket) {
       chatService.socket.emit("get_chat_history", {
+        buyerId,
         productId,
         sellerId,
-        buyerId,
+        
       });
 
       const handleChatHistory = (data: any) => {
@@ -199,12 +208,22 @@ const ChatArea = ({
 
   const handleSendMessage = () => {
     if (messageText.trim()) {
-      chatService.sendMessage(productId, sellerId, messageText, userId, userType, buyerId);
+      // senderId should be buyerId if userType is buyer, sellerId if userType is seller
+      const senderId = userType === "buyer" ? buyerId : sellerId;
+
+      chatService.sendMessage(
+        productId,
+        sellerId,
+        messageText,
+        senderId,
+        userType,
+        buyerId
+      );
       
       const newMessage = {
         id: Date.now().toString(),
         text: messageText,
-        senderId: userId,
+        senderId: senderId,
         senderType: userType,
         time: new Date().toLocaleTimeString(),
       };
@@ -219,7 +238,7 @@ const ChatArea = ({
           lastMessage: {
             message: messageText,
             timestamp: new Date().toISOString(),
-            senderId: userId,
+            senderId: senderId,
             senderType: userType,
           },
           // Reset unread count for the current user
@@ -282,6 +301,9 @@ const ChatArea = ({
     );
   }
 
+  // Prevent self-chat: if currentUserId is both buyer and seller, or buyerId === sellerId
+  const isSelfChat = (currentUserId === buyerId && currentUserId === sellerId) || buyerId === sellerId;
+
   return (
     <div className="flex-1 flex flex-col border-1 rounded-md overflow-hidden">
       {/* Chat Header */}
@@ -333,29 +355,35 @@ const ChatArea = ({
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-6 chat-messages-container">
-        {messages.map((message) => {
-          const isMine = message.senderId === userId && message.senderType === userType;
-          return (
-            <div
-              key={message.id}
-              className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
-            >
+        {isSelfChat ? (
+          <div className="text-center text-red-500 font-semibold">
+            Cannot send messages to yourself. Buyer and seller must be different users.
+          </div>
+        ) : (
+          messages.map((message) => {
+            const isMine = message.senderId === userId && message.senderType === userType;
+            return (
               <div
-                className={`max-w-[70%] px-4 py-2 ${
-                  isMine
-                    ? 'bg-gray-500 text-white rounded-tl-lg rounded-bl-lg rounded-br-lg'
-                    : 'bg-gray-600 text-white rounded-tr-lg rounded-bl-lg rounded-br-lg'
-                }`}
+                key={message.id}
+                className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
               >
-                <p className="text-sm">{message.text}</p>
+                <div
+                  className={`max-w-[70%] px-4 py-2 ${
+                    isMine
+                      ? 'bg-gray-500 text-white rounded-tl-lg rounded-bl-lg rounded-br-lg'
+                      : 'bg-gray-600 text-white rounded-tr-lg rounded-bl-lg rounded-br-lg'
+                  }`}
+                >
+                  <p className="text-sm">{message.text}</p>
+                </div>
+                <span className="text-xs text-muted-foreground mt-1">
+                  {message.time || (message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : "")}
+                  {" "}• {isMine ? 'You' : message.senderType}
+                </span>
               </div>
-              <span className="text-xs text-muted-foreground mt-1">
-                {message.time || (message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : "")}
-                {" "}• {isMine ? 'You' : message.senderType}
-              </span>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
 
       {/* Message Input */}
@@ -368,15 +396,17 @@ const ChatArea = ({
               onChange={(e) => setMessageText(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               className="p-5 bg-gray-100 rounded-full text-sm placeholder:text-sm placeholder:font-medium tracking-wide focus-visible:ring-0 border-0"
+              disabled={isSelfChat}
             />
           </div>
-          <div className='p-1 rounded-full border-2 border-gray-500 cursor-pointer hover:bg-gray-100'>
+          <div className={`p-1 rounded-full border-2 border-gray-500 ${isSelfChat ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-100'}`}>
             <Paperclip className='w-4 h-4 text-gray-700'/>
           </div>
           <Button
             onClick={handleSendMessage}
             size="icon"
             className="cursor-pointer w-12"
+            disabled={isSelfChat}
           >
             <Send className="h-4 w-4" />
           </Button>
@@ -416,10 +446,14 @@ const Chatbot = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
 
-  // Determine userType based on currentUserId matching sellerId or buyerId
+  // Determine userType and userId for socket based on currentUserId
   let userType: 'buyer' | 'seller' = 'buyer';
+  let socketUserId = buyerId; // Always use buyerId for socket userId
+
   if (currentUserId === sellerId) {
     userType = 'seller';
+  } else if (currentUserId === buyerId) {
+    userType = 'buyer';
   }
 
   // Step 1: Fetch recent chats on mount
@@ -497,11 +531,24 @@ const Chatbot = () => {
           } else {
             // No matching recent chat - create new contact for this conversation
             console.log("No matching recent chat, creating new conversation");
+            // Ensure correct assignment of buyerId and sellerId based on userType
+            let finalBuyerId = buyerId;
+            let finalSellerId = sellerId;
+            if (userType === 'buyer') {
+              finalBuyerId = currentUserId;
+            } else if (userType === 'seller') {
+              finalSellerId = currentUserId;
+            }
+            // Prevent both IDs from being the same
+            if (finalBuyerId === finalSellerId) {
+              console.error("Cannot create chat: buyerId and sellerId are the same!", { finalBuyerId, finalSellerId });
+              return;
+            }
             const newContact = {
               roomId: `product_${productId}_buyer_${buyerId}_seller_${sellerId}`,
               productId,
-              sellerId,
-              buyerId,
+              sellerId: sellerId,
+              buyerId: buyerId,
               name: userType === 'buyer' ? 'Seller' : 'Buyer',
               avatar: '',
               isOnline: true,
@@ -529,11 +576,24 @@ const Chatbot = () => {
         if (productId && sellerId && buyerId) {
           // Still allow user to start new chat
           console.log("No recent chats, but IDs provided - creating new conversation");
+          // Ensure correct assignment of buyerId and sellerId based on userType
+          let finalBuyerId = buyerId;
+          let finalSellerId = sellerId;
+          if (userType === 'buyer') {
+            finalBuyerId = currentUserId;
+          } else if (userType === 'seller') {
+            finalSellerId = currentUserId;
+          }
+          // Prevent both IDs from being the same
+          if (finalBuyerId === finalSellerId) {
+            console.error("Cannot create chat: buyerId and sellerId are the same!", { finalBuyerId, finalSellerId });
+            return;
+          }
           const newContact = {
             roomId: `product_${productId}_buyer_${buyerId}_seller_${sellerId}`,
             productId,
-            sellerId,
-            buyerId,
+            sellerId: sellerId,
+            buyerId: buyerId,
             name: userType === 'buyer' ? 'Seller' : 'Buyer',
             avatar: '',
             isOnline: true,
@@ -590,10 +650,16 @@ const Chatbot = () => {
             } else {
               // If the message is for another chat, increment unread count for the recipient (if backend doesn't provide)
               if (typeof data.buyerUnreadCount !== "number" && data.senderType === "seller") {
-                buyerUnreadCount = (chat.buyerUnreadCount || 0) + 1;
+                // Only increment for the recipient (buyer)
+                if (currentUserId !== chat.buyerId) {
+                  buyerUnreadCount = (chat.buyerUnreadCount || 0) + 1;
+                }
               }
               if (typeof data.sellerUnreadCount !== "number" && data.senderType === "buyer") {
-                sellerUnreadCount = (chat.sellerUnreadCount || 0) + 1;
+                // Only increment for the recipient (seller)
+                if (currentUserId !== chat.sellerId) {
+                  sellerUnreadCount = (chat.sellerUnreadCount || 0) + 1;
+                }
               }
             }
 
@@ -611,21 +677,31 @@ const Chatbot = () => {
       // Only add to messages if the message belongs to the currently selected chat
       if (
         selectedContact &&
-        roomIdFromData === selectedContact.roomId &&
-        data.senderId !== currentUserId
+        roomIdFromData === selectedContact.roomId
       ) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: data.id || Date.now().toString() + Math.random(),
-            text: data.message,
-            senderId: data.senderId,
-            senderType: data.senderType,
-            time: data.timestamp
-              ? new Date(data.timestamp).toLocaleTimeString()
-              : new Date().toLocaleTimeString(),
-          },
-        ]);
+        setMessages((prev) => {
+          // Prevent duplicate messages by id and text+timestamp
+          const exists = prev.some(
+            (msg) =>
+              (msg.id && data.id && msg.id === data.id) ||
+              (msg.text === data.message &&
+                msg.senderId === data.senderId &&
+                msg.time === (data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : ""))
+          );
+          if (exists) return prev;
+          return [
+            ...prev,
+            {
+              id: data.id || Date.now().toString() + Math.random(),
+              text: data.message,
+              senderId: data.senderId,
+              senderType: data.senderType,
+              time: data.timestamp
+                ? new Date(data.timestamp).toLocaleTimeString()
+                : new Date().toLocaleTimeString(),
+            },
+          ];
+        });
       }
     };
 
@@ -778,7 +854,8 @@ const Chatbot = () => {
               <ChatArea
                 selectedContact={selectedContact}
                 userType={userType}
-                userId={currentUserId}
+                userId={socketUserId}
+                currentUserId={currentUserId}
                 productId={selectedContact.productId}
                 buyerId={selectedContact.buyerId}
                 sellerId={selectedContact.sellerId}
