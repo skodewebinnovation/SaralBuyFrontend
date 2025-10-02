@@ -5,7 +5,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../../Components/ui/breadcrumb";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Camera, House, SquarePen } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "../../Components/ui/avatar";
 import { NavLink } from 'react-router-dom';
@@ -63,6 +63,7 @@ const tags = [
 
 const Profile = () => {
   const {user,setUser} = getUserProfile()
+  const navigate =useNavigate()
    const { fn: updateProfilefn, data: updateProfileRes, loading:updateProfileLoading } = useFetch(userService.updateProfile)
   const avatarRef = useRef<HTMLInputElement>(null)
    const handleUpdateProfile = async () => {
@@ -85,7 +86,7 @@ const Profile = () => {
       {/* Breadcrumb */}
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>
-          <BreadcrumbItem className="flex items-center gap-2 cursor-pointer">
+          <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <BreadcrumbPage className="capitalize font-regular text-gray-500"><House className="w-5 h-5"/></BreadcrumbPage>
             <BreadcrumbSeparator />
             <BreadcrumbPage className="capitalize font-regular text-orange-600 font-semibold">Account</BreadcrumbPage>
@@ -151,7 +152,7 @@ const Profile = () => {
 
           {/* Main Content */}
           <div className="space-y-10">
-            <section id="account" >
+            <section  >
               <Outlet />
             </section>
           </div>

@@ -22,6 +22,7 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
   })
   const navigate = useNavigate()
 
+
   return (
     <Card className={`shadow-none  p-5 ${target === "bids" ?`bg-${color}-100` :`bg-${color}-50`}`}>
       {/* Header */}
@@ -79,7 +80,9 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
               {/* Footer */}
               <div className="flex flex-col h-full justify-between " style={{ height: '-webkit-fill-available' }}>
                 {
-                  target !== 'drafts' ? <p className="text-sm border rounded px-2 py-1 bg-gray-50">
+                  target !== 'drafts' ? <p className="text-sm cursor-pointer border rounded px-2 py-1 bg-gray-50" onClick={()=>{
+                       navigate('/bid-overview/' + item?._id)
+                  }}>
                   Total Bids:{" "}
                   <span className="font-semibold text-orange-600">
                     {item.totalBids}
@@ -107,7 +110,7 @@ const SwiperSlider = ({ title, color, target,data }: Props) => {
       :
         <div className="h-full w-full flex-col flex justify-center items-center">
            <img src="/observed.svg" width="20%" />
-           <p className="text-gray-500 text-sm">No Bids Registered</p>
+           <p className="text-gray-500 text-sm capitalize">No {target === "bids"? "bids":'drafts'} Registered</p>
         </div>
       }
       </div>

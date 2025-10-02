@@ -5,21 +5,22 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/Components/ui/breadcrumb";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { Banknote, CalendarDays, Camera, House, List, MapPin, User, UserRound } from 'lucide-react';
 import { Avatar, AvatarImage } from "@/Components/ui/avatar";
 
 import { Button } from "@/Components/ui/button";
-import { SkeletonTable } from "@/const/CustomSkeletons";
+import { CategoryFormSkeleton, SkeletonTable } from "@/const/CustomSkeletons";
 import TableListing from "@/Components/TableLisiting";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AvatarFallback } from "@radix-ui/react-avatar";
 import { useFetch } from "@/helper/use-fetch";
 import bidService from "@/services/bid.service";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { dateFormatter } from "@/helper/dateFormatter";
 import { mergeName } from "@/helper/mergeName";
 import { currencyConvertor } from "@/helper/currencyConvertor";
+import { Skeleton } from "@/Components/ui/skeleton";
 const BidOverview = () => {
   const {bidId} = useParams();
   const {fn:bidFn,data:bidRes,loading} = useFetch(bidService.getBidById)
@@ -27,7 +28,9 @@ const BidOverview = () => {
   const [limit, setLimit] = useState(10);
   const [total,setTotal] = useState(0)
   const [sellers,setSellers] = useState<any>([])
+  const navigate = useNavigate()
   const [timeLeft, setTimeLeft] = useState<string>('');
+  let intervalRef = useRef<NodeJS.Timeout | null>(null)
   useEffect(()=>{
     
     bidFn(bidId,limit,page)
@@ -91,34 +94,49 @@ useEffect(()=>{
 },[bidRes])
 
 useEffect(() => {
-  if (!bidRes?.createdAt) return;
+  if (!bidRes?.createdAt || !bidRes?.product?.bidActiveDuration) return;
 
-  const interval = setInterval(() => {
-    const createdAt = new Date(bidRes.createdAt).getTime();
-    const now = new Date().getTime();
-    const diff = 24 * 60 * 60 * 1000 - (now - createdAt); 
+  const createdAt = new Date(bidRes.createdAt).getTime();
+  const durationDays = Number(bidRes.product.bidActiveDuration); 
+  const expiryTime = createdAt + durationDays * 24 * 60 * 60 * 1000;
+
+  const updateTimer = () => {
+    const now = Date.now();
+    const diff = expiryTime - now;
 
     if (diff <= 0) {
       setTimeLeft('Expired');
-      clearInterval(interval);
+      if (intervalRef.current) clearInterval(intervalRef.current);
       return;
     }
 
     const hours = Math.floor(diff / (1000 * 60 * 60));
-    // const minutes
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+  };
+
+  // Initial call
+  updateTimer();
+
+  intervalRef.current = setInterval(updateTimer, 1000);
+
+  return () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  };
+}, [bidRes?.createdAt, bidRes?.product?.bidActiveDuration]);
 
 
-    setTimeLeft(`${hours}:00 Hr.`);
-  }, 1000);
 
-  return () => clearInterval(interval);
-}, [bidRes?.createdAt]);
   return (
-    <div className="w-full max-w-7xl mx-auto py-6 space-y-6 px-4">
+    <>
+    {
+      loading ? <div className="w-full max-w-7xl mx-auto py-6 space-y-6 px-4"> <CategoryFormSkeleton></CategoryFormSkeleton></div> :<div className="w-full max-w-7xl mx-auto py-6 space-y-6 px-4">
       {/* Breadcrumb */}
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>
-          <BreadcrumbItem className="flex items-center gap-2 cursor-pointer">
+          <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" onClick={()=>navigate(-1)}>
             <BreadcrumbPage className="capitalize font-regular text-gray-500"><House className="w-5 h-5" /></BreadcrumbPage>
             <BreadcrumbSeparator />
             <BreadcrumbPage className="capitalize font-regular text-gray-500">Bid Overview</BreadcrumbPage>
@@ -205,13 +223,19 @@ useEffect(() => {
                   <h2 className="text-xl font-bold capitalize item-center">
                    {bidRes?.product?.title}
                   </h2>
-                 {
-timeLeft.length > 0 && timeLeft !== 'Expired' &&<Button
-                    variant={'ghost'} className=" float-end border rounded-full hover:bg-orange-700 hover:text-white text-sm bg-orange-700  text-white cursor-pointer">
-                    {timeLeft}
-                  </Button>
+              {loading || !timeLeft ? (
+                <Skeleton className="h-8 w-24 rounded-full float-end" />
+              ) : timeLeft !== 'Expired' ? (
+                <Button
+                  variant="ghost"
+                  className="float-end border rounded-full hover:bg-orange-700 hover:text-white text-sm bg-orange-700 text-white"
+                >
+                  {timeLeft}
+                </Button>
+              ) : (
+                <span className="text-red-500 text-sm font-medium float-end">Expired</span>
+              )}
 
-                 } 
                 </div>
                 <p className="text-sm text-gray-500 mt-2 ">
                  {bidRes?.product?.description}
@@ -240,6 +264,8 @@ timeLeft.length > 0 && timeLeft !== 'Expired' &&<Button
         </div>
       </div>
     </div>
+    }
+    </>
   );
 };
 

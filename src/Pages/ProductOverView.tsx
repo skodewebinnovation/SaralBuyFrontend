@@ -328,7 +328,7 @@ useEffect(()=>{
       setOpen={setSellerVerification} open={sellerVerification} setValue={setBusinessType} value={businessType} handleCreteBid={handleCreteBid} createBidLoading={createBidLoading} />
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>
-          <BreadcrumbItem className="flex items-center gap-2 ">
+          <BreadcrumbItem className="flex items-center gap-2 cursor-pointer " onClick={()=>navigate(-1)}>
             <Home className="h-4 w-4" />
             <BreadcrumbSeparator />
             <BreadcrumbPage className="capitalize font-regular text-gray-500">
@@ -751,7 +751,7 @@ useEffect(()=>{
                   }
                 </div>
                 {
-                    productResponse?.subProducts.length > -1 && idx < productResponse?.subProducts.length - 1 && <div className="bg-gray-4r00 w-full h-[2px] my-5"></div>
+                    productResponse?.subProducts.length > -1 && idx < productResponse?.subProducts.length - 1 && <div className="bg-gray-400 w-full h-[2px] my-5"></div>
                 }
               </>
             )

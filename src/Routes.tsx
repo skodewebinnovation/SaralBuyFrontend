@@ -50,7 +50,7 @@ export default function AppRouters() {
         <HomeNavbar/>
         <Authentication open={open} setOpen={setOpen}/>
 
-      <Suspense fallback>
+      <Suspense  fallback={<div className="h-screen"></div>}>
         <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/requirement" element={<Requirement/>} />

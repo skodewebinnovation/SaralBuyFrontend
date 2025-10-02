@@ -1,107 +1,45 @@
 import { Button } from '@/Components/ui/button'
 import { SliderSkeleton } from '@/const/CustomSkeletons'
 import TooltipComp from '@/utils/TooltipComp'
-import { ListFilter, SquarePen } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { ListFilter, X } from 'lucide-react'
 import RequirementSlider from './components/requirement-slide'
 import { useEffect } from 'react'
 import cartService from '@/services/cart.service'
 import { useFetch } from '@/helper/use-fetch'
-
-
-export const dummyProducts = [
-  {
-    _id: "p1",
-    title: "Organic Face Cream",
-    description: "A hydrating cream with natural extracts.",
-    quantity: 10,
-    image: "https://picsum.photos/200/200?random=1",
-    brand: "GlowCare",
-    draft: true,
-    createdAt: "2025-09-18T10:30:00.000Z",
-    updatedAt: "2025-09-18T10:30:00.000Z",
-    totalBidCount: 5,
-    categoryId: {
-      _id: "c1",
-      categoryName: "Beauty",
-      image: "https://picsum.photos/100/100?random=2",
-      updatedAt: "2025-09-13T12:21:54.261Z",
-    },
-    subCategoryId: "sc1",
-    userId: "u1",
-    paymentAndDelivery: {
-      ex_deliveryDate: "2025-09-24T18:30:00.000Z",
-      paymentMode: "Online",
-      gstNumber: "GST123456",
-      organizationName: "GlowCare Pvt Ltd",
-      organizationAddress: "123 Beauty Lane, Delhi",
-    },
-    subProducts: [
-      {
-        _id: "sp1",
-        title: "Organic Face Cream - Mini Pack",
-        description: "Travel size cream, 30ml.",
-        quantity: 50,
-        image: "https://picsum.photos/200/200?random=3",
-        brand: "GlowCare",
-        createdAt: "2025-09-18T11:00:00.000Z",
-        updatedAt: "2025-09-18T11:00:00.000Z",
-        draft: true,
-        categoryId: {
-          _id: "c1",
-          categoryName: "Beauty",
-          image: "https://picsum.photos/100/100?random=4",
-          updatedAt: "2025-09-13T12:21:54.261Z",
-        },
-        subCategoryId: "sc1",
-        userId: "u1",
-        paymentAndDelivery: {
-          ex_deliveryDate: "2025-09-26T18:30:00.000Z",
-          paymentMode: "Cash on Delivery",
-          gstNumber: "GST654321",
-          organizationName: "GlowCare Pvt Ltd",
-          organizationAddress: "123 Beauty Lane, Delhi",
-        },
-        totalBidCount: 2,
-      },
-    ],
-  },
-  {
-    _id: "p2",
-    title: "Herbal Shampoo",
-    description: "Shampoo enriched with aloe vera and neem.",
-    quantity: 20,
-    image: "https://picsum.photos/200/200?random=5",
-    brand: "NatureWash",
-    draft: false,
-    createdAt: "2025-09-15T09:15:00.000Z",
-    updatedAt: "2025-09-15T09:15:00.000Z",
-    totalBidCount: 3,
-    categoryId: {
-      _id: "c2",
-      categoryName: "Hair Care",
-      image: "https://picsum.photos/100/100?random=6",
-      updatedAt: "2025-09-13T12:21:54.261Z",
-    },
-    subCategoryId: "sc2",
-    userId: "u2",
-    paymentAndDelivery: {
-      ex_deliveryDate: "2025-09-28T18:30:00.000Z",
-      paymentMode: "Bank Transfer",
-      gstNumber: "GST987654",
-      organizationName: "NatureWash Ltd",
-      organizationAddress: "45 Green Street, Mumbai",
-    },
-    subProducts: [],
-  },
-];
+import { toast } from 'sonner'
 
 const Cart = () => {
-  const navigate = useNavigate();
-  const {fn:getCartFn,data:getCartRes,loading:getCartLoading} = useFetch(cartService.getCart)
+  const {fn:getCartFn,data:getCartRes,loading:getCartLoading,setData:setCartItems} = useFetch(cartService.getCart)
+  const {fn:removeCartFn,data:removeCartRes,loading:removeCartLoading} = useFetch(cartService.removeCart)
 useEffect(()=>{
   getCartFn()
 },[])
+
+
+ function handleCart(cartId:string,productId:string){
+  console.log(cartId,productId)
+   removeCartFn(cartId,productId)
+
+}
+
+useEffect(() => {
+    if (removeCartRes) {
+      console.log(getCartRes)
+      console.log(removeCartRes)
+      toast.success(removeCartRes?.message || 'Cart item removed successfully');
+      
+      // Use the callback form of setCartItems to get the latest state
+      setCartItems((prevCart: any) => {
+        if (prevCart?.cartItems?.length) {
+          const updatedItems = prevCart.cartItems.filter(
+            (item: any) => item.product._id !== removeCartRes.productId
+          );
+          return { ...prevCart, cartItems: updatedItems };
+        }
+        return prevCart;
+      });
+    }
+  }, [removeCartRes])
   return (
      <div className="w-full max-w-7xl mx-auto  space-y-6 ">
       <div className='grid space-y-5 w-full'>
@@ -118,7 +56,7 @@ useEffect(()=>{
          {
               getCartLoading ?
                 new Array(3).fill(0).map(_ => <SliderSkeleton />) :
-            getCartRes &&    getCartRes.length > 0 ? getCartRes.map((item: any, idx: number) => (
+            getCartRes && getCartRes.cartItems?.length > 0 ? getCartRes?.cartItems?.map((item: any, idx: number) => (
                   <div key={idx} className='border-2 border-gray-300 p-4 rounded-md w-full mb-2 relative'>
                     <div className='absolute top-1 left-1 z-10 bg-orange-50 text-orange-400 rounded-sm  p-1 cursor-pointer'
                       // onClick={() => {
@@ -126,8 +64,10 @@ useEffect(()=>{
                       // }}
                     >
                       <TooltipComp
-                        hoverChildren={<SquarePen className='h-4 w-4' />}
-                        contentChildren={<p>Edit Cart</p>}
+                        disabled={removeCartLoading}
+                        onClick={()=>handleCart(getCartRes?._id,item?.product?._id)}
+                        hoverChildren={<X className='h-4 w-4' />}
+                        contentChildren={<p>Remove Cart</p>}
                       ></TooltipComp>
                     </div>
 

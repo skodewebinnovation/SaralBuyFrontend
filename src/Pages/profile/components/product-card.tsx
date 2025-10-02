@@ -2,7 +2,6 @@ import { dateFormatter } from "@/helper/dateFormatter"
 
 const ProductCard = ({ product ,target}: { product: any,target:string }) => {
   product = product.product || product || {}
-  console.log(product)
   return (
     <div className={`w-full  border-r-2 border-gray-200 p-2 b shadow-sm  ${target === "requirements" ? 'cursor-pointer': ''}`}>
       <div className='flex gap-6 pl-12 items-center'>
