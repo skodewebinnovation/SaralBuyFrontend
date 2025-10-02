@@ -29,9 +29,7 @@ function handleCart(cartId: string, productId: string) {
     };
   });
 
-  removeCartFn(cartId, productId).then((res: any) => {
-    toast.success(res?.message || 'Cart item removed successfully');
-  });
+  removeCartFn(cartId, productId)
 }
 
 useEffect(() => {
