@@ -397,11 +397,27 @@ const HomeNavbar = () => {
           <div className="flex gap-5 items-center space-x-1">
            
 {/*  messaging */}
-            <Popover onOpenChange={() => setShowNotifDropdown(true)} >
+            <Popover
+              open={notifications.length > 0 ? showNotifDropdown : false}
+              onOpenChange={(open) => {
+                // Only allow opening if there are notifications
+                if (open && notifications.length > 0) {
+                  setShowNotifDropdown(true);
+                } else {
+                  setShowNotifDropdown(false);
+                }
+              }}
+            >
               <PopoverTrigger>
                 <div
                   className="cursor-pointer relative  bg-transparent border-0 shadow-none"
-                  onClick={handleBellClick}
+                  onClick={() => {
+                    if (notifications.length === 0) {
+                      navigate('/chat');
+                    } else {
+                      handleBellClick();
+                    }
+                  }}
                 >
                   <MessageSquareText className="w-5 h-5 text-gray-600" />
                   {notifications.length > 0 && (

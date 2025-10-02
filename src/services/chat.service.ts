@@ -195,6 +195,29 @@ class ChatService {
     if (!this._productNotificationListeners) this._productNotificationListeners = [];
     this._productNotificationListeners.push(cb);
   }
+  /**
+   * Get all recent chats for a user.
+   * @param userId The current user's ID.
+   * @param callback Function to call with the recent chats data.
+   */
+  public getRecentChats(userId: string, callback: (data: any) => void) {
+    if (this.socket && userId) {
+      // Emit the event to request recent chats
+      this.socket.emit("get_recent_chats", { userId });
+
+      // Handler for the response
+      const handler = (data: any) => {
+        callback(data);
+        // Remove this handler after first call to avoid memory leaks
+        this.socket?.off("recent_chats", handler);
+      };
+
+      // Listen for the response
+      this.socket.on("recent_chats", handler);
+    } else {
+      console.error("[ChatService] Socket not connected or userId missing for getRecentChats");
+    }
+  }
 }
 
 
