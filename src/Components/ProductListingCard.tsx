@@ -31,8 +31,8 @@ const ProductListingCard = ({product}:{product:any}) => {
         <div className="w-28 h-28 flex-shrink-0">
             <img
   
-            src={product?.image}
-            alt="Construction Material"
+            src={product?.image || 'no-image.webp'}
+            alt={product?.title}
             className="w-full h-full object-contain rounded-lg"
             />
             </div>

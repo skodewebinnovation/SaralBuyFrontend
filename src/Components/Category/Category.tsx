@@ -579,7 +579,7 @@ const CategoryForm = ({
              
               <div
                 onClick={() => (imageRef as any)?.current?.click()}
-                className="border-2 border-dashed border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer"
+                className="border-2 border-dashed relative border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer h-32"
               >
                 <CloudUpload className="h-6 w-6 mb-2 text-gray-500" />
                 <span className="text-sm text-muted-foreground font-semibold">Upload Image*</span>
@@ -605,6 +605,11 @@ const CategoryForm = ({
                 {image && (
                   <p className="text-xs mt-2 text-green-600">{(image as any)?.name}</p>
                 )}
+                {
+                  image && <div className="absolute h-16 w-16 right-2 top-2 rounded-lg shadow  select-none z-10">
+                    <img src={URL.createObjectURL(image)} className="h-full w-full object-contain" alt="" />
+                  </div>
+                }
               </div>
              
               <div
@@ -788,10 +793,10 @@ const Category = () => {
         toast.error(`Quantity is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
         return false
       }
-      else if (!forms[i].image && !isDraft) {
-        toast.error(`Image is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`);
-        return false;
-      }
+      // else if (!forms[i].image && !isDraft) {
+      //   toast.error(`Image is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`);
+      //   return false;
+      // }
       else if (!forms[i].description && !isDraft) {
         toast.error(`Description is required ${forms.length > 1 ? `in product form(s) ${i + 1}` : ''}`)
         return false

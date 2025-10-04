@@ -34,7 +34,7 @@ import { SearchableDropdown } from "@/utils/searchableDropdown";
 import { electronicCategories, constructionIndustrialCategories, fashionCategories, furnitureCategories, homeAppliancesCategories, beautyCategories, sportCategories, vehicleCategories, serviceCategories } from "@/const/categoriesData";
 import { getCategorySpecificFields } from "@/const/categoriesFormdataFields";
 import Authentication from "@/Components/auth/Authentication";
-import {CategoryFormSkeleton} from "@/const/CustomSkeletons";
+import { CategoryFormSkeleton } from "@/const/CustomSkeletons";
 
 const innerFormImages = {
   automobile: "automobileFormImage.png",
@@ -94,12 +94,12 @@ const UpdateProductDraftForm = ({
   const [image, setImage] = useState(null);
   const [fileDoc, setFileDoc] = useState(null);
   const [brand, setbrand] = useState(initialData?.brand || '');
-  console.log(brand,2)
+  console.log(brand, 2)
   const [brandRenderItems, setBrandRenderItems] = useState([]);
   const imageRef = useRef(null);
   const fileDocRef = useRef<HTMLInputElement>(null);
 
-  const { watch, setValue, formState: {}, register, getValues, reset: resetFormHook } = useForm({
+  const { watch, setValue, formState: { }, register, getValues, reset: resetFormHook } = useForm({
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
       title: initialData?.title || '',
@@ -163,12 +163,12 @@ const UpdateProductDraftForm = ({
         document: fileDoc,
         formIndex: formIndex,
         _id: initialData?._id, // Include the ID for identification
-        initialData: initialData 
+        initialData: initialData
       };
       onFormDataChange(formIndex, formData);
     });
     return () => subscription.unsubscribe();
-  }, [watch, image, fileDoc, formIndex, onFormDataChange, getValues,initialData]);
+  }, [watch, image, fileDoc, formIndex, onFormDataChange, getValues, initialData]);
 
   useEffect(() => {
     setValue("oldProductValue.min", values[0].toString());
@@ -199,7 +199,7 @@ const UpdateProductDraftForm = ({
         {/* Left Panel */}
         <div className="md:col-span-1 lg:col-span-1 bg-transparent  border-0 p-6 xs:grid xs:grid-cols-2 gap-6 space-y-4">
           <div className="col-span-1 align-center sm:block flex flex-col justify-center">
-           <h2 className="text-[15px] font-semibold mb-2 text-center">Product Form ({formIndex+1})</h2>
+            <h2 className="text-[15px] font-semibold mb-2 text-center">Product Form ({formIndex + 1})</h2>
             <p className="text-[13px] text-muted-foreground text-center">
               Update your product details below. Make sure all required fields are filled correctly.
             </p>
@@ -267,16 +267,16 @@ const UpdateProductDraftForm = ({
                 /> */}
 
               {currentCategoryName === "electronics" && (
-               <div className="relative">
-                <p className="absolute top-1/2 left-2 text-sm  text-orange-600 font-semibold -translate-y-1/2">
-                ₹</p>
-                 <Input
-                  type="text"
-                  placeholder="Enter a Minimum Budget"
-                  {...register('minimumBudget')}
-                  className="bg-white  pl-5"
-                />
-               </div>
+                <div className="relative">
+                  <p className="absolute top-1/2 left-2 text-sm  text-orange-600 font-semibold -translate-y-1/2">
+                    ₹</p>
+                  <Input
+                    type="text"
+                    placeholder="Enter a Minimum Budget"
+                    {...register('minimumBudget')}
+                    className="bg-white  pl-5"
+                  />
+                </div>
               )}
 
               {currentCategoryName !== "service" && (
@@ -561,7 +561,7 @@ const UpdateProductDraftForm = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div
                 onClick={() => (imageRef as any)?.current?.click()}
-                className="border-2 border-dashed relative border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer"
+                className="border-2 border-dashed relative border-gray-300 rounded-lg flex bg-transparent flex-col items-center justify-center p-6 cursor-pointer h-32"
               >
                 <CloudUpload className="h-6 w-6 mb-2 text-gray-500" />
                 <span className="text-sm text-muted-foreground">Upload Image*</span>
@@ -588,12 +588,17 @@ const UpdateProductDraftForm = ({
                 {image && (
                   <p className="text-xs mt-2 text-green-600 text-center">{(image as any)?.name}</p>
                 )}
+                {
+                  image && <div className="absolute h-16 w-16 right-2 top-2 rounded-lg shadow  select-none z-10">
+                    <img src={URL.createObjectURL(image)} className="h-full w-full object-contain" alt="" />
+                  </div>
+                }
                 {!image && initialData?.image && (
-             <>
-               <div className="absolute h-16 w-16 right-2 bottom-2 rounded-lg shadow p-2 select-none z-10">
-                 <img src={image || initialData?.image!}  className=" w-full h-full object-contain "/>
-               </div>
-             </>
+                  <>
+                    <div className="absolute h-16 w-16 right-2 top-2 rounded-lg shadow  select-none z-10">
+                      <img src={image || initialData?.image!} className=" w-full h-full object-contain " />
+                    </div>
+                  </>
                 )}
               </div>
               <div
@@ -714,7 +719,7 @@ const UpdateProductDraftForm = ({
 
 const UpdateDraft = () => {
   const { productId } = useParams();
-  const { fn: getDraft, data: getDraftRes ,loading:getDraftLoading} = useFetch(productService.getDraftById);
+  const { fn: getDraft, data: getDraftRes, loading: getDraftLoading } = useFetch(productService.getDraftById);
   const [draftState, setDraftState] = useState<any>(null);
   const navigate = useNavigate();
   const [subCategroies, setSubCategoies] = useState([]);
@@ -723,7 +728,7 @@ const UpdateDraft = () => {
   const { fn: getCatByIdFn, data: catByIdData } = useFetch(categoryService.getCategoriesById);
   const [currentCategoryName, setCurrentCategoryName] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const {fn,data,loading}= useFetch(productService.updateDrafts)
+  const { fn, data, loading } = useFetch(productService.updateDrafts)
   const [subCategoriesData, setSubCategoriesData] = useState([]);
   const [resetForms, setResetForms] = useState(false);
 
@@ -735,12 +740,12 @@ const UpdateDraft = () => {
 
 
   useEffect(() => {
-    if (getDraftRes ) {
+    if (getDraftRes) {
       console.log(getDraftRes)
       const firstDraft = getDraftRes
       setDraftState(firstDraft);
       setCurrentCategoryName(firstDraft?.categoryId?.categoryName);
-      
+
       // Get category data
       if (firstDraft?.categoryId?._id) {
         getCatByIdFn(firstDraft.categoryId._id);
@@ -748,7 +753,7 @@ const UpdateDraft = () => {
 
       if (firstDraft?.subProducts && firstDraft?.subProducts.length > 0) {
 
-        const formIndices = firstDraft.subProducts.map((_:any, index:number) => index);
+        const formIndices = firstDraft.subProducts.map((_: any, index: number) => index);
         setForms(formIndices);
       } else {
         setForms([0]);
@@ -759,64 +764,64 @@ const UpdateDraft = () => {
 
 
   const isValidForms = (formsDataObj: any) => {
-  const formsArray = Object.values(formsDataObj);
-  console.log(formsArray)
-  
-  for (let i = 0; i < formsArray.length; i++) {
-    const form = formsArray[i] as any;
-    
-    if (!form.title || form.title.trim() === '') {
-      toast.error(`Title is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
-      return false;
-    }
-    
-    if (!form.subCategoryId || form.subCategoryId.trim() === '') {
-      toast.error(`Category is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
-      return false;
-    }
-    
-    if (currentCategoryName?.toLowerCase() !== 'service' && (!form.brand || form.brand.trim() === '')) {
-      toast.error(`Brand is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
-      return false;
-    }
-    //  if (!form.budget || form.budget.trim() === '') {
-    //   toast.error(`Budget is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
-    //   return false;
-    // }
-    
-    if (currentCategoryName?.toLowerCase() !== 'service' && (!form.quantity || form.quantity.toString().trim() === '')) {
-      toast.error(`Quantity is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
-      return false;
-    }
-    
-    if (!form.image && (!form.initialData?.image || form.initialData?.image.trim() === '')) {
-      toast.error(`Image is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
-      return false;
-    }
-    
-    if (!form.description || form.description.trim() === '') {
-      toast.error(`Description is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
-      return false;
-    }
-  }
-  
-  return true;
-};
+    const formsArray = Object.values(formsDataObj);
+    console.log(formsArray)
 
-  
-    useEffect(() => {
-      if (catByIdData) {
-        try {
-          const decodedCategoryName = currentCategoryName!.toLowerCase();
-          setSubCategoriesData(getSubCategories(decodedCategoryName) as any);
-          setCurrentCategoryName(decodedCategoryName || null);
-        } catch (e) {
-          console.error("Error decoding category name:", e);
-          setCurrentCategoryName(null);
-        }
-        setSubCategoies(catByIdData?.subCategories || []);
+    for (let i = 0; i < formsArray.length; i++) {
+      const form = formsArray[i] as any;
+
+      if (!form.title || form.title.trim() === '') {
+        toast.error(`Title is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
+        return false;
       }
-    }, [catByIdData]);
+
+      if (!form.subCategoryId || form.subCategoryId.trim() === '') {
+        toast.error(`Category is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
+        return false;
+      }
+
+      if (currentCategoryName?.toLowerCase() !== 'service' && (!form.brand || form.brand.trim() === '')) {
+        toast.error(`Brand is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
+        return false;
+      }
+      //  if (!form.budget || form.budget.trim() === '') {
+      //   toast.error(`Budget is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
+      //   return false;
+      // }
+
+      if (currentCategoryName?.toLowerCase() !== 'service' && (!form.quantity || form.quantity.toString().trim() === '')) {
+        toast.error(`Quantity is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
+        return false;
+      }
+
+      // if (!form.image && (!form.initialData?.image || form.initialData?.image.trim() === '')) {
+      //   toast.error(`Image is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
+      //   return false;
+      // }
+
+      if (!form.description || form.description.trim() === '') {
+        toast.error(`Description is required${formsArray.length > 1 ? ` in product form (${i + 1})` : ''}`);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+
+  useEffect(() => {
+    if (catByIdData) {
+      try {
+        const decodedCategoryName = currentCategoryName!.toLowerCase();
+        setSubCategoriesData(getSubCategories(decodedCategoryName) as any);
+        setCurrentCategoryName(decodedCategoryName || null);
+      } catch (e) {
+        console.error("Error decoding category name:", e);
+        setCurrentCategoryName(null);
+      }
+      setSubCategoies(catByIdData?.subCategories || []);
+    }
+  }, [catByIdData]);
 
   useEffect(() => {
     if (catByIdData) {
@@ -830,28 +835,28 @@ const UpdateDraft = () => {
       [formIndex]: data
     }));
   };
- const handleSubmitAllForms = async() => {
-if (!isValidForms(formsData)) {
-    return;
-  }
+  const handleSubmitAllForms = async () => {
+    if (!isValidForms(formsData)) {
+      return;
+    }
     const allowedFields = getCategorySpecificFields(currentCategoryName!);
     const formDataToSend = new FormData();
     const productsData = [] as any
-    
+
     Object.entries(formsData).forEach(([formIndex, formData]: any) => {
 
       const productData: any = {
         _id: formData._id // Include ID for update
       };
-      
+
       allowedFields.forEach(field => {
         if (field === 'image' || field === 'document') {
-          return; 
+          return;
         }
         if ((field === 'oldProductValue' || field === 'productCondition') && formData.productType !== 'old_product') {
-          return; 
+          return;
         }
-        
+
         const value = formData[field];
         if (value !== undefined && value !== null) {
           if (typeof value === "object") {
@@ -863,7 +868,7 @@ if (!isValidForms(formsData)) {
           productData[field] = '';
         }
       });
-      
+
       productsData.push(productData);
 
       // Handle file uploads with unique keys for each form
@@ -876,7 +881,7 @@ if (!isValidForms(formsData)) {
     });
 
     formDataToSend.append('products', JSON.stringify(productsData));
-    formDataToSend.append('draft', 'false'); 
+    formDataToSend.append('draft', 'false');
     console.log(productsData)
     // Determine if multiple products
     const isMultiple = forms.length > 1;
@@ -884,20 +889,20 @@ if (!isValidForms(formsData)) {
 
   };
 
-  useEffect(()=>{
-    if(data){
+  useEffect(() => {
+    if (data) {
       toast.success(`Draft updated successfully`)
       navigate(-1)
     }
-  },[data])
+  }, [data])
 
 
   const getInitialDataForForm = (formIndex: number) => {
     console.log("Getting initial data for form:", formIndex);
     console.log("Draft state:", draftState);
-    
+
     if (!draftState) return null;
-    
+
     if (draftState.subProducts && draftState.subProducts.length > 0) {
       // Return subProduct data for this form index
       const subProduct = draftState.subProducts[formIndex];
@@ -915,73 +920,73 @@ if (!isValidForms(formsData)) {
   return (
     <>
       <Authentication setOpen={setOpen} open={open} />
-      
-        
-        <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
-          {
-        getDraftLoading ? <CategoryFormSkeleton/> : 
-        <>
-        {/* Breadcrumb + Action */}
-        <div className="flex flex-row sm:justify-between justify-end items-center gap-3 mb-6">
-          <Breadcrumb className="sm:block hidden">
-            <BreadcrumbList>
-              <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
-                <MoveLeft className="h-4 w-4" />
-                <BreadcrumbPage className="capitalize font-semibold text-gray-500">
-                  Selected Product
-                </BreadcrumbPage>
-                <BreadcrumbSeparator />
-                <BreadcrumbPage className="capitalize font-semibold text-orange-600">
-                  {currentCategoryName === "beauty" ? 'Personal Care' : currentCategoryName === "electronics" ? 'Electronics Appliances' : currentCategoryName  === "sports" ? 'Sports & Stationary' : currentCategoryName === 'home' ? 'Home Appliances' : currentCategoryName  === 'industrial' ?"Industrial & Construction Material" : currentCategoryName }
-                </BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
 
-        {/* Render all forms */}
-        <div className="space-y-8">
-          {forms.map((_:any,formIndex:number) => (
-            <div key={formIndex} >
-              <UpdateProductDraftForm
-                formIndex={formIndex}
-                currentCategoryName={currentCategoryName}
-                catByIdData={catByIdData}
-                subCategroies={subCategroies}
-                subCategoriesData={subCategoriesData}
-                onFormDataChange={handleFormDataChange}
-                initialData={getInitialDataForForm(formIndex)}
-                resetForm={resetForms}
-              />
-                 {
-             forms.length > -1 && formIndex < forms.length - 1 && <div className="bg-gray-400 w-full h-[2px] my-5"></div>
-           }
-            </div>
-          ))}
-        </div>
-  
 
-        {/* Global Actions - Single Submit and Draft buttons for all forms */}
-        <div className="flex justify-end gap-3 my-5">
-          <Button 
-            type="button" 
-            disabled={loading}
-            className="text-white w-32 cursor-pointer bc  text-xs border-primary-btn border-2 "
-            onClick={handleSubmitAllForms}
-          >
-            {loading ? (
-              <Spinner className="w-5 h-5 animate-spin" />
-            ) : (
-              `Submit ${Object.keys(formsData).length > 1 ? 'All' : ''}`
-            )}
-          </Button>
-        </div>
-        </>
-}
+      <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
+        {
+          getDraftLoading ? <CategoryFormSkeleton /> :
+            <>
+              {/* Breadcrumb + Action */}
+              <div className="flex flex-row sm:justify-between justify-end items-center gap-3 mb-6">
+                <Breadcrumb className="sm:block hidden">
+                  <BreadcrumbList>
+                    <BreadcrumbItem className="flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
+                      <MoveLeft className="h-4 w-4" />
+                      <BreadcrumbPage className="capitalize font-semibold text-gray-500">
+                        Selected Product
+                      </BreadcrumbPage>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbPage className="capitalize font-semibold text-orange-600">
+                        {currentCategoryName === "beauty" ? 'Personal Care' : currentCategoryName === "electronics" ? 'Electronics Appliances' : currentCategoryName === "sports" ? 'Sports & Stationary' : currentCategoryName === 'home' ? 'Home Appliances' : currentCategoryName === 'industrial' ? "Industrial & Construction Material" : currentCategoryName}
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
+              </div>
+
+              {/* Render all forms */}
+              <div className="space-y-8">
+                {forms.map((_: any, formIndex: number) => (
+                  <div key={formIndex} >
+                    <UpdateProductDraftForm
+                      formIndex={formIndex}
+                      currentCategoryName={currentCategoryName}
+                      catByIdData={catByIdData}
+                      subCategroies={subCategroies}
+                      subCategoriesData={subCategoriesData}
+                      onFormDataChange={handleFormDataChange}
+                      initialData={getInitialDataForForm(formIndex)}
+                      resetForm={resetForms}
+                    />
+                    {
+                      forms.length > -1 && formIndex < forms.length - 1 && <div className="bg-gray-400 w-full h-[2px] my-5"></div>
+                    }
+                  </div>
+                ))}
+              </div>
+
+
+              {/* Global Actions - Single Submit and Draft buttons for all forms */}
+              <div className="flex justify-end gap-3 my-5">
+                <Button
+                  type="button"
+                  disabled={loading}
+                  className="text-white w-32 cursor-pointer bc  text-xs border-primary-btn border-2 "
+                  onClick={handleSubmitAllForms}
+                >
+                  {loading ? (
+                    <Spinner className="w-5 h-5 animate-spin" />
+                  ) : (
+                    `Submit ${Object.keys(formsData).length > 1 ? 'All' : ''}`
+                  )}
+                </Button>
+              </div>
+            </>
+        }
       </div>
-        
 
-     
+
+
     </>
   );
 };

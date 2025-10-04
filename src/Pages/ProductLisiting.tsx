@@ -20,13 +20,22 @@ import productService from '@/services/product.service'
 import ProductListingCard from '@/Components/ProductListingCard'
 import { ProductListingCardSkeleton } from '@/const/CustomSkeletons'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form';
+import { Button } from '@/Components/ui/button'
 export default function ProductListing() {
   const [values, setValues] = useState([0, 0]);
+   const {data:categoriesArray} = useCategoriesStore()
   const [filters, setFilters] = useState([
     {
       id: 'category',
       name: 'All Category',
+      options: [
+        // DYNAMIC CATEGORIES
+      ],
+    },
+       {
+      id: 'subCategory',
+      name: 'Sub Category',
       options: [
         // DYNAMIC CATEGORIES
       ],
@@ -58,9 +67,11 @@ export default function ProductListing() {
 
 type FilterForm = {
   category: string  
+  subCategory: string
   budget: string
   sort: string        
   }
+
 
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const { data } = useCategoriesStore();
@@ -72,12 +83,14 @@ type FilterForm = {
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [maxBudget,setMaxBudget] = useState(0)
   const limit = 10;
   const formState = useForm({
     defaultValues: {
       category: searchParams.get("category") || '',
       budget: searchParams.get("budget") || '',
-      sort: searchParams.get("sort") || ''
+      sort: searchParams.get("sort") || '',
+      subCategory: searchParams.get("subCategory") || '',
     },
   })
   const watchAll = formState.watch();
@@ -94,6 +107,12 @@ type FilterForm = {
           newParams.set('category', watchAll.category);
         } else {
           newParams.delete('category');
+        }
+         // Handle category
+        if (watchAll.subCategory) {
+          newParams.set('subCategory', watchAll.subCategory);
+        } else {
+          newParams.delete('subCategory');
         }
         
         // Handle sort
@@ -114,7 +133,7 @@ type FilterForm = {
     };
     const timeoutId = setTimeout(updateSearchParams, 300);
     return () => clearTimeout(timeoutId);
-  }, [watchAll.category,watchAll.sort, values, setSearchParams]);
+  }, [watchAll.category,watchAll.sort, watchAll.subCategory, values, setSearchParams]);
 
 
   useEffect(()=>{
@@ -124,7 +143,11 @@ type FilterForm = {
       setValues([parseInt(searchParams.get("min_budget")!), parseInt(searchParams.get("max_budget")!)])
     }else if(searchParams.get('categoryId')){
       formState.setValue('category',searchParams.get('category')!)
-    }else if(searchParams.get('sort')){
+    }
+    else if(searchParams.get('subCategory')){
+      formState.setValue('subCategory',searchParams.get('subCategory')!)
+    }
+    else if(searchParams.get('sort')){
       formState.setValue('sort',searchParams.get('sort')!)
     }
     
@@ -171,7 +194,8 @@ type FilterForm = {
     searchParams.get("category"),
     searchParams.get("sort"),
     searchParams.get("min_budget"),
-    searchParams.get("max_budget")
+    searchParams.get("max_budget"),
+    searchParams.get('subCategory')
   ]);
 
   const fetchMoreData = async (reset: boolean = false) => {
@@ -195,6 +219,9 @@ type FilterForm = {
       console.log("Fetched products data:", response);
 
       const newProducts = response?.data?.data?.products || [];
+      // console.log(newProducts,23)
+      //   const maxPrice = Math.max(...newProducts.map((p: any) => p.minimumBudget || 0), 0);
+      //   setMaxBudget(maxPrice);
 
       setProducts(prev => reset ? newProducts : [...prev, ...newProducts]);
       setTotal(response?.data?.data.total);
@@ -208,7 +235,57 @@ type FilterForm = {
   };
 
 
+  useEffect(()=>{
+    const categoroies  = categoriesArray && (categoriesArray as any)?.find((item:any)=>item._id === searchParams.get("category"))
+    if(categoroies?.subCategories && Array.isArray(categoroies?.subCategories)){
+      setFilters((prev) =>
+      prev.map((section) => {
+        if (section.id === "subCategory") {
+          return {
+            ...section,
+            options: categoroies.subCategories.map((cat: any) => ({
+              value: cat._id,
+              label: cat.name,
+              checked: false,
+            })),
+          };
+        }
+        return section;
+      })
+    );
+    }
+  
+  },[searchParams.get("category")])
 
+
+const handleRemoveFilter = () => {
+  formState.reset({
+    category: '',
+    subCategory: '',
+    sort: '',
+    budget: ''
+  });
+  setSearchParams((prev: any) => {
+    const newParams = new URLSearchParams(prev);
+
+    newParams.delete('category');
+    newParams.delete('subCategory');
+    newParams.delete('min_budget');
+    newParams.delete('max_budget');
+    newParams.delete('sort');
+
+    return newParams;
+  });
+};
+
+
+const isFilterActive = !!(
+  searchParams.get('category') ||
+  searchParams.get('subCategory') ||
+  searchParams.get('min_budget') ||
+  searchParams.get('max_budget') ||
+  searchParams.get('sort')
+);
 
   return (
     <div className="">
@@ -474,6 +551,18 @@ type FilterForm = {
                     </Disclosure>
                   )
                 ))}
+                {/* buttons */}
+                {
+                  isFilterActive && (
+                  <Button
+                type='button'
+               onClick={handleRemoveFilter}
+               variant="ghost" size="lg" className="border w-full mt-5 shadow-orange-500 border-orange-600 text-orange-600 rounded-[5px]  hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out underline-0 cursor-pointer">
+              Remove Filter's
+            </Button> 
+                  )
+                }
+            
               </form>
 
 
@@ -488,11 +577,11 @@ type FilterForm = {
                   </p>
                 </div>
                 {/* className='shadow-sm rounded-2xl p-6 border' */}
-                <div >
+                <div  className='min-h-[300px]'>
                   {
                     key.length > 0 && products.length == 0 ?
                       <div className='flex justify-center items-center h-full flex-col space-y-2'>
-                        <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-illustration-svg-png-download-8779492.png" alt="" className='h-24 w-24' />
+                        <img src="empty-cart.webp" alt="" className='h-24 w-24' />
                         <p className='text-xl font-semibold  text-center'>No Item Found</p>
                       </div> :
                       <InfiniteScroll

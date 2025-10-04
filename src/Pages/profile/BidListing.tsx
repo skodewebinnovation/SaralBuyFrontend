@@ -58,8 +58,8 @@ const BidListing = () => {
             accessorKey: "status",
             header: "Status",
             cell: ({ row }) => {
-                const status = row.getValue("status");
-                if (status === 'inactive') {
+                const diff = row.getValue("status") as number;
+                if (diff <= 0) {
                     return <Badge className="bg-red-100 text-red-500 rounded-full px-2 w-20">Inactive</Badge>
                 } else {
                     return <Badge className="bg-green-100 text-green-500 rounded-full capitalize px-3 w-20">Active</Badge>
@@ -101,10 +101,14 @@ const BidListing = () => {
     useEffect(() => {
         if (fetchBidsResponse) {
             const { bids, total: totalCount, limit: pageLimit } = fetchBidsResponse;
-
             const formattedData = bids.map((item: any) => {
-                let mainProductId = item.product?.product?._id || item.product?._id;
-                let mainProductBuyerId = item.product?.product?.userId || item.product?.userId;
+            let mainProductId = item.product?.product?._id || item.product?._id;
+            let mainProductBuyerId = item.product?.product?.userId || item.product?.userId;
+            const createdAt = new Date(item.createdAt).getTime();
+                const durationDays = Number(item.product?.bidActiveDuration); 
+                const expiryTime = createdAt + durationDays * 24 * 60 * 60 * 1000;
+                const now = Date.now();
+                const diff = expiryTime - now;
                 return {
                     _id: item._id,
                     date: dateFormatter(item.createdAt),
@@ -114,7 +118,7 @@ const BidListing = () => {
                     productBuyerId: mainProductBuyerId,
                     min_budget: item?.product?.minimumBudget,
                     your_budget: item?.budgetQuation,
-                    status: item?.status || "active",
+                    status: diff
                 };
             });
 

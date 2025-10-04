@@ -442,13 +442,13 @@ useEffect(()=>{
 
                     <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
                   )}
-                  {/* {
+                  {
                     (bidOverviewRes?.product?.minimumBudget || productResponse?.mainProduct?.minimumBudget) && (
 
                       <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.minimumBudget
                         : productResponse?.mainProduct?.minimumBudget)}</p>
                     )
-                  } */}
+                  }
                    
                      
 
@@ -656,13 +656,13 @@ useEffect(()=>{
 
                         <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Construction Tool Type:</span> Industrial Tool</p>
                       )}
-                      {/* {
+                      {
                         (bidOverviewRes?.product?.minimumBudget || item?.minimumBudget) && (
 
                           <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.minimumBudget
                             : item?.minimumBudget)}</p>
                         )
-                      } */}
+                      }
                 
                           {/* <p className="flex items-center justify-between py-2 border-b-2 "><span className="font-semibold">Budget:</span> {currencyConvertor(bidOverviewRes ? bidOverviewRes?.product?.budget
                             : item?.budget || 0) || 'N/A'}</p> */}
